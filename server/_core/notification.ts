@@ -83,6 +83,7 @@ export async function notifyOwner(
   }
 
   const endpoint = buildEndpointUrl(ENV.forgeApiUrl);
+  console.log("[Notification] Endpoint:", endpoint);
 
   try {
     const response = await fetch(endpoint, {
