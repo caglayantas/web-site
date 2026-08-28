@@ -70,12 +70,15 @@ export default function DashboardLayout({
             </p>
           </div>
           <Button
-            onClick={() => startLogin()}
-            size="lg"
-            className="w-full shadow-lg hover:shadow-xl transition-all"
-          >
-            Sign in
-          </Button>
+  onClick={() => {
+    console.log("SIGN IN BUTTON ÇALIŞTI");
+    alert("Buton çalışıyor!");
+  }}
+  size="lg"
+  className="w-full shadow-lg hover:shadow-xl transition-all"
+>
+  Sign in
+</Button>
         </div>
       </div>
     );
