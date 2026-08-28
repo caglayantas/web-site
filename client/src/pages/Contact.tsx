@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import PageHero from "@/components/PageHero";
+import { supabase } from "@/lib/supabase";
 import { ArrowUpRight, Check, MessageCircle, MapPin, Phone, Mail, AlertCircle } from "lucide-react";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -23,25 +24,51 @@ export function validateContactForm(values: Record<string, unknown>): FieldError
 export default function Contact() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitted, setSubmitted] = useState(false);
-  const [mailHref, setMailHref] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const nextErrors = validateContactForm({ name: data.get("name"), email: data.get("email"), service: data.get("service"), message: data.get("message"), consent: data.get("consent") });
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const values = {
+      name: data.get("name"),
+      email: data.get("email"),
+      service: data.get("service"),
+      message: data.get("message"),
+      consent: data.get("consent"),
+    };
+    const nextErrors = validateContactForm(values);
     setErrors(nextErrors);
     setSubmitted(false);
+    setSubmitError("");
     if (Object.keys(nextErrors).length > 0) return;
 
-    const subject = `Perla Marine teknik değerlendirme: ${data.get("service")}`;
-    const body = [
-      `Ad soyad: ${data.get("name")}`, `E-posta: ${data.get("email")}`, `Telefon: ${data.get("phone") || ""}`,
-      `Tekne / proje: ${data.get("project") || ""}`, `Tekne tipi: ${data.get("vessel") || ""}`, `Konum / marina: ${data.get("location") || ""}`,
-      `Hizmet kategorisi: ${data.get("service")}`, `İletişim tercihi: ${data.get("preferred") || ""}`, "", `Mesaj: ${data.get("message")}`,
-    ].join("\n");
-    const href = `mailto:info@perlamarine.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setMailHref(href);
+    setSubmitting(true);
+
+    const { error } = await supabase.from("contact_requests").insert({
+      name: String(data.get("name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      phone: String(data.get("phone") || "").trim() || null,
+      project: String(data.get("project") || "").trim() || null,
+      vessel: String(data.get("vessel") || "").trim() || null,
+      location: String(data.get("location") || "").trim() || null,
+      service: String(data.get("service") || ""),
+      preferred: String(data.get("preferred") || "").trim() || null,
+      message: String(data.get("message") || "").trim(),
+      consent: true,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      console.error("[Contact] Supabase insert failed:", error);
+      setSubmitError("Talebiniz gönderilemedi. Lütfen birkaç saniye sonra tekrar deneyin veya telefon, e-posta ya da WhatsApp üzerinden doğrudan ulaşın.");
+      return;
+    }
+
     setSubmitted(true);
+    form.reset();
   }
 
   const describedBy = (field: string) => errors[field] ? `${field}-error` : undefined;
@@ -65,6 +92,7 @@ export default function Contact() {
       <form className="contact-form" onSubmit={handleSubmit} noValidate>
         <div className="contact-form__heading"><span>TEKNİK DEĞERLENDİRME</span><p>Servis ve teklif talebi</p></div>
         {Object.keys(errors).length > 0 && <div className="form-error-summary" role="alert"><AlertCircle size={16} /><span>Lütfen aşağıdaki alanları kontrol edin: {Object.values(errors).join(" ")}</span></div>}
+        {submitError && <div className="form-error-summary" role="alert"><AlertCircle size={16} /><span>{submitError}</span></div>}
         <div className="form-row">
           <label>Adınız ve soyadınız<input name="name" required autoComplete="name" placeholder="Adınız ve soyadınız" aria-invalid={invalid("name")} aria-describedby={describedBy("name")} />{errors.name && <small id="name-error" className="field-error">{errors.name}</small>}</label>
           <label>E-posta adresiniz<input name="email" type="email" required autoComplete="email" placeholder="ornek@eposta.com" aria-invalid={invalid("email")} aria-describedby={describedBy("email")} />{errors.email && <small id="email-error" className="field-error">{errors.email}</small>}</label>
@@ -77,8 +105,8 @@ export default function Contact() {
         </div>
         <label>Mevcut durum ve hedef<textarea name="message" required rows={5} placeholder="Teknenin kullanım profili, mevcut sistemler ve çözmek istediğiniz teknik konuyu kısaca paylaşın." aria-invalid={invalid("message")} aria-describedby={describedBy("message")} />{errors.message && <small id="message-error" className="field-error">{errors.message}</small>}</label>
         <label className="consent-field"><input name="consent" type="checkbox" required aria-invalid={invalid("consent")} aria-describedby={describedBy("consent")} /> <span>Kişisel verilerimin <a href={`${SITE_URL}/kvkk`}>Aydınlatma Metni</a> kapsamında işlenmesini kabul ediyorum.{errors.consent && <small id="consent-error" className="field-error">{errors.consent}</small>}</span></label>
-        <button className="button button--navy" type="submit">Teknik değerlendirme talebi <ArrowUpRight size={17} /></button>
-        {submitted && <div className="form-success" role="status" aria-live="polite"><Check size={15} /><span>Talep bilgileriniz hazırlandı. Sunucu taraflı e-posta gönderimi bu sürümde yapılandırılmadığı için cihazınızdaki e-posta uygulaması açılır. Açılmadıysa <a href={mailHref}>e-posta taslağını açın</a> veya <a href="https://wa.me/905454353201" target="_blank" rel="noreferrer">WhatsApp’tan yazın</a>.</span></div>}
+        <button className="button button--navy" type="submit" disabled={submitting}>{submitting ? "Gönderiliyor..." : "Teknik değerlendirme talebi"} <ArrowUpRight size={17} /></button>
+        {submitted && <div className="form-success" role="status" aria-live="polite"><Check size={15} /><span>Talebiniz başarıyla alındı. Bilgileriniz Perla Marine ekibine iletildi; en kısa sürede sizinle iletişime geçeceğiz.</span></div>}
         <p className="form-assurance"><Check size={14} /> Bilgileriniz yalnızca talebinizin ilk değerlendirmesi için kullanılır. Alternatif olarak +90 545 435 32 01 veya info@perlamarine.com üzerinden doğrudan ulaşabilirsiniz.</p>
       </form>
     </section>
