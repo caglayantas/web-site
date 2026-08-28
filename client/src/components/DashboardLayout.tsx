@@ -69,14 +69,13 @@ export default function DashboardLayout({
               Access to this dashboard requires authentication. Continue to launch the login flow.
             </p>
           </div>
-          <Button
-  onClick={() => startLogin()}
-  }
-  size="lg"
-  className="w-full shadow-lg hover:shadow-xl transition-all"
->
-  Sign in
-</Button>
+           <Button
+              onClick={startLogin}
+              size="lg"
+              className="w-full shadow-lg hover:shadow-xl transition-all"
+            >
+              Sign in
+            </Button>
         </div>
       </div>
     );
