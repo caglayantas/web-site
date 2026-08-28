@@ -28,10 +28,18 @@ import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-function LegacyBlogRedirect() {
+function AdminRedirect() {
   const [, navigate] = useLocation();
-  useEffect(() => { navigate("/teknik-bilgiler", { replace: true }); }, [navigate]);
-  return <div className="route-loading" role="status">Teknik Bilgiler’e yönlendiriliyorsunuz…</div>;
+
+  useEffect(() => {
+    navigate("/yonetim/projeler", { replace: true });
+  }, [navigate]);
+
+  return (
+    <div className="route-loading" role="status">
+      Yönetim paneline yönlendiriliyorsunuz…
+    </div>
+  );
 }
 
 function Router() {
@@ -39,6 +47,8 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      
+      <Route path={"/yonetim"} component={AdminRedirect} />
       <Route path={"/yonetim/projeler"} component={AdminProjects} />
       <Route path={"/yonetim/projeler/preview/:slug"} component={ProjectDraftPreview} />
       <Route path={"/yonetim/teknik-bilgiler"} component={AdminKnowledge} />
