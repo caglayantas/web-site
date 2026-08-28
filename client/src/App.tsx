@@ -1,7 +1,6 @@
-```tsx
 /**
- * Perla Marine / Sessiz Kuvvet: Koyu lacivert mühendislik disiplini ile fildişi boşlukları,
- * rota çizgilerini ve kontrollü altın vurguları birleştiren global sayfa kabuğu.
+ * Perla Marine / Sessiz Kuvvet
+ * Global page shell and application routing.
  */
 
 import { lazy, Suspense, useEffect } from "react";
@@ -18,6 +17,15 @@ import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import ServiceFAQ from "@/components/ServiceFAQ";
 import Legal, { Sitemap } from "@/pages/Legal";
+
+import { Route, Switch, useLocation } from "wouter";
+
+import ErrorBoundary from "./components/ErrorBoundary";
+import { ThemeProvider } from "./contexts/ThemeContext";
+
+// ============================================================
+// Lazy loaded pages
+// ============================================================
 
 const AboutNew = lazy(() =>
   import("@/pages/CorporatePages").then((module) => ({
@@ -50,41 +58,27 @@ const ServicesNew = lazy(() =>
 );
 
 const AdminProjects = lazy(() => import("@/pages/AdminProjects"));
+
 const AdminKnowledge = lazy(() => import("@/pages/AdminKnowledge"));
+
 const AdminFAQ = lazy(() => import("@/pages/AdminFAQ"));
 
-const ProjectDraftPreview = lazy(
-  () => import("@/pages/ProjectDraftPreview")
+const ProjectDraftPreview = lazy(() =>
+  import("@/pages/ProjectDraftPreview")
 );
 
-const KnowledgePost = lazy(() => import("@/pages/KnowledgePost"));
-const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
+const KnowledgePost = lazy(() =>
+  import("@/pages/KnowledgePost")
+);
 
-import { Route, Switch, useLocation } from "wouter";
+const ProjectDetail = lazy(() =>
+  import("@/pages/ProjectDetail")
+);
 
-import ErrorBoundary from "./components/ErrorBoundary";
-import { ThemeProvider } from "./contexts/ThemeContext";
+// ============================================================
+// Admin redirect
+// ============================================================
 
-/**
- * Eski /blog adresini yeni Teknik Bilgiler sayfasına yönlendirir.
- */
-function LegacyBlogRedirect() {
-  const [, navigate] = useLocation();
-
-  useEffect(() => {
-    navigate("/teknik-bilgiler", { replace: true });
-  }, [navigate]);
-
-  return (
-    <div className="route-loading" role="status">
-      Teknik Bilgiler’e yönlendiriliyorsunuz…
-    </div>
-  );
-}
-
-/**
- * /yonetim adresini varsayılan yönetim sayfasına yönlendirir.
- */
 function AdminRedirect() {
   const [, navigate] = useLocation();
 
@@ -99,119 +93,139 @@ function AdminRedirect() {
   );
 }
 
+// ============================================================
+// Legacy blog redirect
+// ============================================================
+
+function LegacyBlogRedirect() {
+  const [, navigate] = useLocation();
+
+  useEffect(() => {
+    navigate("/teknik-bilgiler", { replace: true });
+  }, [navigate]);
+
+  return (
+    <div className="route-loading" role="status">
+      Teknik Bilgiler’e yönlendiriliyorsunuz…
+    </div>
+  );
+}
+
+// ============================================================
+// Router
+// ============================================================
+
 function Router() {
   return (
     <Switch>
-      {/* Ana sayfa */}
-      <Route path={"/"} component={Home} />
 
-      {/* Yönetim paneli */}
-      <Route path={"/yonetim"} component={AdminRedirect} />
-      <Route
-        path={"/yonetim/projeler"}
-        component={AdminProjects}
-      />
-      <Route
-        path={"/yonetim/projeler/preview/:slug"}
-        component={ProjectDraftPreview}
-      />
-      <Route
-        path={"/yonetim/teknik-bilgiler"}
-        component={AdminKnowledge}
-      />
-      <Route
-        path={"/yonetim/sss"}
-        component={AdminFAQ}
-      />
+      {/* ======================================================
+          MAIN WEBSITE
+         ====================================================== */}
 
-      {/* Kurumsal sayfalar */}
+      <Route path="/" component={Home} />
+
+      <Route path="/hakkimizda" component={AboutNew} />
+
+      <Route path="/hizmetler" component={ServicesNew} />
+
+      <Route path="/projeler/:slug" component={ProjectDetail} />
+
+      <Route path="/projeler" component={ProjectsNew} />
+
       <Route
-        path={"/hakkimizda"}
-        component={AboutNew}
+        path="/teknik-bilgiler/:slug"
+        component={KnowledgePost}
       />
 
       <Route
-        path={"/hizmetler"}
-        component={ServicesNew}
-      />
-
-      <Route
-        path={"/projeler"}
-        component={ProjectsNew}
-      />
-
-      <Route
-        path={"/projeler/:slug"}
-        component={ProjectDetail}
-      />
-
-      {/* Teknik bilgiler */}
-      <Route
-        path={"/teknik-bilgiler"}
+        path="/teknik-bilgiler"
         component={KnowledgeNew}
       />
 
       <Route
-        path={"/teknik-bilgiler/:slug"}
-        component={KnowledgePost}
-      />
-
-      {/* Eski blog adresi */}
-      <Route
-        path={"/blog"}
+        path="/blog"
         component={LegacyBlogRedirect}
       />
 
-      {/* İletişim */}
-      <Route
-        path={"/iletisim"}
-        component={ContactNew}
-      />
+      <Route path="/iletisim" component={ContactNew} />
 
-      {/* SSS */}
       <Route
-        path={"/sss"}
+        path="/sss"
         component={() => <ServiceFAQ />}
       />
 
-      {/* Yasal sayfalar */}
+      {/* ======================================================
+          LEGAL
+         ====================================================== */}
+
       <Route
-        path={"/kvkk"}
+        path="/kvkk"
         component={() => <Legal type="kvkk" />}
       />
 
       <Route
-        path={"/gizlilik"}
+        path="/gizlilik"
         component={() => <Legal type="gizlilik" />}
       />
 
       <Route
-        path={"/cerez"}
+        path="/cerez"
         component={() => <Legal type="cerez" />}
       />
 
-      {/* Site haritası */}
       <Route
-        path={"/site-haritasi"}
+        path="/site-haritasi"
         component={Sitemap}
       />
 
-      {/* 404 */}
+      {/* ======================================================
+          ADMIN PANEL
+         ====================================================== */}
+
       <Route
-        path={"/404"}
+        path="/yonetim"
+        component={AdminRedirect}
+      />
+
+      <Route
+        path="/yonetim/projeler"
+        component={AdminProjects}
+      />
+
+      <Route
+        path="/yonetim/projeler/preview/:slug"
+        component={ProjectDraftPreview}
+      />
+
+      <Route
+        path="/yonetim/teknik-bilgiler"
+        component={AdminKnowledge}
+      />
+
+      <Route
+        path="/yonetim/sss"
+        component={AdminFAQ}
+      />
+
+      {/* ======================================================
+          404
+         ====================================================== */}
+
+      <Route
+        path="/404"
         component={NotFound}
       />
 
-      {/* Yakalanamayan tüm adresler */}
       <Route component={NotFound} />
+
     </Switch>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg),
-//   then change color palette in index.css to keep consistent foreground/background color across components.
-// - If you want to make theme switchable, pass switchable ThemeProvider and use useTheme.
+// ============================================================
+// App
+// ============================================================
 
 function App() {
   const [location] = useLocation();
@@ -222,11 +236,14 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
+
           <Toaster />
 
           <PageHead location={location} />
 
           <div className="app-shell">
+
+            {/* Accessibility */}
             <a
               className="skip-link"
               href="#main-content"
@@ -234,9 +251,12 @@ function App() {
               Ana içeriğe geç
             </a>
 
+            {/* Public website header */}
             {!isAdminRoute && <SiteHeader />}
 
+            {/* Main content */}
             <main id="main-content">
+
               <Suspense
                 fallback={
                   <div
@@ -249,12 +269,16 @@ function App() {
               >
                 <Router />
               </Suspense>
+
             </main>
 
+            {/* Public website footer */}
             {!isAdminRoute && <SiteFooter />}
 
             {!isAdminRoute && <BackToTop />}
+
           </div>
+
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
@@ -262,4 +286,3 @@ function App() {
 }
 
 export default App;
-```
