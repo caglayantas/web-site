@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Application } from "express";
 import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
@@ -6,7 +6,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 
-export async function setupVite(app: Express, server: Server) {
+export async function setupVite(app: Application, server: Server) {
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
@@ -32,7 +32,6 @@ export async function setupVite(app: Express, server: Server) {
         "index.html"
       );
 
-      // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
@@ -58,7 +57,7 @@ const routeMetadata: Record<string, { title: string; description: string; image?
 };
 const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 
-export function serveStatic(app: Express) {
+export function serveStatic(app: Application) {
   const distPath =
     process.env.NODE_ENV === "development"
       ? path.resolve(import.meta.dirname, "../..", "dist", "public")
@@ -78,7 +77,6 @@ export function serveStatic(app: Express) {
     },
   }));
 
-  // Fall through to index.html while adapting primary metadata to the requested route.
   app.use("*", (req, res) => {
     const requestedPath = (req.originalUrl.split("?")[0].replace(/\/$/, "") || "/");
     const matched = routeMetadata[requestedPath] || (requestedPath.startsWith("/teknik-bilgiler/") ? routeMetadata["/teknik-bilgiler"] : requestedPath.startsWith("/projeler/") ? routeMetadata["/projeler"] : null);
