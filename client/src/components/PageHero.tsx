@@ -1,12 +1,21 @@
 /**
  * Perla Marine / Sessiz Kuvvet: İç sayfalarda büyük boşluk, serif başlık ve ince altın rota
- * çizgisiyle kurumsal sakinliği sürdüren, görseli asla metnin önüne geçirmeyen sayfa başlığı.
+ * çizgisiyle kurumsal sakinliği sürdüren sayfa başlığı. İç sayfaların her birinde
+ * gerçek proje/saha görseli de kullanılır; böylece ana sayfa dışındaki rotalar da görsel olarak
+ * ana sayfayla aynı kalite seviyesinde kalır.
  */
 type PageHeroProps = {
   eyebrow: string;
   title: string;
   intro: string;
   variant: "about" | "services" | "blog" | "contact";
+};
+
+const heroImages: Record<PageHeroProps["variant"], string> = {
+  about: "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
+  services: "/manus-storage/perla-hero-medium-yacht-service-1600_e565edfd.webp",
+  blog: "/manus-storage/perla-hybrid-propulsion_709c0218.jpg",
+  contact: "/manus-storage/perla-marine-checkup-inspection-report-1600_ee2d0922.webp",
 };
 
 function HeroSignal({ variant }: Pick<PageHeroProps, "variant">) {
@@ -48,7 +57,14 @@ function HeroSignal({ variant }: Pick<PageHeroProps, "variant">) {
 
 export default function PageHero({ eyebrow, title, intro, variant }: PageHeroProps) {
   return (
-    <section className={`page-hero page-hero--${variant}`}>
+    <section
+      className={`page-hero page-hero--${variant}`}
+      style={{
+        backgroundImage: `linear-gradient(90deg, rgba(9, 22, 38, 0.94) 0%, rgba(9, 22, 38, 0.78) 42%, rgba(9, 22, 38, 0.25) 100%), url(${heroImages[variant]})`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
       <div className="page-hero__route" aria-hidden="true"><span /></div>
       <div className="page-hero__content">
         <p className="eyebrow">{eyebrow}</p>
