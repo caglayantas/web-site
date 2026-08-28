@@ -1,4 +1,4 @@
-import express, { type Application } from "express";
+import express from "express";
 import fs from "fs";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
@@ -6,37 +6,16 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 
-export async function setupVite(app: Application, server: Server) {
-  const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
-    allowedHosts: true as const,
-  };
-
-  const vite = await createViteServer({
-    ...viteConfig,
-    configFile: false,
-    server: serverOptions,
-    appType: "custom",
-  });
-
+export async function setupVite(app: any, server: Server) {
+  const serverOptions = { middlewareMode: true, hmr: { server }, allowedHosts: true as const };
+  const vite = await createViteServer({ ...viteConfig, configFile: false, server: serverOptions, appType: "custom" });
   app.use(vite.middlewares);
-  app.use("*", async (req, res, next) => {
+  app.use("*", async (req: any, res: any, next: any) => {
     const url = req.originalUrl;
-
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "../..",
-        "client",
-        "index.html"
-      );
-
+      const clientTemplate = path.resolve(import.meta.dirname, "../..", "client", "index.html");
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
-      template = template.replace(
-        `src="/src/main.tsx"`,
-        `src="/src/main.tsx?v=${nanoid()}"`
-      );
+      template = template.replace(`src="/src/main.tsx"`, `src="/src/main.tsx?v=${nanoid()}"`);
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
@@ -57,27 +36,13 @@ const routeMetadata: Record<string, { title: string; description: string; image?
 };
 const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 
-export function serveStatic(app: Application) {
-  const distPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(import.meta.dirname, "../..", "dist", "public")
-      : path.resolve(import.meta.dirname, "public");
-  if (!fs.existsSync(distPath)) {
-    console.error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`
-    );
-  }
-
-  app.use(express.static(distPath, {
-    maxAge: "1d",
-    setHeaders: (res, filePath) => {
-      if (filePath.includes(`${path.sep}assets${path.sep}`)) {
-        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-      }
-    },
-  }));
-
-  app.use("*", (req, res) => {
+export function serveStatic(app: any) {
+  const distPath = process.env.NODE_ENV === "development" ? path.resolve(import.meta.dirname, "../..", "dist", "public") : path.resolve(import.meta.dirname, "public");
+  if (!fs.existsSync(distPath)) console.error(`Could not find the build directory: ${distPath}, make sure to build the client first`);
+  app.use(express.static(distPath, { maxAge: "1d", setHeaders: (res: any, filePath: string) => {
+    if (filePath.includes(`${path.sep}assets${path.sep}`)) res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  }}));
+  app.use("*", (req: any, res: any) => {
     const requestedPath = (req.originalUrl.split("?")[0].replace(/\/$/, "") || "/");
     const matched = routeMetadata[requestedPath] || (requestedPath.startsWith("/teknik-bilgiler/") ? routeMetadata["/teknik-bilgiler"] : requestedPath.startsWith("/projeler/") ? routeMetadata["/projeler"] : null);
     const indexPath = path.resolve(distPath, "index.html");
@@ -85,18 +50,14 @@ export function serveStatic(app: Application) {
     let html = fs.readFileSync(indexPath, "utf-8");
     html = html.replace(/<title>[^<]*<\/title>/, `<title>${escapeHtml(matched.title)}</title>`);
     html = html.replace(/<meta name="description" content="[^"]*"\s*\/>/, `<meta name="description" content="${escapeHtml(matched.description)}" />`);
-    html = html.replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="https://www.perlamarine.com${requestedPath === "/" ? "/" : requestedPath}" />`);
-    html = html.replace(/<meta property="og:title" content="[^"]*"\s*\/>/, `<meta property="og:title" content="${escapeHtml(matched.title)}" />`);
     const canonical = `https://www.perlamarine.com${requestedPath === "/" ? "/" : requestedPath}`;
     const image = matched.image || "https://www.perlamarine.com/manus-storage/perla-hero-medium-yacht-service_7ccec84c.jpg";
+    html = html.replace(/<link rel="canonical" href="[^"]*"\s*\/>/, `<link rel="canonical" href="${canonical}" />`);
+    html = html.replace(/<meta property="og:title" content="[^"]*"\s*\/>/, `<meta property="og:title" content="${escapeHtml(matched.title)}" />`);
     html = html.replace(/<meta property="og:description" content="[^"]*"\s*\/>/, `<meta property="og:description" content="${escapeHtml(matched.description)}" />`);
     html = html.replace(/<meta property="og:url" content="[^"]*"\s*\/>/, `<meta property="og:url" content="${escapeHtml(canonical)}" />`);
     html = html.replace(/<meta property="og:image" content="[^"]*"\s*\/>/, `<meta property="og:image" content="${escapeHtml(image)}" />`);
-    html = html.replace(/<meta name="twitter:title" content="[^"]*"\s*\/>/, `<meta name="twitter:title" content="${escapeHtml(matched.title)}" />`);
-    html = html.replace(/<meta name="twitter:description" content="[^"]*"\s*\/>/, `<meta name="twitter:description" content="${escapeHtml(matched.description)}" />`);
-    html = html.replace(/<meta name="twitter:image" content="[^"]*"\s*\/>/, `<meta name="twitter:image" content="${escapeHtml(image)}" />`);
-    const pageSchema = JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", url: canonical, name: matched.title, description: matched.description, inLanguage: "tr-TR" }).replace(/</g, "\\u003c");
-    html = html.replace("</head>", `<script type="application/ld+json">${pageSchema}</script></head>`);
+    html = html.replace("</head>", `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "WebPage", url: canonical, name: matched.title, description: matched.description, inLanguage: "tr-TR" }).replace(/</g, "\\u003c")}</script></head>`);
     return res.type("html").send(html);
   });
 }
