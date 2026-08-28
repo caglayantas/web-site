@@ -1,0 +1,23 @@
+import { chromium } from "playwright";
+
+const baseUrl = process.env.PREVIEW_URL || "http://localhost:3000";
+const browser = await chromium.launch({ headless: true, executablePath: "/usr/bin/chromium" });
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+await page.goto(`${baseUrl}/iletisim`, { waitUntil: "networkidle" });
+await page.locator("#teklif-formu button[type=submit]").click();
+const errorVisible = await page.locator(".new-contact-form .form-error-summary").isVisible();
+await page.locator('input').nth(0).fill("Perla Marine");
+await page.locator('input[type=email]').fill("info@example.com");
+await page.locator('select').selectOption({ index: 1 });
+await page.locator('textarea').fill("Akü ve şarj sistemi kontrolü");
+await page.locator('input[type=checkbox]').check();
+await page.locator("#teklif-formu button[type=submit]").click();
+const successVisible = await page.locator(".new-contact-success").isVisible();
+const successAnimation = await page.locator(".new-contact-success").evaluate((node) => ({ animationName: getComputedStyle(node).animationName, animationDuration: getComputedStyle(node).animationDuration }));
+await page.goto(`${baseUrl}/projeler`, { waitUntil: "networkidle" });
+const comparisonCount = await page.locator(".project-comparison").count();
+const detailCount = await page.locator(".project-detail-card__copy").count();
+await page.goto(`${baseUrl}/teknik-bilgiler`, { waitUntil: "networkidle" });
+const articleCount = await page.locator(".knowledge-card").count();
+console.log(JSON.stringify({ errorVisible, successVisible, successAnimation, comparisonCount, detailCount, articleCount }));
+await browser.close();
