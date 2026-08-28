@@ -46,15 +46,10 @@ export default function Contact() {
 
     setSubmitting(true);
 
-    const { error } = await supabase.from("contact_requests").insert({
+    const { error } = await supabase.from("contact_messages").insert({
       name: String(data.get("name") || "").trim(),
       email: String(data.get("email") || "").trim(),
-      phone: String(data.get("phone") || "").trim() || null,
-      project: String(data.get("project") || "").trim() || null,
-      vessel: String(data.get("vessel") || "").trim() || null,
-      location: String(data.get("location") || "").trim() || null,
-      service: String(data.get("service") || ""),
-      preferred: String(data.get("preferred") || "").trim() || null,
+      service: String(data.get("service") || "").trim(),
       message: String(data.get("message") || "").trim(),
       consent: true,
     });
