@@ -198,6 +198,9 @@ export const app = createApp();
 
 async function startServer() {
   const server = createServer(app);
+  if (process.env.NODE_ENV !== "production") {
+    await setupVite(app, server);
+  }
 
   const preferredPort = parseInt(
     process.env.PORT || "3000",
