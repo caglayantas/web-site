@@ -1,15 +1,15 @@
-```typescript
 import "dotenv/config";
 import express from "express";
 import net from "net";
 import path from "path";
-import { createServer, type Server } from "http";
+import { createServer } from "http";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
+
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
-import { setupVite } from "./vite";
+import { setupVite, serveStatic } from "./vite";
 import { buildSitemapXml } from "../sitemap";
 import { assertProductionEnv } from "./env";
 
@@ -18,22 +18,40 @@ const securityHeaders = (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const analyticsOrigin = (() => {
-    try {
-      return new URL(process.env.VITE_ANALYTICS_ENDPOINT || "").origin;
-    } catch {
-      return "";
+  let analyticsOrigin = "";
+
+  try {
+    const analyticsUrl = process.env.VITE_ANALYTICS_ENDPOINT || "";
+
+    if (analyticsUrl) {
+      analyticsOrigin = new URL(analyticsUrl).origin;
     }
-  })();
+  } catch {
+    analyticsOrigin = "";
+  }
 
   res.removeHeader("X-Powered-By");
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Frame-Options", "SAMEORIGIN");
-  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  res.setHeader(
+    "X-Content-Type-Options",
+    "nosniff"
+  );
+
+  res.setHeader(
+    "X-Frame-Options",
+    "SAMEORIGIN"
+  );
+
+  res.setHeader(
+    "Referrer-Policy",
+    "strict-origin-when-cross-origin"
+  );
+
   res.setHeader(
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=()"
   );
+
   res.setHeader(
     "Cross-Origin-Opener-Policy",
     "same-origin-allow-popups"
@@ -45,13 +63,40 @@ const securityHeaders = (
       "max-age=31536000; includeSubDomains"
     );
 
-    const externalAnalytics = analyticsOrigin
-      ? ` ${analyticsOrigin}`
-      : "";
+    let contentSecurityPolicy =
+      "default-src 'self'; " +
+      "base-uri 'self'; " +
+      "frame-ancestors 'self'; " +
+      "form-action 'self' https://wa.me; " +
+      "img-src 'self' data: blob: https://d36hbw14aib5lz.cloudfront.net; " +
+      "font-src 'self' https://fonts.gstatic.com; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+      "script-src 'self' 'unsafe-inline'; " +
+      "connect-src 'self'; " +
+      "object-src 'none'; " +
+      "upgrade-insecure-requests";
+
+    if (analyticsOrigin) {
+      contentSecurityPolicy =
+        contentSecurityPolicy.replace(
+          "connect-src 'self';",
+          "connect-src 'self' " +
+            analyticsOrigin +
+            ";"
+        );
+
+      contentSecurityPolicy =
+        contentSecurityPolicy.replace(
+          "script-src 'self' 'unsafe-inline';",
+          "script-src 'self' 'unsafe-inline' " +
+            analyticsOrigin +
+            ";"
+        );
+    }
 
     res.setHeader(
       "Content-Security-Policy",
-      `default-src 'self'; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://wa.me; img-src 'self' data: blob: https://d36hbw14aib5lz.cloudfront.net; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'${externalAnalytics}; connect-src 'self'${externalAnalytics}; object-src 'none'; upgrade-insecure-requests`
+      contentSecurityPolicy
     );
   }
 
@@ -68,31 +113,45 @@ export function createApp() {
 
   app.use(securityHeaders);
 
-  app.use(express.json({ limit: "16mb" }));
-  app.use(express.urlencoded({ limit: "2mb", extended: true }));
+  app.use(
+    express.json({
+      limit: "16mb",
+    })
+  );
 
-  // Storage
+  app.use(
+    express.urlencoded({
+      limit: "2mb",
+      extended: true,
+    })
+  );
+
   registerStorageProxy(app);
 
-  // OAuth
   registerOAuthRoutes(app);
 
-  // Sitemap
   app.get("/sitemap.xml", async (_req, res) => {
     try {
+      const sitemap = await buildSitemapXml();
+
       res
         .type("application/xml")
-        .send(await buildSitemapXml());
+        .send(sitemap);
     } catch (error) {
-      console.error("[SEO] Sitemap generation failed", error);
+      console.error(
+        "[SEO] Sitemap generation failed",
+        error
+      );
+
       res
         .status(503)
         .type("text/plain")
-        .send("Sitemap temporarily unavailable");
+        .send(
+          "Sitemap temporarily unavailable"
+        );
     }
   });
 
-  // tRPC API
   app.use(
     "/api/trpc",
     createExpressMiddleware({
@@ -101,7 +160,6 @@ export function createApp() {
     })
   );
 
-  // Production static files
   if (process.env.NODE_ENV === "production") {
     const staticPath = path.resolve(
       process.cwd(),
@@ -109,9 +167,10 @@ export function createApp() {
       "public"
     );
 
-    app.use(express.static(staticPath));
+    app.use(
+      express.static(staticPath)
+    );
 
-    // SPA fallback
     app.get("*", (req, res, next) => {
       if (
         req.path.startsWith("/api/") ||
@@ -120,8 +179,16 @@ export function createApp() {
         return next();
       }
 
-      res.sendFile(path.join(staticPath, "index.html"));
+      res.sendFile(
+        path.join(
+          staticPath,
+          "index.html"
+        )
+      );
     });
+  } else {
+    // Development mode
+    // Vite is started by the development server.
   }
 
   return app;
@@ -137,15 +204,25 @@ async function startServer() {
     10
   );
 
-  const isPortAvailable = (port: number): Promise<boolean> =>
+  const isPortAvailable = (
+    port: number
+  ): Promise<boolean> =>
     new Promise((resolve) => {
       const testServer = net.createServer();
 
-      testServer.once("error", () => resolve(false));
+      testServer.once(
+        "error",
+        () => resolve(false)
+      );
 
-      testServer.listen(port, () => {
-        testServer.close(() => resolve(true));
-      });
+      testServer.listen(
+        port,
+        () => {
+          testServer.close(() =>
+            resolve(true)
+          );
+        }
+      );
     });
 
   let port = preferredPort;
@@ -155,7 +232,9 @@ async function startServer() {
     current < preferredPort + 20;
     current++
   ) {
-    if (await isPortAvailable(current)) {
+    if (
+      await isPortAvailable(current)
+    ) {
       port = current;
       break;
     }
@@ -163,21 +242,36 @@ async function startServer() {
 
   if (port !== preferredPort) {
     console.log(
-      `Port ${preferredPort} is busy, using port ${port} instead`
+      "Port " +
+        preferredPort +
+        " is busy, using port " +
+        port +
+        " instead"
     );
   }
 
-  server.listen(port, () => {
-    console.log(
-      `Server running on http://localhost:${port}/`
-    );
-  });
+  server.listen(
+    port,
+    () => {
+      console.log(
+        "Server running on http://localhost:" +
+          port +
+          "/"
+      );
+    }
+  );
 }
 
-if (process.env.NODE_ENV !== "production") {
+if (
+  process.env.NODE_ENV !==
+  "production"
+) {
   startServer().catch((error) => {
-    console.error("[Server] Failed to start:", error);
+    console.error(
+      "[Server] Failed to start:",
+      error
+    );
+
     process.exit(1);
   });
 }
-```
