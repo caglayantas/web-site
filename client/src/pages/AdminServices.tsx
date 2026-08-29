@@ -6,7 +6,7 @@ import { createService, updateService, deleteService, getAllServices, uploadImag
 import { ICON_OPTIONS } from "@/components/ServiceGrid";
 import { slugify } from "@/lib/markdown";
 import { Check, Crop, ImagePlus, Pencil, Plus, Save, Trash2, Wrench, X, ZoomIn } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type ServiceForm = {
   id?: number; slug: string; title: string; icon: string; image: string; description: string;
@@ -23,37 +23,26 @@ const emptyForm: ServiceForm = {
 const linesToList = (value: string) => value.split("\n").map((line) => line.trim()).filter(Boolean);
 const listToLines = (value: string[]) => value.join("\n");
 
-async function cropToWebp(file: File, focalX: number, focalY: number, zoom: number) {
-  const sourceUrl = URL.createObjectURL(file);
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const element = new Image();
-      element.onload = () => resolve(element);
-      element.onerror = () => reject(new Error("Görsel okunamadı"));
-      element.src = sourceUrl;
-    });
-    const outputWidth = 1600;
-    const outputHeight = 900;
-    const aspect = outputWidth / outputHeight;
-    const imageAspect = image.naturalWidth / image.naturalHeight;
-    const baseHeight = imageAspect > aspect ? image.naturalHeight : image.naturalWidth / aspect;
-    const baseWidth = baseHeight * aspect;
-    const cropWidth = baseWidth / zoom;
-    const cropHeight = cropWidth / aspect;
-    const sx = Math.max(0, Math.min(image.naturalWidth - cropWidth, (image.naturalWidth - cropWidth) * focalX));
-    const sy = Math.max(0, Math.min(image.naturalHeight - cropHeight, (image.naturalHeight - cropHeight) * focalY));
-    const canvas = document.createElement("canvas");
-    canvas.width = outputWidth;
-    canvas.height = outputHeight;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Canvas kullanılamıyor");
-    context.drawImage(image, sx, sy, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86));
-    if (!blob) throw new Error("WebP dönüşümü başarısız");
-    return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "kapak"}.webp`, { type: "image/webp" });
-  } finally {
-    URL.revokeObjectURL(sourceUrl);
-  }
+async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, zoom: number, fileName: string) {
+  const outputWidth = 1600;
+  const outputHeight = 900;
+  const aspect = outputWidth / outputHeight;
+  const imageAspect = bitmap.width / bitmap.height;
+  const baseHeight = imageAspect > aspect ? bitmap.height : bitmap.width / aspect;
+  const baseWidth = baseHeight * aspect;
+  const cropWidth = baseWidth / zoom;
+  const cropHeight = cropWidth / aspect;
+  const sx = Math.max(0, Math.min(bitmap.width - cropWidth, (bitmap.width - cropWidth) * focalX));
+  const sy = Math.max(0, Math.min(bitmap.height - cropHeight, (bitmap.height - cropHeight) * focalY));
+  const canvas = document.createElement("canvas");
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas kullanılamıyor");
+  context.drawImage(bitmap, sx, sy, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight);
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86));
+  if (!blob) throw new Error("WebP dönüşümü başarısız");
+  return new File([blob], `${fileName.replace(/\.[^.]+$/, "") || "kapak"}.webp`, { type: "image/webp" });
 }
 
 function CoverImageField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
@@ -66,33 +55,31 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
   const [focalX, setFocalX] = useState(.5);
   const [focalY, setFocalY] = useState(.5);
   const [zoom, setZoom] = useState(1);
+  const bitmapRef = useRef<ImageBitmap | null>(null);
   useEffect(() => { setPreview(value); }, [value]);
-  useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); }, [sourcePreview]);
+  useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); bitmapRef.current?.close(); }, [sourcePreview]);
 
   const chooseFile = async (file?: File) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) return setError("Lütfen bir görsel dosyası seçin.");
-    if (file.size > 8 * 1024 * 1024) return setError("Görsel 8 MB’dan küçük olmalı.");
+    if (file.size > 8 * 1024 * 1024) return setError("Kapak görseli 8 MB’dan küçük olmalı.");
     setError("");
     setIsPending(true);
-    const objectUrl = URL.createObjectURL(file);
     try {
-      const dimensions = await new Promise<{ width: number; height: number }>((resolve, reject) => {
-        const probe = new Image();
-        probe.onload = () => resolve({ width: probe.naturalWidth, height: probe.naturalHeight });
-        probe.onerror = () => reject(new Error("Bu dosya bir görsel olarak açılamadı. Dosya bozuk olabilir veya bu formatı telefonunuzun tarayıcısı desteklemiyor olabilir."));
-        probe.src = objectUrl;
+      const bitmap = await createImageBitmap(file).catch(() => {
+        throw new Error("Bu dosya bir görsel olarak açılamadı. Dosya bozuk olabilir veya bu formatı telefonunuzun tarayıcısı desteklemiyor olabilir.");
       });
-      if (dimensions.width * dimensions.height > 40_000_000) {
-        URL.revokeObjectURL(objectUrl);
-        return setError("Bu görsel çok yüksek çözünürlüklü (" + dimensions.width + "×" + dimensions.height + "). Lütfen görseli küçültüp tekrar deneyin.");
+      if (bitmap.width * bitmap.height > 40_000_000) {
+        bitmap.close();
+        return setError(`Bu görsel çok yüksek çözünürlüklü (${bitmap.width}×${bitmap.height}). Lütfen görseli küçültüp tekrar deneyin.`);
       }
+      bitmapRef.current?.close();
+      bitmapRef.current = bitmap;
       if (sourcePreview) URL.revokeObjectURL(sourcePreview);
       setSourceFile(file);
-      setSourcePreview(objectUrl);
+      setSourcePreview(URL.createObjectURL(file));
       setFocalX(.5); setFocalY(.5); setZoom(1);
     } catch (probeError) {
-      URL.revokeObjectURL(objectUrl);
       setError(probeError instanceof Error ? probeError.message : "Görsel açılamadı.");
     } finally {
       setIsPending(false);
@@ -100,14 +87,16 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
   };
 
   const applyCrop = async () => {
-    if (!sourceFile) return;
+    if (!sourceFile || !bitmapRef.current) return;
     setError("");
     setIsPending(true);
     try {
-      const webpFile = await cropToWebp(sourceFile, focalX, focalY, zoom);
+      const webpFile = await cropToWebp(bitmapRef.current, focalX, focalY, zoom, sourceFile.name);
       const url = await uploadImage("services", webpFile);
       onChange(url);
       setPreview(url);
+      bitmapRef.current?.close();
+      bitmapRef.current = null;
       setSourceFile(null);
       if (sourcePreview) URL.revokeObjectURL(sourcePreview);
       setSourcePreview("");
@@ -119,7 +108,13 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
     }
   };
 
-  const cancelCrop = () => { setSourceFile(null); if (sourcePreview) URL.revokeObjectURL(sourcePreview); setSourcePreview(""); };
+  const cancelCrop = () => {
+    bitmapRef.current?.close();
+    bitmapRef.current = null;
+    setSourceFile(null);
+    if (sourcePreview) URL.revokeObjectURL(sourcePreview);
+    setSourcePreview("");
+  };
 
   return (
     <div className="admin-upload-field admin-project-form__full">
