@@ -18,10 +18,7 @@ export async function setupVite(app: any, server: Server) {
       template = template.replace(`src="/src/main.tsx"`, `src="/src/main.tsx?v=${nanoid()}"`);
       const page = await vite.transformIndexHtml(url, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
-    }
+    } catch (e) { vite.ssrFixStacktrace(e as Error); next(e); }
   });
 }
 
@@ -37,13 +34,17 @@ const routeMetadata: Record<string, { title: string; description: string; image?
 const escapeHtml = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 
 export function serveStatic(app: any) {
-  const distPath = process.env.NODE_ENV === "development" ? path.resolve(import.meta.dirname, "../..", "dist", "public") : path.resolve(import.meta.dirname, "public");
-  if (!fs.existsSync(distPath)) console.error(`Could not find the build directory: ${distPath}, make sure to build the client first`);
+  // Vite copies client/public into dist/public. Serving server/public in production
+  // was the reason the /manus-storage photos returned 404.
+  const distPath = path.resolve(import.meta.dirname, "../..", "dist", "public");
+  if (!fs.existsSync(distPath)) console.error(`Could not find the build directory: ${distPath}`);
   app.use(express.static(distPath, { maxAge: "1d", setHeaders: (res: any, filePath: string) => {
     if (filePath.includes(`${path.sep}assets${path.sep}`)) res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
   }}));
   app.use("*", (req: any, res: any) => {
     const requestedPath = (req.originalUrl.split("?")[0].replace(/\/$/, "") || "/");
+    // Never let the SPA fallback swallow static files such as /manus-storage/*.webp.
+    if (requestedPath.startsWith("/manus-storage/") || requestedPath.startsWith("/assets/")) return res.status(404).end();
     const matched = routeMetadata[requestedPath] || (requestedPath.startsWith("/teknik-bilgiler/") ? routeMetadata["/teknik-bilgiler"] : requestedPath.startsWith("/projeler/") ? routeMetadata["/projeler"] : null);
     const indexPath = path.resolve(distPath, "index.html");
     if (!matched) return res.sendFile(indexPath);
