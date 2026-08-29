@@ -21,13 +21,14 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BookOpen, ExternalLink, HelpCircle, LayoutDashboard, LogOut, PanelLeft, Wrench } from "lucide-react";
+import { BookOpen, ExternalLink, HelpCircle, LayoutDashboard, LogOut, PanelLeft, Wrench, Sparkles } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
+  { icon: Sparkles, label: "Hizmetlerimiz", path: "/yonetim/hizmetler" },
   { icon: Wrench, label: "Projeler", path: "/yonetim/projeler" },
   { icon: BookOpen, label: "Teknik bilgiler", path: "/yonetim/teknik-bilgiler" },
   { icon: HelpCircle, label: "SSS", path: "/yonetim/sss" },
@@ -266,6 +267,23 @@ function DashboardLayoutContent({
       </div>
 
       <SidebarInset>
+        <nav className="admin-mobile-nav" aria-label="Yönetim menüsü">
+          {menuItems.map(item => (
+            <a
+              key={item.path}
+              href={item.path}
+              className={`admin-mobile-nav__link${location === item.path ? " is-active" : ""}`}
+              onClick={(event) => { event.preventDefault(); setLocation(item.path); }}
+            >
+              <item.icon className="h-4 w-4" />
+              <span>{item.label}</span>
+            </a>
+          ))}
+          <button type="button" className="admin-mobile-nav__link admin-mobile-nav__link--logout" onClick={logout}>
+            <LogOut className="h-4 w-4" />
+            <span>Çıkış yap</span>
+          </button>
+        </nav>
         {isMobile && (
           <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
             <div className="flex items-center gap-2">
