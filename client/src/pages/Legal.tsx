@@ -79,7 +79,7 @@ const legalContent = {
         heading: "2. Toplanan Bilgiler",
         body: [
           "İletişim formunu doldurduğunuzda ad-soyad, e-posta, telefon, tekne veya proje bilgisi ve mesaj içeriğiniz tarafımızca alınır. Siteyi ziyaret ettiğinizde ise tarayıcı türü, cihaz bilgisi, IP adresi ve ziyaret kayıtları gibi teknik veriler otomatik olarak oluşabilir.",
-          "Site, şu an itibarıyla üçüncü taraf analiz veya reklam çerezi kullanmamaktadır. Bu durumun değişmesi hâlinde Çerez Politikamız güncellenerek tarafınıza bu sayfa üzerinden bildirilecektir.",
+          "Site; rızanıza bağlı olarak, ziyaretçi istatistiklerini anlamak amacıyla Google Analytics gibi üçüncü taraf analiz araçları kullanabilir. Bu araçlar yalnızca sitemizi ilk ziyaretinizde gösterilen çerez bandında açık rızanızı vermeniz hâlinde etkinleştirilir; tercihinizi dilediğiniz zaman değiştirebilirsiniz. Detaylar için Çerez Politikamızı inceleyebilirsiniz.",
         ],
       },
       {
@@ -131,22 +131,22 @@ const legalContent = {
         ],
       },
       {
-        heading: "2. Şu An Kullanılan Çerezler",
+        heading: "2. Zorunlu Çerezler",
         body: [
-          "perlamarine.com, şu an itibarıyla yalnızca sitenin temel işlevlerinin (sayfalar arası gezinme, form işlevselliği, güvenlik) çalışması için gerekli olabilecek zorunlu/teknik nitelikte çerezler ve benzeri teknolojiler kullanmaktadır. Reklam, pazarlama veya profil oluşturma amaçlı üçüncü taraf çerezi kullanılmamaktadır.",
+          "perlamarine.com, sitenin temel işlevlerinin (sayfalar arası gezinme, form işlevselliği, güvenlik, çerez tercihinizin hatırlanması) çalışması için gerekli olan zorunlu/teknik nitelikte çerezleri ve benzeri teknolojileri kullanır. Bu çerezler için ayrı bir onay istenmez ve devre dışı bırakılamaz.",
         ],
       },
       {
-        heading: "3. İleride Eklenebilecek Çerezler",
+        heading: "3. Analiz Çerezleri (Rızanıza Bağlı)",
         body: [
-          "İlerleyen dönemde, ziyaretçi istatistiklerini anlamak amacıyla analiz çerezlerinin (örn. Google Analytics benzeri araçlar) kullanılması planlanmaktadır. Bu tür çerezler devreye alındığında bu Çerez Politikası güncellenecek ve mevzuatın gerektirdiği hâllerde sitemizi ilk ziyaretinizde açık rızanız istenecektir.",
+          "Ziyaretçi istatistiklerini anlamak amacıyla Google Analytics çerezleri kullanılabilmektedir. Bu çerezler yalnızca sitemizi ilk ziyaretinizde gösterilen çerez bandında açık rızanızı vermeniz hâlinde etkinleştirilir; “Sadece Zorunlu” seçeneğini işaretlerseniz bu çerezler yüklenmez. Tercihinizi dilediğiniz zaman internet sitemizin altbilgisindeki “Çerez tercihlerini değiştir” bağlantısından güncelleyebilirsiniz.",
         ],
       },
       {
         heading: "4. Çerez Türleri Hakkında Genel Bilgi",
         body: [
           "Zorunlu çerezler: Sitenin temel işlevleri (sayfa gezinme, form gönderimi, güvenlik) için gereklidir ve kapatılamaz.",
-          "Performans/analiz çerezleri: Ziyaretçilerin siteyi nasıl kullandığını anlamak için kullanılır; şu an aktif değildir.",
+          "Performans/analiz çerezleri: Ziyaretçilerin siteyi nasıl kullandığını anlamak için kullanılır; yalnızca açık rızanızla etkinleştirilir.",
           "Pazarlama çerezleri: Kişiselleştirilmiş reklam amacıyla kullanılır; şu an aktif değildir.",
         ],
       },
