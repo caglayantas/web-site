@@ -1,6 +1,7 @@
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
-import { trpc } from "@/lib/trpc";
+import { getProjectPreviewBySlug, type ProjectRow } from "@/lib/content";
 import { ArrowLeft, Check, ExternalLink, Loader2, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useRoute } from "wouter";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -8,17 +9,24 @@ const SITE_URL = "https://www.perlamarine.com";
 export default function ProjectDraftPreview() {
   const [, params] = useRoute("/yonetim/projeler/preview/:slug");
   const slug = params?.slug ?? "";
-  const project = trpc.projects.preview.useQuery({ slug }, { enabled: Boolean(slug) });
+  const [data, setData] = useState<ProjectRow | null | undefined>(undefined);
+  useEffect(() => {
+    if (!slug) return;
+    let mounted = true;
+    setData(undefined);
+    getProjectPreviewBySlug(slug).then((project) => { if (mounted) setData(project); }).catch(() => { if (mounted) setData(null); });
+    return () => { mounted = false; };
+  }, [slug]);
 
-  if (project.isLoading) {
+  if (data === undefined) {
     return <main className="draft-preview-shell draft-preview-shell--centered"><Loader2 className="animate-spin" size={28} /><span>Taslak önizleme hazırlanıyor…</span></main>;
   }
 
-  if (project.isError || !project.data) {
+  if (!data) {
     return <main className="draft-preview-shell draft-preview-shell--centered"><div className="draft-preview-error"><p className="eyebrow">Önizleme kullanılamıyor</p><h1>Taslak proje bulunamadı.</h1><p>Proje silinmiş, URL anahtarı değişmiş veya yönetici oturumunuz sona ermiş olabilir.</p><a className="draft-preview-back" href="/yonetim/projeler"><ArrowLeft size={16} /> Proje yönetimine dön</a></div></main>;
   }
 
-  const value = project.data;
+  const value = data;
   return <main className="draft-preview-shell">
     <div className="draft-preview-bar" role="status" aria-label="Taslak önizleme durumu">
       <div className="draft-preview-bar__identity"><span className="draft-preview-badge"><Wrench size={14} /> TASLAK ÖNİZLEME</span><span className="draft-preview-bar__title">{value.title}</span></div>

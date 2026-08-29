@@ -1218,9 +1218,9 @@ export function ProjectsNew() {
           await supabase
             .from("projects")
             .select("*")
-            .eq("published", true)
-            .order("created_at", {
-              ascending: false,
+            .eq("status", "published")
+            .order("sort_order", {
+              ascending: true,
             });
 
         if (
@@ -1512,9 +1512,9 @@ export function KnowledgeNew() {
 
         const { data, error } =
           await supabase
-            .from("knowledge")
+            .from("knowledge_posts")
             .select("*")
-            .eq("published", true)
+            .eq("status", "published")
             .order("published_at", {
               ascending: false,
             });
@@ -1934,6 +1934,8 @@ export function ContactNew() {
 
             status:
               "new",
+
+            consent: true,
           });
 
       if (error) {

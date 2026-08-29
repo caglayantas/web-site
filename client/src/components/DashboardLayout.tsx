@@ -1,4 +1,5 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth, signInWithPassword } from "@/lib/auth";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -19,7 +20,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { startLogin } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { BookOpen, ExternalLink, LayoutDashboard, LogOut, PanelLeft, Wrench } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
@@ -37,6 +37,49 @@ const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
+
+function AdminLoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      await signInWithPassword(email.trim(), password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Giriş başarısız oldu.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <form onSubmit={submit} className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
+        <div className="flex flex-col items-center gap-6">
+          <h1 className="text-2xl font-semibold tracking-tight text-center">
+            Yönetim paneline giriş
+          </h1>
+          <p className="text-sm text-muted-foreground text-center max-w-sm">
+            Devam etmek için e-posta ve şifrenizle giriş yapın.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 w-full">
+          <Input type="email" required autoComplete="email" placeholder="E-posta" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input type="password" required autoComplete="current-password" placeholder="Şifre" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
+        <Button type="submit" size="lg" className="w-full shadow-lg hover:shadow-xl transition-all" disabled={submitting}>
+          {submitting ? "Giriş yapılıyor…" : "Giriş yap"}
+        </Button>
+      </form>
+    </div>
+  );
+}
 
 export default function DashboardLayout({
   children,
@@ -58,27 +101,7 @@ export default function DashboardLayout({
   }
 
   if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
-          <div className="flex flex-col items-center gap-6">
-            <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign in to continue
-            </h1>
-            <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Access to this dashboard requires authentication. Continue to launch the login flow.
-            </p>
-          </div>
-           <Button
-              onClick={startLogin}
-              size="lg"
-              className="w-full shadow-lg hover:shadow-xl transition-all"
-            >
-              Sign in
-            </Button>
-        </div>
-      </div>
-    );
+    return <AdminLoginForm />;
   }
 
   return (
@@ -206,12 +229,12 @@ function DashboardLayoutContent({
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Avatar className="h-9 w-9 border shrink-0">
                     <AvatarFallback className="text-xs font-medium">
-                      {user?.name?.charAt(0).toUpperCase()}
+                      {user?.email?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
                     <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
+                      {user?.email || "-"}
                     </p>
                     <p className="text-xs text-muted-foreground truncate mt-1.5">
                       {user?.email || "-"}

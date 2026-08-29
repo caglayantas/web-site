@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { trpc } from "@/lib/trpc";
 
 export type ProjectForm = {
   id?: number;
@@ -102,8 +101,4 @@ export function useProjectDraft(value: ProjectForm, onChange: (value: ProjectFor
   };
   const discardDraft = () => { clearProjectDraft(); setDraftAvailable(false); };
   return { draftAvailable, draftSavedAt, restoreDraft, discardDraft };
-}
-
-export function useProjectImageUpload() {
-  return trpc.projects.uploadImage.useMutation();
 }

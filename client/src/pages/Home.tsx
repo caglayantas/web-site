@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ServiceGrid from "@/components/ServiceGrid";
 import ServiceFAQ from "@/components/ServiceFAQ";
-import { trpc } from "@/lib/trpc";
+import { getPublishedKnowledgePosts, getPublishedProjects, type KnowledgePostRow, type ProjectRow } from "@/lib/content";
 import { ArrowDownRight, ArrowUpRight, BatteryCharging, CalendarClock, Check, ChevronRight, ClipboardCheck, Clock3, FileText, MapPin, Settings2, ShieldCheck, Wrench, MoveRight } from "lucide-react";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -16,10 +16,18 @@ const checkupBenefits = [{ title: "Elektrik kontrolü", icon: BatteryCharging },
 const shortenProjectText = (text: string, limit: number) => { const firstSentence = text.split(/[.!?]/)[0]?.trim() || text.trim(); return firstSentence.length <= limit ? firstSentence : `${firstSentence.slice(0, limit - 1).trimEnd()}…`; };
 
 export default function Home() {
-  const knowledge = trpc.knowledge.published.useQuery();
-  const projects = trpc.projects.latestPublished.useQuery();
-  const technicalCards = knowledge.isError ? technicalFallback : (knowledge.data ?? []).slice(0, 3);
-  const displayProjects = projects.isError ? projectFallback : (projects.data ?? []).filter((project) => project.status === "published").slice(0, 3);
+  const [knowledgeData, setKnowledgeData] = useState<KnowledgePostRow[] | null>(null);
+  const [knowledgeError, setKnowledgeError] = useState(false);
+  const [knowledgeLoading, setKnowledgeLoading] = useState(true);
+  const [projectsData, setProjectsData] = useState<ProjectRow[] | null>(null);
+  const [projectsError, setProjectsError] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  useEffect(() => {
+    getPublishedKnowledgePosts().then(setKnowledgeData).catch(() => setKnowledgeError(true)).finally(() => setKnowledgeLoading(false));
+    getPublishedProjects().then(setProjectsData).catch(() => setProjectsError(true)).finally(() => setProjectsLoading(false));
+  }, []);
+  const technicalCards = knowledgeError ? technicalFallback : (knowledgeData ?? []).slice(0, 3);
+  const displayProjects = projectsError ? projectFallback : (projectsData ?? []).filter((project) => project.status === "published").slice(0, 3);
   return (
     <div className="home-page-compact">
       <section className="hero-section" id="giris">
@@ -94,7 +102,7 @@ export default function Home() {
           </div>
           <div className="home-project-carousel-shell">
             <div className="home-project-carousel" tabIndex={0} aria-label="Son üç proje kartı">
-              <div className="home-project-carousel__track">{projects.isLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`project-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <a className="home-project-card" key={project.slug} href={`/projeler/${project.slug}`}><img className="home-project-card__cover" src={project.afterImage} alt={`${project.title} bakım projesi`} loading="lazy" decoding="async" /><div className="home-project-card__overlay"><span>{project.label}</span><h3>{shortenProjectText(project.title, 36)}</h3><p>{shortenProjectText(project.detail, 94)}</p><strong>Projeyi incele <ChevronRight size={15} /></strong></div></a>) : <p className="home-content-empty">Henüz yayınlanmış proje bulunmuyor. Yeni saha çalışmaları yayınlandığında bu alanda görünecek.</p>}</div>
+              <div className="home-project-carousel__track">{projectsLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`project-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <a className="home-project-card" key={project.slug} href={`/projeler/${project.slug}`}><img className="home-project-card__cover" src={project.afterImage} alt={`${project.title} bakım projesi`} loading="lazy" decoding="async" /><div className="home-project-card__overlay"><span>{project.label}</span><h3>{shortenProjectText(project.title, 36)}</h3><p>{shortenProjectText(project.detail, 94)}</p><strong>Projeyi incele <ChevronRight size={15} /></strong></div></a>) : <p className="home-content-empty">Henüz yayınlanmış proje bulunmuyor. Yeni saha çalışmaları yayınlandığında bu alanda görünecek.</p>}</div>
             </div>
           </div>
         </section>
@@ -105,7 +113,7 @@ export default function Home() {
             <a className="text-link text-link--dark" href="/projeler">Daha fazlasını gör <ArrowUpRight size={16} /></a>
           </div>
           <div className="home-before-after-grid">
-            {projects.isLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`comparison-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <article className="home-before-after-card" key={`${project.slug}-comparison`}><BeforeAfterSlider before={project.beforeImage} after={project.afterImage} beforeAlt={`${project.title} önce`} afterAlt={`${project.title} sonra`} label={project.title} /></article>) : <p className="home-content-empty">Yayınlanmış karşılaştırma projesi bulunmuyor.</p>}
+            {projectsLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`comparison-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <article className="home-before-after-card" key={`${project.slug}-comparison`}><BeforeAfterSlider before={project.beforeImage} after={project.afterImage} beforeAlt={`${project.title} önce`} afterAlt={`${project.title} sonra`} label={project.title} /></article>) : <p className="home-content-empty">Yayınlanmış karşılaştırma projesi bulunmuyor.</p>}
           </div>
         </section>
 
@@ -120,7 +128,7 @@ export default function Home() {
           <div><p className="eyebrow">Teknik Bilgiler</p><h2>Bakım kararlarını daha görünür ve uygulanabilir hale getiren notlar.</h2></div>
           <a className="text-link text-link--dark" href="/teknik-bilgiler">Tüm teknik bilgileri görün <ArrowUpRight size={16} /></a>
         </div>
-        <div className="journal-grid">{knowledge.isLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--journal" key={`journal-skeleton-${index}`} aria-hidden="true" />) : technicalCards.length > 0 ? technicalCards.map((card, index) => <a key={card.slug} href={`/teknik-bilgiler/${card.slug}`} className={`journal-card${index === 0 ? " journal-card--feature" : ""}`}><span>{card.category}</span><h3>{card.title}</h3><p>{card.excerpt}</p><FileText size={19} /></a>) : <p className="home-content-empty">Henüz yayınlanmış teknik bilgi bulunmuyor.</p>}</div>
+        <div className="journal-grid">{knowledgeLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--journal" key={`journal-skeleton-${index}`} aria-hidden="true" />) : technicalCards.length > 0 ? technicalCards.map((card, index) => <a key={card.slug} href={`/teknik-bilgiler/${card.slug}`} className={`journal-card${index === 0 ? " journal-card--feature" : ""}`}><span>{card.category}</span><h3>{card.title}</h3><p>{card.excerpt}</p><FileText size={19} /></a>) : <p className="home-content-empty">Henüz yayınlanmış teknik bilgi bulunmuyor.</p>}</div>
       </section>
 
       <ServiceFAQ compact />

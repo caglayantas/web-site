@@ -1,6 +1,8 @@
-import { trpc } from "@/lib/trpc";
-import { useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
+
+type FaqItem = { question: string; answer: string };
 
 const fallbackQuestions = [
   { question: "Bakım veya onarım talebi nasıl değerlendirilir?", answer: "Önce teknenin mevcut durumu, kullanım profili, konumu ve teknik ihtiyacı anlaşılır. Ardından gerekli inceleme ve uygulanabilir sonraki adım birlikte netleştirilir." },
@@ -24,8 +26,20 @@ export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", "https://www.perlamarine.com/sss");
     return () => { document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [compact]);
-  const query = trpc.faq.published.useQuery();
-  const source = query.data?.length ? query.data : fallbackQuestions;
+  const [items, setItems] = useState<FaqItem[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let mounted = true;
+    supabase.from("faq").select("question,answer").eq("status", "published").order("sort_order", { ascending: true })
+      .then(({ data, error }) => {
+        if (!mounted) return;
+        if (error) console.error("[FAQ] Supabase error:", error);
+        setItems(data && data.length ? data : null);
+        setLoading(false);
+      });
+    return () => { mounted = false; };
+  }, []);
+  const source = items?.length ? items : fallbackQuestions;
   const visibleQuestions = compact ? source.slice(0, 5) : source;
   const schemaQuestions = visibleQuestions.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } }));
 
@@ -39,8 +53,8 @@ export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
         </div>
         {compact && <a className="text-link text-link--dark" href="/sss">Tüm SSS’yi görün <ArrowUpRight size={16} /></a>}
       </div>
-      <div className="faq-list" aria-busy={query.isLoading}>
-        {query.isLoading && <p className="home-content-empty">Sık sorulan sorular yükleniyor…</p>}
+      <div className="faq-list" aria-busy={loading}>
+        {loading && <p className="home-content-empty">Sık sorulan sorular yükleniyor…</p>}
         {visibleQuestions.map((item) => (
           <details className="faq-item" key={item.question}>
             <summary><span>{item.question}</span><Plus size={18} aria-hidden="true" /></summary>

@@ -3,8 +3,8 @@ import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { trpc } from "@/lib/trpc";
-import { useProjectDraft, useProjectImageUpload } from "@/hooks/useProjectEditor";
+import { createProject, updateProject, deleteProject, getAllProjects, uploadImage } from "@/lib/content";
+import { useProjectDraft } from "@/hooks/useProjectEditor";
 import { Check, Eye, ImagePlus, Loader2, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -85,7 +85,7 @@ async function fileToBase64(file: File) {
 }
 
 function ImageUploadField({ field, label, value, fieldError, onChange, onError }: { field: string; label: string; value: string; fieldError?: string; onChange: (url: string) => void; onError?: (message: string) => void }) {
-  const upload = useProjectImageUpload();
+  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(value);
   const [dragging, setDragging] = useState(false);
@@ -98,19 +98,21 @@ function ImageUploadField({ field, label, value, fieldError, onChange, onError }
     onError?.("");
     const localPreview = URL.createObjectURL(file);
     setPreview(localPreview);
+    setIsPending(true);
     try {
-      const data = await fileToBase64(file);
-      const result = await upload.mutateAsync({ fileName: file.name, contentType: file.type as "image/jpeg", data });
-      onChange(result.url);
+      const url = await uploadImage("projects", file);
+      onChange(url);
       URL.revokeObjectURL(localPreview);
     } catch {
       const message = "Görsel yüklenemedi. Önizleme korunuyor; tekrar deneyin.";
       setError(message);
       onError?.(message);
+    } finally {
+      setIsPending(false);
     }
   };
   const visibleError = error || fieldError;
-  return <div className={`admin-upload-field${visibleError ? " has-error" : ""}`}><span id={`${field}-label`}>{label}</span><label className={`admin-upload-dropzone${dragging ? " is-dragging" : ""}${visibleError ? " has-error" : ""}`} aria-describedby={visibleError ? `${field}-error` : undefined} aria-invalid={Boolean(visibleError)} onDragEnter={(event) => { event.preventDefault(); setDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); void handleFile(event.dataTransfer.files?.[0]); }}><input id={`${field}-field`} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => void handleFile(event.target.files?.[0])} /><span className="admin-upload-dropzone__icon">{upload.isPending ? <Loader2 className="animate-spin" size={20} /> : <ImagePlus size={20} />}</span><strong>{upload.isPending ? "Görsel yükleniyor…" : dragging ? "Bırakın" : value ? "Görseli değiştir" : "Görsel seçin veya sürükleyin"}</strong><small>JPG, PNG, WebP · maksimum 8 MB</small></label>{preview && <img className="admin-upload-preview" src={preview} alt={`${label} önizleme`} />}{preview && !value && <small className="admin-upload-pending">Önizleme hazır · kaydetmeden önce yükleniyor</small>}{visibleError && <small id={`${field}-error`} className="admin-form-error" role="alert">{visibleError}</small>}</div>;
+  return <div className={`admin-upload-field${visibleError ? " has-error" : ""}`}><span id={`${field}-label`}>{label}</span><label className={`admin-upload-dropzone${dragging ? " is-dragging" : ""}${visibleError ? " has-error" : ""}`} aria-describedby={visibleError ? `${field}-error` : undefined} aria-invalid={Boolean(visibleError)} onDragEnter={(event) => { event.preventDefault(); setDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); void handleFile(event.dataTransfer.files?.[0]); }}><input id={`${field}-field`} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => void handleFile(event.target.files?.[0])} /><span className="admin-upload-dropzone__icon">{isPending ? <Loader2 className="animate-spin" size={20} /> : <ImagePlus size={20} />}</span><strong>{isPending ? "Görsel yükleniyor…" : dragging ? "Bırakın" : value ? "Görseli değiştir" : "Görsel seçin veya sürükleyin"}</strong><small>JPG, PNG, WebP · maksimum 8 MB</small></label>{preview && <img className="admin-upload-preview" src={preview} alt={`${label} önizleme`} />}{preview && !value && <small className="admin-upload-pending">Önizleme hazır · kaydetmeden önce yükleniyor</small>}{visibleError && <small id={`${field}-error`} className="admin-form-error" role="alert">{visibleError}</small>}</div>;
 }
 
 function SavedProjectSummary({ project, onClose }: { project: SavedProject; onClose: () => void }) {
@@ -128,9 +130,8 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
   const [errors, setErrors] = useState<FormErrors>({});
   const [slugTouched, setSlugTouched] = useState(Boolean(value.id));
   const handleMutationError = (message: string) => { const formatted = formatProjectMutationError(message); setErrors(formatted.field ? { form: formatted.message, [formatted.field]: formatted.message } : { form: formatted.message }); focusFormError(formatted.field); };
-  const create = trpc.projects.create.useMutation({ onSuccess: onSaved, onError: (error) => handleMutationError(error.message) });
-  const update = trpc.projects.update.useMutation({ onSuccess: onSaved, onError: (error) => handleMutationError(error.message) });
-  const isSaving = create.isPending || update.isPending;
+  const [isSaving, setIsSaving] = useState(false);
+  const [serverErrorMessage, setServerErrorMessage] = useState<string | undefined>(undefined);
   const { draftAvailable, draftSavedAt, restoreDraft, discardDraft } = useProjectDraft(value, onChange);
   const set = <K extends keyof ProjectForm>(key: K, next: ProjectForm[K]) => {
     const nextValue = { ...value, [key]: next };
@@ -143,7 +144,7 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
     "aria-invalid": Boolean(errors[key]),
     "aria-describedby": errors[key] ? `${String(key)}-error` : undefined,
   });
-  const submit = (event: React.FormEvent) => {
+  const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     const nextErrors = validateProjectForm(value);
     setErrors(nextErrors);
@@ -154,11 +155,21 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
     }
     const { id, ...rawPayload } = value;
     const payload = { ...rawPayload, slug: rawPayload.slug.trim(), label: rawPayload.label.trim(), title: rawPayload.title.trim(), detail: rawPayload.detail.trim(), scope: rawPayload.scope.trim(), systems: rawPayload.systems.trim(), results: rawPayload.results.trim() };
-    if (id !== undefined) update.mutate({ id, ...payload });
-    else create.mutate(payload);
+    setIsSaving(true);
+    setServerErrorMessage(undefined);
+    try {
+      const saved = id !== undefined ? await updateProject(id, payload) : await createProject(payload);
+      onSaved(saved as unknown as SavedProject);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Proje kaydedilemedi.";
+      setServerErrorMessage(message);
+      handleMutationError(message);
+    } finally {
+      setIsSaving(false);
+    }
   };
   const field = (key: keyof ProjectForm) => errors[key] ? " has-error" : "";
-  const serverError = errors.form || create.error?.message || update.error?.message;
+  const serverError = errors.form || serverErrorMessage;
   const hint = (key: keyof ProjectForm, text: string) => errors[key] ? <small id={`${String(key)}-error`} className="admin-form-error" role="alert">{errors[key]}</small> : <small className="admin-form-hint">{text}</small>;
   return <form className="admin-project-form" onSubmit={submit} noValidate>
     <div className="admin-project-form__header"><div><p className="eyebrow">{value.id ? "Projeyi düzenle" : "Yeni proje"}</p><h2>{value.id ? value.title : "Saha çalışması ekle"}</h2></div><button type="button" className="admin-icon-button" onClick={onCancel} aria-label="Formu kapat"><X size={18} /></button></div>
@@ -184,14 +195,17 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
 }
 
 export default function AdminProjects() {
-  const projects = trpc.projects.adminList.useQuery();
-  const utils = trpc.useUtils();
-  const refreshProjects = () => { void Promise.all([projects.refetch(), utils.projects.published.invalidate()]); };
-  const remove = trpc.projects.remove.useMutation({ onSuccess: refreshProjects });
+  const [projectList, setProjectList] = useState<SavedProject[] | null>(null);
+  const [listError, setListError] = useState(false);
+  const refreshProjects = () => {
+    getAllProjects().then((data) => { setProjectList(data as unknown as SavedProject[]); setListError(false); }).catch(() => setListError(true));
+  };
+  useEffect(() => { refreshProjects(); }, []);
   const [form, setForm] = useState<ProjectForm | null>(null);
   const [savedProject, setSavedProject] = useState<SavedProject | null>(null);
-  const editProject = (project: NonNullable<typeof projects.data>[number]) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, status: project.status, sortOrder: project.sortOrder }); };
+  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, status: project.status, sortOrder: project.sortOrder }); };
   const startNewProject = () => { setSavedProject(null); setForm(emptyForm); };
   const saved = (project: SavedProject) => { clearProjectDraft(); setForm(null); setSavedProject(project); refreshProjects(); };
-  return <DashboardLayout><div className="admin-projects-page"><header className="admin-page-header"><div><p className="eyebrow">Perla Marine · Yönetim</p><h1>Projeler</h1><p>Önce/sonra saha çalışmalarını görselleri yükleyerek ekleyin, detaylandırın ve yayına alın.</p></div><Button onClick={startNewProject}><Plus size={17} /> Yeni proje</Button></header>{savedProject && <SavedProjectSummary project={savedProject} onClose={() => setSavedProject(null)} />}{form && <ProjectFormPanel value={form} onChange={setForm} onCancel={() => setForm(null)} onSaved={saved} />}<section className="admin-project-list" aria-label="Proje listesi"><div className="admin-project-list__header"><h2>Tüm projeler</h2><span>{projects.data?.length ?? 0} kayıt</span></div>{projects.isLoading ? <p className="admin-empty">Projeler yükleniyor…</p> : projects.error ? <p className="admin-form-error" role="alert">Proje listesi yüklenemedi. Yönetici yetkinizi kontrol edin.</p> : projects.data?.length ? projects.data.map((project) => <article className="admin-project-row" key={project.id}><div className="admin-project-row__images"><img src={project.beforeImage} alt={`${project.title} önce`} /><img src={project.afterImage} alt={`${project.title} sonra`} /></div><div className="admin-project-row__copy"><div className="admin-project-row__meta"><span>{project.label}</span><strong className={`admin-status admin-status--${project.status}`}>{project.status === "published" ? <><Check size={13} /> Yayında</> : "Taslak"}</strong></div><h3>{project.title}</h3><p>{project.detail}</p><small>/{project.slug} · Sıra {project.sortOrder}</small></div><div className="admin-project-row__actions"><a className="admin-project-preview-link" href={project.status === "published" ? `/projeler#${encodeURIComponent(project.slug)}` : `/yonetim/projeler/preview/${encodeURIComponent(project.slug)}`}><Eye size={15} /> {project.status === "published" ? "Görünümü aç" : "Taslağı önizle"}</a><Button variant="outline" size="sm" onClick={() => editProject(project)}><Pencil size={15} /> Düzenle</Button><Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) remove.mutate({ id: project.id }); }}><Trash2 size={15} /> Sil</Button></div></article>) : <div className="admin-empty"><p>Henüz proje yok.</p><Button onClick={startNewProject}><Plus size={16} /> İlk projeyi ekle</Button></div>}</section></div></DashboardLayout>;
+  const handleRemove = (id: number) => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) deleteProject(id).then(refreshProjects); };
+  return <DashboardLayout><div className="admin-projects-page"><header className="admin-page-header"><div><p className="eyebrow">Perla Marine · Yönetim</p><h1>Projeler</h1><p>Önce/sonra saha çalışmalarını görselleri yükleyerek ekleyin, detaylandırın ve yayına alın.</p></div><Button onClick={startNewProject}><Plus size={17} /> Yeni proje</Button></header>{savedProject && <SavedProjectSummary project={savedProject} onClose={() => setSavedProject(null)} />}{form && <ProjectFormPanel value={form} onChange={setForm} onCancel={() => setForm(null)} onSaved={saved} />}<section className="admin-project-list" aria-label="Proje listesi"><div className="admin-project-list__header"><h2>Tüm projeler</h2><span>{projectList?.length ?? 0} kayıt</span></div>{projectList === null && !listError ? <p className="admin-empty">Projeler yükleniyor…</p> : listError ? <p className="admin-form-error" role="alert">Proje listesi yüklenemedi. Yönetici yetkinizi kontrol edin.</p> : projectList?.length ? projectList.map((project) => <article className="admin-project-row" key={project.id}><div className="admin-project-row__images"><img src={project.beforeImage} alt={`${project.title} önce`} /><img src={project.afterImage} alt={`${project.title} sonra`} /></div><div className="admin-project-row__copy"><div className="admin-project-row__meta"><span>{project.label}</span><strong className={`admin-status admin-status--${project.status}`}>{project.status === "published" ? <><Check size={13} /> Yayında</> : "Taslak"}</strong></div><h3>{project.title}</h3><p>{project.detail}</p><small>/{project.slug} · Sıra {project.sortOrder}</small></div><div className="admin-project-row__actions"><a className="admin-project-preview-link" href={project.status === "published" ? `/projeler#${encodeURIComponent(project.slug)}` : `/yonetim/projeler/preview/${encodeURIComponent(project.slug)}`}><Eye size={15} /> {project.status === "published" ? "Görünümü aç" : "Taslağı önizle"}</a><Button variant="outline" size="sm" onClick={() => editProject(project)}><Pencil size={15} /> Düzenle</Button><Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => handleRemove(project.id)}><Trash2 size={15} /> Sil</Button></div></article>) : <div className="admin-empty"><p>Henüz proje yok.</p><Button onClick={startNewProject}><Plus size={16} /> İlk projeyi ekle</Button></div>}</section></div></DashboardLayout>;
 }
