@@ -5,15 +5,123 @@ import { Textarea } from "@/components/ui/textarea";
 import { createKnowledgePost, updateKnowledgePost, deleteKnowledgePost, getAllKnowledgePosts, uploadImage, type KnowledgePostRow } from "@/lib/content";
 import { renderMarkdownToHtml, slugify } from "@/lib/markdown";
 import { Check, Crop, Eye, FileText, ImagePlus, Pencil, Plus, Save, Trash2, X, ZoomIn } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type KnowledgeForm = { id?: number; slug: string; category: string; title: string; excerpt: string; coverImage: string; body: string; seoTitle: string; seoDescription: string; publishedAt: string; status: "draft" | "published"; featured: boolean; sortOrder: number };
 const emptyForm: KnowledgeForm = { slug: "", category: "Marin elektrik", title: "", excerpt: "", coverImage: "", body: "## Teknik not\n\nİçeriğinizi markdown ile yazın.\n\n- Kontrol başlığı\n- Uygulama notu\n- Bakım önerisi", seoTitle: "", seoDescription: "", publishedAt: new Date().toISOString().slice(0, 16), status: "draft", featured: false, sortOrder: 0 };
 
 async function fileToBase64(file: File) { const buffer = await file.arrayBuffer(); let binary = ""; const bytes = new Uint8Array(buffer); for (let index = 0; index < bytes.length; index += 1) binary += String.fromCharCode(bytes[index]); return btoa(binary); }
-async function cropToWebp(file: File, focalX: number, focalY: number, zoom: number) { const sourceUrl = URL.createObjectURL(file); try { const image = await new Promise<HTMLImageElement>((resolve, reject) => { const element = new Image(); element.onload = () => resolve(element); element.onerror = () => reject(new Error("Görsel okunamadı")); element.src = sourceUrl; }); const outputWidth = 1600; const outputHeight = 900; const aspect = outputWidth / outputHeight; const imageAspect = image.naturalWidth / image.naturalHeight; const baseHeight = imageAspect > aspect ? image.naturalHeight : image.naturalWidth / aspect; const baseWidth = baseHeight * aspect; const cropWidth = baseWidth / zoom; const cropHeight = cropWidth / aspect; const sx = Math.max(0, Math.min(image.naturalWidth - cropWidth, (image.naturalWidth - cropWidth) * focalX)); const sy = Math.max(0, Math.min(image.naturalHeight - cropHeight, (image.naturalHeight - cropHeight) * focalY)); const canvas = document.createElement("canvas"); canvas.width = outputWidth; canvas.height = outputHeight; const context = canvas.getContext("2d"); if (!context) throw new Error("Canvas kullanılamıyor"); context.drawImage(image, sx, sy, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight); const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86)); if (!blob) throw new Error("WebP dönüşümü başarısız"); return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "kapak"}.webp`, { type: "image/webp" }); } finally { URL.revokeObjectURL(sourceUrl); } }
+async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, zoom: number, fileName: string) { const outputWidth = 1600; const outputHeight = 900; const aspect = outputWidth / outputHeight; const imageAspect = bitmap.width / bitmap.height; const baseHeight = imageAspect > aspect ? bitmap.height : bitmap.width / aspect; const baseWidth = baseHeight * aspect; const cropWidth = baseWidth / zoom; const cropHeight = cropWidth / aspect; const sx = Math.max(0, Math.min(bitmap.width - cropWidth, (bitmap.width - cropWidth) * focalX)); const sy = Math.max(0, Math.min(bitmap.height - cropHeight, (bitmap.height - cropHeight) * focalY)); const canvas = document.createElement("canvas"); canvas.width = outputWidth; canvas.height = outputHeight; const context = canvas.getContext("2d"); if (!context) throw new Error("Canvas kullanılamıyor"); context.drawImage(bitmap, sx, sy, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight); const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86)); if (!blob) throw new Error("WebP dönüşümü başarısız"); return new File([blob], `${fileName.replace(/\.[^.]+$/, "") || "kapak"}.webp`, { type: "image/webp" }); }
 
-function CoverImageField({ value, onChange }: { value: string; onChange: (url: string) => void }) { const [isPending, setIsPending] = useState(false); const [preview, setPreview] = useState(value); const [sourceFile, setSourceFile] = useState<File | null>(null); const [sourcePreview, setSourcePreview] = useState(""); const [dragging, setDragging] = useState(false); const [error, setError] = useState(""); const [focalX, setFocalX] = useState(.5); const [focalY, setFocalY] = useState(.5); const [zoom, setZoom] = useState(1); useEffect(() => { setPreview(value); }, [value]); useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); }, [sourcePreview]); const chooseFile = async (file?: File) => { if (!file) return; if (!file.type.startsWith("image/")) return setError("Lütfen bir görsel dosyası seçin."); if (file.size > 8 * 1024 * 1024) return setError("Kapak görseli 8 MB’dan küçük olmalı."); setError(""); setIsPending(true); const objectUrl = URL.createObjectURL(file); try { const dimensions = await new Promise<{ width: number; height: number }>((resolve, reject) => { const probe = new Image(); probe.onload = () => resolve({ width: probe.naturalWidth, height: probe.naturalHeight }); probe.onerror = () => reject(new Error("Bu dosya bir görsel olarak açılamadı. Dosya bozuk olabilir veya bu formatı telefonunuzun tarayıcısı desteklemiyor olabilir.")); probe.src = objectUrl; }); if (dimensions.width * dimensions.height > 40_000_000) { URL.revokeObjectURL(objectUrl); return setError("Bu görsel çok yüksek çözünürlüklü (" + dimensions.width + "×" + dimensions.height + "). Lütfen görseli küçültüp tekrar deneyin."); } if (sourcePreview) URL.revokeObjectURL(sourcePreview); setSourceFile(file); setSourcePreview(objectUrl); setFocalX(.5); setFocalY(.5); setZoom(1); } catch (probeError) { URL.revokeObjectURL(objectUrl); setError(probeError instanceof Error ? probeError.message : "Görsel açılamadı."); } finally { setIsPending(false); } }; const applyCrop = async () => { if (!sourceFile) return; setError(""); setIsPending(true); try { const webpFile = await cropToWebp(sourceFile, focalX, focalY, zoom); const url = await uploadImage("knowledge", webpFile); onChange(url); setPreview(url); setSourceFile(null); if (sourcePreview) URL.revokeObjectURL(sourcePreview); setSourcePreview(""); } catch (uploadError) { const reason = uploadError instanceof Error ? uploadError.message : "Bilinmeyen hata"; setError(`Görsel yüklenemedi: ${reason}. Lütfen tekrar deneyin.`); } finally { setIsPending(false); } }; const cancelCrop = () => { setSourceFile(null); if (sourcePreview) URL.revokeObjectURL(sourcePreview); setSourcePreview(""); }; return <div className="admin-upload-field admin-project-form__full"><span>Kapak görseli</span><label className={`admin-upload-dropzone admin-upload-dropzone--cover${dragging ? " is-dragging" : ""}`} onDragEnter={(event) => { event.preventDefault(); setDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); chooseFile(event.dataTransfer.files?.[0]); }}><input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => chooseFile(event.target.files?.[0])} /><span className="admin-upload-dropzone__icon">{isPending ? <span className="admin-spinner" /> : <ImagePlus size={20} />}</span><strong>{isPending ? "WebP hazırlanıyor ve yükleniyor…" : dragging ? "Bırakın" : value ? "Kapak görselini değiştir" : "Kapak görseli seçin veya sürükleyin"}</strong><small>Önce kırpılır, ardından 1600×900 WebP olarak yüklenir · maksimum 8 MB</small></label>{preview && <img className="admin-upload-preview admin-upload-preview--cover" src={preview} alt="Kapak görseli önizleme" />}{error && <small className="admin-form-error" role="alert">{error}</small>}{sourceFile && sourcePreview && <div className="admin-cover-crop" role="dialog" aria-modal="true" aria-label="Kapak görselini kırp"><div className="admin-cover-crop__header"><div><strong>Kapak görselini kırp</strong><small>Yayın kartında 16:9 oranında kullanılacak alanı seçin.</small></div><button type="button" className="admin-icon-button" onClick={cancelCrop} aria-label="Kırpmayı iptal et"><X size={17} /></button></div><div className="admin-cover-crop__stage"><img src={sourcePreview} alt="Kırpılacak kapak görseli" onError={() => setError("Görsel önizlemesi yüklenemedi. Lütfen farklı bir dosya deneyin.")} style={{ objectPosition: `${focalX * 100}% ${focalY * 100}%`, transform: `scale(${zoom})` }} /></div><div className="admin-cover-crop__controls"><label><span><Crop size={15} /> Yatay odak</span><input type="range" min="0" max="1" step="0.01" value={focalX} onChange={(event) => setFocalX(Number(event.target.value))} aria-label="Yatay odak" /></label><label><span><Crop size={15} /> Dikey odak</span><input type="range" min="0" max="1" step="0.01" value={focalY} onChange={(event) => setFocalY(Number(event.target.value))} aria-label="Dikey odak" /></label><label><span><ZoomIn size={15} /> Yakınlaştırma</span><input type="range" min="1" max="2" step="0.01" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} aria-label="Yakınlaştırma" /></label></div><div className="admin-cover-crop__actions"><Button type="button" variant="outline" onClick={cancelCrop}>İptal</Button><Button type="button" onClick={() => void applyCrop()} disabled={isPending}>{isPending ? "Yükleniyor…" : "Kırp ve WebP yükle"}</Button></div></div>}</div>; }
+function CoverImageField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [isPending, setIsPending] = useState(false);
+  const [preview, setPreview] = useState(value);
+  const [sourceFile, setSourceFile] = useState<File | null>(null);
+  const [sourcePreview, setSourcePreview] = useState("");
+  const [dragging, setDragging] = useState(false);
+  const [error, setError] = useState("");
+  const [focalX, setFocalX] = useState(.5);
+  const [focalY, setFocalY] = useState(.5);
+  const [zoom, setZoom] = useState(1);
+  const bitmapRef = useRef<ImageBitmap | null>(null);
+  useEffect(() => { setPreview(value); }, [value]);
+  useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); bitmapRef.current?.close(); }, [sourcePreview]);
+
+  const chooseFile = async (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("Lütfen bir görsel dosyası seçin.");
+    if (file.size > 8 * 1024 * 1024) return setError("Kapak görseli 8 MB’dan küçük olmalı.");
+    setError("");
+    setIsPending(true);
+    try {
+      const bitmap = await createImageBitmap(file).catch(() => {
+        throw new Error("Bu dosya bir görsel olarak açılamadı. Dosya bozuk olabilir veya bu formatı telefonunuzun tarayıcısı desteklemiyor olabilir.");
+      });
+      if (bitmap.width * bitmap.height > 40_000_000) {
+        bitmap.close();
+        return setError(`Bu görsel çok yüksek çözünürlüklü (${bitmap.width}×${bitmap.height}). Lütfen görseli küçültüp tekrar deneyin.`);
+      }
+      bitmapRef.current?.close();
+      bitmapRef.current = bitmap;
+      if (sourcePreview) URL.revokeObjectURL(sourcePreview);
+      setSourceFile(file);
+      setSourcePreview(URL.createObjectURL(file));
+      setFocalX(.5); setFocalY(.5); setZoom(1);
+    } catch (probeError) {
+      setError(probeError instanceof Error ? probeError.message : "Görsel açılamadı.");
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const applyCrop = async () => {
+    if (!sourceFile || !bitmapRef.current) return;
+    setError("");
+    setIsPending(true);
+    try {
+      const webpFile = await cropToWebp(bitmapRef.current, focalX, focalY, zoom, sourceFile.name);
+      const url = await uploadImage("knowledge", webpFile);
+      onChange(url);
+      setPreview(url);
+      bitmapRef.current?.close();
+      bitmapRef.current = null;
+      setSourceFile(null);
+      if (sourcePreview) URL.revokeObjectURL(sourcePreview);
+      setSourcePreview("");
+    } catch (uploadError) {
+      const reason = uploadError instanceof Error ? uploadError.message : "Bilinmeyen hata";
+      setError(`Görsel yüklenemedi: ${reason}. Lütfen tekrar deneyin.`);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const cancelCrop = () => {
+    bitmapRef.current?.close();
+    bitmapRef.current = null;
+    setSourceFile(null);
+    if (sourcePreview) URL.revokeObjectURL(sourcePreview);
+    setSourcePreview("");
+  };
+
+  return (
+    <div className="admin-upload-field admin-project-form__full">
+      <span>Kapak görseli</span>
+      <label className={`admin-upload-dropzone admin-upload-dropzone--cover${dragging ? " is-dragging" : ""}`}
+        onDragEnter={(event) => { event.preventDefault(); setDragging(true); }}
+        onDragOver={(event) => event.preventDefault()}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(event) => { event.preventDefault(); setDragging(false); void chooseFile(event.dataTransfer.files?.[0]); }}>
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => void chooseFile(event.target.files?.[0])} />
+        <span className="admin-upload-dropzone__icon">{isPending ? <span className="admin-spinner" /> : <ImagePlus size={20} />}</span>
+        <strong>{isPending ? "WebP hazırlanıyor ve yükleniyor…" : dragging ? "Bırakın" : value ? "Kapak görselini değiştir" : "Kapak görseli seçin veya sürükleyin"}</strong>
+        <small>Önce kırpılır, ardından 1600×900 WebP olarak yüklenir · maksimum 8 MB</small>
+      </label>
+      {preview && <img className="admin-upload-preview admin-upload-preview--cover" src={preview} alt="Kapak görseli önizleme" />}
+      {error && <small className="admin-form-error" role="alert">{error}</small>}
+      {sourceFile && sourcePreview && (
+        <div className="admin-cover-crop" role="dialog" aria-modal="true" aria-label="Kapak görselini kırp">
+          <div className="admin-cover-crop__header">
+            <div><strong>Kapak görselini kırp</strong><small>16:9 oranında kullanılacak alanı seçin.</small></div>
+            <button type="button" className="admin-icon-button" onClick={cancelCrop} aria-label="Kırpmayı iptal et"><X size={17} /></button>
+          </div>
+          <div className="admin-cover-crop__stage">
+            <img src={sourcePreview} alt="Kırpılacak görsel" onError={() => setError("Görsel önizlemesi yüklenemedi. Lütfen farklı bir dosya deneyin.")} style={{ objectPosition: `${focalX * 100}% ${focalY * 100}%`, transform: `scale(${zoom})` }} />
+          </div>
+          <div className="admin-cover-crop__controls">
+            <label><span><Crop size={15} /> Yatay odak</span><input type="range" min="0" max="1" step="0.01" value={focalX} onChange={(event) => setFocalX(Number(event.target.value))} aria-label="Yatay odak" /></label>
+            <label><span><Crop size={15} /> Dikey odak</span><input type="range" min="0" max="1" step="0.01" value={focalY} onChange={(event) => setFocalY(Number(event.target.value))} aria-label="Dikey odak" /></label>
+            <label><span><ZoomIn size={15} /> Yakınlaştırma</span><input type="range" min="1" max="2" step="0.01" value={zoom} onChange={(event) => setZoom(Number(event.target.value))} aria-label="Yakınlaştırma" /></label>
+          </div>
+          <div className="admin-cover-crop__actions">
+            <Button type="button" variant="outline" onClick={cancelCrop}>İptal</Button>
+            <Button type="button" onClick={() => void applyCrop()} disabled={isPending}>{isPending ? "Yükleniyor…" : "Kırp ve WebP yükle"}</Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function MarkdownEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) { const [preview, setPreview] = useState(false); return <div className="markdown-editor"><div className="markdown-editor__toolbar"><span><FileText size={16} /> Markdown gövde</span><button type="button" onClick={() => setPreview((current) => !current)} aria-pressed={preview}><Eye size={15} /> {preview ? "Düzenle" : "Önizle"}</button></div>{preview ? <div className="markdown-editor__preview knowledge-card__body" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(value) }} /> : <Textarea value={value} onChange={(event) => onChange(event.target.value)} rows={18} aria-label="Markdown teknik içerik gövdesi" placeholder="# Başlık\n\nTeknik içeriğinizi buraya yazın..." />}<small>Başlık, kalın metin, italik, bağlantı, madde listesi, alıntı ve kod bloğu desteklenir.</small></div>; }
 
