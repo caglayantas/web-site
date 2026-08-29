@@ -815,7 +815,7 @@ export function AboutNew() {
 
         <a
           className="button button--navy"
-          href="/documents/perla-marine-kurumsal-sirket-profili.pdf"
+          href="/perla-marine-kurumsal-sirket-profili.pdf"
           target="_blank"
           rel="noopener noreferrer"
           download
