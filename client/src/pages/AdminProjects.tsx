@@ -102,9 +102,11 @@ function ImageUploadField({ field, label, value, fieldError, onChange, onError }
     try {
       const url = await uploadImage("projects", file);
       onChange(url);
+      setPreview(url);
       URL.revokeObjectURL(localPreview);
-    } catch {
-      const message = "Görsel yüklenemedi. Önizleme korunuyor; tekrar deneyin.";
+    } catch (uploadError) {
+      const reason = uploadError instanceof Error ? uploadError.message : "Bilinmeyen hata";
+      const message = `Görsel yüklenemedi: ${reason}. Önizleme korunuyor; tekrar deneyin.`;
       setError(message);
       onError?.(message);
     } finally {
