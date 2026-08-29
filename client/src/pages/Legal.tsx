@@ -192,7 +192,6 @@ export default function Legal({ type }: { type: keyof typeof legalContent }) {
               {section.body.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </div>
           ))}
-          <p className="legal-review-note"><strong>Yayın notu:</strong> Perla Marine’in ticari şirket kuruluş süreci tamamlandığında, bu metinlerdeki veri sorumlusu unvanı ve adres bilgileri güncellenecek; metinler nihai hukuki kontrolden geçirilerek yayınlanmaya devam edecektir.</p>
           <Link className="text-link text-link--dark" href="/iletisim">İletişim sayfasına geçin</Link>
         </div>
       </section>
