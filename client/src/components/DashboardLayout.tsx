@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/useMobile";
-import { BookOpen, ExternalLink, LayoutDashboard, LogOut, PanelLeft, Wrench } from "lucide-react";
+import { BookOpen, ExternalLink, HelpCircle, LayoutDashboard, LogOut, PanelLeft, Wrench } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -30,6 +30,7 @@ import { Button } from "./ui/button";
 const menuItems = [
   { icon: Wrench, label: "Projeler", path: "/yonetim/projeler" },
   { icon: BookOpen, label: "Teknik bilgiler", path: "/yonetim/teknik-bilgiler" },
+  { icon: HelpCircle, label: "SSS", path: "/yonetim/sss" },
   { icon: ExternalLink, label: "Siteyi görüntüle", path: "/" },
 ];
 
