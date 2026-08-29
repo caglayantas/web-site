@@ -171,9 +171,9 @@ const pageData: Record<string, PageData> = {
     lead:
       "Mevcut durumu, önceliğinizi ve ihtiyaç duyduğunuz zamanı paylaşın; doğru bakım-onarım kapsamını birlikte netleştirelim.",
     image:
-      "/manus-storage/perla-service-mechanical-v2-1600_b2b0c9ef.webp",
+      "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
     alt:
-      "Tekne mekanik tesisat sistemi",
+      "Perla Marine teknisyeni kuru havuzda bir yatı inceliyor",
   },
 };
 
@@ -1972,8 +1972,9 @@ export function ContactNew() {
             </div>
           )}
 
-          {/* NAME */}
+          {/* NAME + EMAIL */}
 
+          <div className="new-contact-form__row">
           <label>
             Adınız ve soyadınız
 
@@ -2047,6 +2048,7 @@ export function ContactNew() {
               </small>
             )}
           </label>
+          </div>
 
           {/* SERVICE */}
 
@@ -2109,7 +2111,7 @@ export function ContactNew() {
             <textarea
               id="message-field"
               name="message"
-              rows={5}
+              rows={3}
               value={
                 values.message
               }
