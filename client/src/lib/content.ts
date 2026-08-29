@@ -43,6 +43,25 @@ export type FaqRow = {
   sortOrder: number;
 };
 
+export type ServiceRow = {
+  id: number;
+  slug: string;
+  title: string;
+  icon: string;
+  image: string | null;
+  description: string;
+  subtopics: string[];
+  eyebrow: string;
+  intro: string;
+  operations: string[];
+  note: string;
+  cta: string;
+  status: "draft" | "published";
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 const mapProject = (row: any): ProjectRow => ({
   id: row.id,
   slug: row.slug,
@@ -85,6 +104,43 @@ const mapFaq = (row: any): FaqRow => ({
   status: row.status,
   sortOrder: row.sort_order,
 });
+
+const mapService = (row: any): ServiceRow => ({
+  id: row.id,
+  slug: row.slug,
+  title: row.title,
+  icon: row.icon,
+  image: row.image,
+  description: row.description,
+  subtopics: Array.isArray(row.subtopics) ? row.subtopics : [],
+  eyebrow: row.eyebrow,
+  intro: row.intro,
+  operations: Array.isArray(row.operations) ? row.operations : [],
+  note: row.note,
+  cta: row.cta,
+  status: row.status,
+  sortOrder: row.sort_order,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const serviceToRow = (p: Partial<ServiceRow>) => {
+  const row: Record<string, unknown> = {};
+  if (p.slug !== undefined) row.slug = p.slug;
+  if (p.title !== undefined) row.title = p.title;
+  if (p.icon !== undefined) row.icon = p.icon;
+  if (p.image !== undefined) row.image = p.image;
+  if (p.description !== undefined) row.description = p.description;
+  if (p.subtopics !== undefined) row.subtopics = p.subtopics;
+  if (p.eyebrow !== undefined) row.eyebrow = p.eyebrow;
+  if (p.intro !== undefined) row.intro = p.intro;
+  if (p.operations !== undefined) row.operations = p.operations;
+  if (p.note !== undefined) row.note = p.note;
+  if (p.cta !== undefined) row.cta = p.cta;
+  if (p.status !== undefined) row.status = p.status;
+  if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
+  return row;
+};
 
 const projectToRow = (p: Partial<ProjectRow>) => {
   const row: Record<string, unknown> = {};
@@ -149,6 +205,12 @@ export async function getPublishedFaqs(): Promise<FaqRow[]> {
   const { data, error } = await supabase.from("faq").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(mapFaq);
+}
+
+export async function getPublishedServices(): Promise<ServiceRow[]> {
+  const { data, error } = await supabase.from("services").select("*").eq("status", "published").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapService);
 }
 
 // ---- Admin reads/writes (require an authenticated Supabase session; enforced by RLS) ----
@@ -233,9 +295,32 @@ export async function deleteFaq(id: number): Promise<void> {
   if (error) throw error;
 }
 
+export async function getAllServices(): Promise<ServiceRow[]> {
+  const { data, error } = await supabase.from("services").select("*").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapService);
+}
+
+export async function createService(input: Partial<ServiceRow>): Promise<ServiceRow> {
+  const { data, error } = await supabase.from("services").insert(serviceToRow(input)).select("*").single();
+  if (error) throw error;
+  return mapService(data);
+}
+
+export async function updateService(id: number, changes: Partial<ServiceRow>): Promise<ServiceRow> {
+  const { data, error } = await supabase.from("services").update(serviceToRow(changes)).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapService(data);
+}
+
+export async function deleteService(id: number): Promise<void> {
+  const { error } = await supabase.from("services").delete().eq("id", id);
+  if (error) throw error;
+}
+
 // ---- Image uploads (Supabase Storage, replacing Manus Forge storage) ----
 
-export async function uploadImage(bucket: "projects" | "knowledge" | "site", file: File): Promise<string> {
+export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services", file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {contentType: file.type });
