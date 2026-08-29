@@ -137,15 +137,16 @@ h1, h2, h3 { color: inherit; }
 .consulting-band__copy > p:not(.eyebrow) { color: #5f6f80; font-size: 14px; line-height: 1.82; }
 .journal-section { background: var(--paper); }
 .journal-grid { display: grid; grid-template-columns: 1.15fr .85fr .85fr; gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-.journal-card { position: relative; min-height: 370px; padding: 28px 27px; display: flex; flex-direction: column; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--navy); transition: color 200ms var(--ease-out), background 200ms var(--ease-out); }
-.journal-card > span { color: var(--gold); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
-.journal-card h3 { max-width: 330px; margin: 84px 0 0; font: 30px/1.08 var(--serif); letter-spacing: -.015em; }
-.journal-card p { margin: 17px 0 0; max-width: 310px; color: #647287; font-size: 12px; line-height: 1.7; }
-.journal-card svg { position: absolute; bottom: 27px; right: 27px; color: var(--gold); transition: transform 180ms var(--ease-out); }
-.journal-card:hover { background: var(--navy); color: white; }
-.journal-card:hover p { color: rgba(255,255,255,.7); }
-.journal-card:hover svg { transform: translate(3px, -3px); color: var(--gold-light); }
-.journal-card--feature { background: var(--ivory); }
+.journal-card { position: relative; overflow: hidden; min-height: 370px; display: block; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: #fff; }
+.journal-card__cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 420ms var(--ease-out); }
+.journal-card__overlay { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-height: 370px; padding: 28px 27px; background: linear-gradient(180deg, rgba(3,24,47,.05) 22%, rgba(3,24,47,.92) 100%); }
+.journal-card__overlay > span { align-self: flex-start; margin-bottom: auto; color: var(--gold-light); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.journal-card__overlay h3 { max-width: 330px; margin: 0 0 10px; color: #fff; font: 30px/1.08 var(--serif); letter-spacing: -.015em; }
+.journal-card__overlay p { margin: 0; max-width: 310px; color: rgba(255,255,255,.82); font-size: 12px; line-height: 1.7; }
+.journal-card svg { position: absolute; bottom: 27px; right: 27px; z-index: 1; color: var(--gold-light); transition: transform 180ms var(--ease-out); }
+.journal-card:hover .journal-card__cover { transform: scale(1.055); }
+.journal-card:hover svg { transform: translate(3px, -3px); }
+.journal-card--feature .journal-card__overlay { padding: 32px 30px; }
 .contact-cta { display: flex; align-items: center; justify-content: space-between; gap: 40px; padding: clamp(55px, 7vw, 105px) max(20px, calc((100% - 1200px) / 2)); background: var(--navy); color: white; }
 .contact-cta h2 { max-width: 710px; }
 
@@ -316,7 +317,6 @@ h1, h2, h3 { color: inherit; }
   .process-list h3 { margin-top: 29px; }
   .consulting-band__media { min-height: 345px; }
   .journal-card { min-height: 290px; }
-  .journal-card h3 { margin-top: 55px; }
   .contact-cta { align-items: flex-start; flex-direction: column; padding: 62px 20px; }
   .page-hero { min-height: 420px; grid-template-columns: 1fr; padding: 68px 20px 66px; }
   .page-hero__route { display: none; }
@@ -385,7 +385,6 @@ textarea:focus-visible {
   .service-grid, .service-grid--expanded { grid-template-columns: 1fr; }
   .journal-grid { grid-template-columns: 1fr; }
   .journal-card { min-height: 285px; }
-  .journal-card h3 { margin-top: 52px; }
   .contact-cta--home { align-items: flex-start; flex-direction: column; }
 }
 
@@ -1063,8 +1062,7 @@ textarea:focus-visible {
 .home-page-compact .home-before-after-card h3 { font-size: 21px; }
 .home-page-compact .journal-section { background: #f1ede5; }
 .home-page-compact .journal-grid { gap: 10px; border: 0; }
-.home-page-compact .journal-card { min-height: 290px; border: 1px solid #ddd5c7; padding: 20px 19px; background: #faf8f3; }
-.home-page-compact .journal-card h3 { margin-top: 55px; font-size: 25px; }
+.home-page-compact .journal-card { min-height: 290px; }
 .home-page-compact .faq-section--compact { background: #fffdf8; }
 .home-page-compact .faq-section--compact.section { padding-top: clamp(42px, 4.8vw, 70px); padding-bottom: clamp(42px, 4.8vw, 70px); }
 .home-page-compact .faq-item summary { padding: 17px 0; font-size: 21px; }
@@ -1702,13 +1700,9 @@ textarea:focus-visible {
 .knowledge-post__footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 52px; padding-top: 24px; border-top: 1px solid #d9d1c3; }
 @media (max-width: 680px) { .knowledge-post-page { padding: 46px 16px 78px; } .knowledge-post__header { margin-top: 30px; } .knowledge-post__header h1 { font-size: 48px; } .knowledge-post__body { margin-top: 34px; font-size: 15px; } .knowledge-post__body h2 { font-size: 31px; } .knowledge-post__footer { align-items: flex-start; flex-direction: column; } }
 
-/* Technical Information cards keep readable navy text on hover and touch devices. */
-.journal-card:hover, .journal-card:focus-visible { color: var(--navy); background: #fffdf8; box-shadow: inset 0 3px 0 var(--gold), 0 10px 24px rgba(4,31,61,.08); }
-.journal-card:hover h3, .journal-card:focus-visible h3 { color: var(--navy); }
-.journal-card:hover p, .journal-card:focus-visible p { color: #647287; }
-.journal-card:hover > span, .journal-card:focus-visible > span { color: #9a6e21; }
-.journal-card:hover svg, .journal-card:focus-visible svg { color: var(--gold); }
-@media (prefers-reduced-motion: reduce) { .journal-card { transition: none; } }
+/* Technical Information cards: darken the photo overlay on hover/focus for readability. */
+.journal-card:hover .journal-card__overlay, .journal-card:focus-visible .journal-card__overlay { background: linear-gradient(180deg, rgba(3,24,47,.12) 18%, rgba(3,24,47,.96) 100%); }
+@media (prefers-reduced-motion: reduce) { .journal-card, .journal-card__cover { transition: none; } }
 
 .form-honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; pointer-events: none !important; }
 .project-post-page { padding: 76px 20px 110px; }
