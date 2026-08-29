@@ -1421,8 +1421,8 @@ export function KnowledgeNew() {
             .from("knowledge_posts")
             .select("*")
             .eq("status", "published")
-            .order("published_at", {
-              ascending: false,
+            .order("sort_order", {
+              ascending: true,
             });
 
         if (

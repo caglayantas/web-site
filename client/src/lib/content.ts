@@ -134,7 +134,7 @@ export async function getPublishedProjectBySlug(slug: string): Promise<ProjectRo
 }
 
 export async function getPublishedKnowledgePosts(): Promise<KnowledgePostRow[]> {
-  const { data, error } = await supabase.from("knowledge_posts").select("*").eq("status", "published").order("published_at", { ascending: false });
+  const { data, error } = await supabase.from("knowledge_posts").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(mapKnowledge);
 }
