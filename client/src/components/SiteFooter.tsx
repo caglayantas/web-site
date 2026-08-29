@@ -48,6 +48,7 @@ export default function SiteFooter() {
           <a href="/kvkk">KVKK / Aydınlatma</a>
           <a href="/gizlilik">Gizlilik</a>
           <a href="/cerez">Çerez politikası</a>
+          <button type="button" className="footer-cookie-link" onClick={() => { localStorage.removeItem("perla-cookie-consent"); window.location.reload(); }}>Çerez tercihlerini değiştir</button>
         </div>
       </div>
     </footer>
