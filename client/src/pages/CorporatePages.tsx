@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import ServiceGrid from "@/components/ServiceGrid";
 import {
   ArrowLeft,
   ArrowRight,
@@ -892,25 +893,7 @@ export function ServicesNew() {
           </p>
         </div>
 
-        <div className="service-grid">
-          {serviceGroups.map(
-            ([title, description]) => (
-              <article
-                className="service-card"
-                key={title}
-              >
-                <h3>{title}</h3>
-
-                <p>{description}</p>
-
-                <a href="/iletisim">
-                  Detaylı bilgi
-                  <ArrowUpRight size={15} />
-                </a>
-              </article>
-            )
-          )}
-        </div>
+        <ServiceGrid expanded />
       </section>
     </PageFrame>
   );
