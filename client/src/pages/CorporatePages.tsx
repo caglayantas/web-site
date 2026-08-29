@@ -32,10 +32,10 @@ const SITE_URL = "https://www.perlamarine.com";
  * Tüm görseller public/images klasöründen okunur.
  *
  * Örnek:
- * public/images/perla-about-drydock-inspection.jpg
+ * public/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp
  *
  * URL:
- * /images/perla-about-drydock-inspection.jpg
+ * /manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp
  */
 
 /* =========================================================
@@ -102,7 +102,7 @@ const pageData: Record<string, PageData> = {
     lead:
       "Perla Marine; tekne ve yat bakım-onarım, refit ve teknik servis süreçlerini mühendislik disiplini, saha deneyimi ve şeffaf iletişim anlayışıyla yöneten kurumsal bir denizcilik çözüm ortağıdır.",
     image:
-      "/images/perla-about-drydock-inspection.jpg",
+      "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
     alt:
       "Kuru havuzda motor yat üzerinde teknik inceleme yapan denizcilik uzmanı",
   },
@@ -119,7 +119,7 @@ const pageData: Record<string, PageData> = {
     lead:
       "Kompozit, marin elektrik, elektronik, iklimlendirme, mekanik tesisat, motor-tahrik-dümen ve güverte sistemleri için tekneye özel servis çözümleri.",
     image:
-      "/images/perla-service-composite.jpg",
+      "/manus-storage/perla-service-composite-v2-1600_cb23463b.webp",
     alt:
       "Yat kompozit kalıbı, elyaf malzeme ve teknik üretim ekipmanları",
   },
@@ -136,7 +136,7 @@ const pageData: Record<string, PageData> = {
     lead:
       "Bakım ve refit kapsamını mevcut durum, kullanım profili ve uygulanabilir sonraki adım üzerinden ele alıyoruz.",
     image:
-      "/images/perla-service-propulsion.jpg",
+      "/manus-storage/perla-service-propulsion-v2-1600_5ff2ef59.webp",
     alt:
       "Motor ve tahrik sistemi bakım detayı",
   },
@@ -153,7 +153,7 @@ const pageData: Record<string, PageData> = {
     lead:
       "Tekne sahipleri ve üretici ekipleri için bakım kararlarını destekleyen teknik notlar, kontrol başlıkları ve uygulama rehberleri.",
     image:
-      "/images/perla-service-marine-electronics.jpg",
+      "/manus-storage/perla-service-marine-electronics-1600_858e312b.webp",
     alt:
       "Marin elektronik ve navigasyon ekranları",
   },
@@ -170,7 +170,7 @@ const pageData: Record<string, PageData> = {
     lead:
       "Mevcut durumu, önceliğinizi ve ihtiyaç duyduğunuz zamanı paylaşın; doğru bakım-onarım kapsamını birlikte netleştirelim.",
     image:
-      "/images/perla-service-mechanical.jpg",
+      "/manus-storage/perla-service-mechanical-v2-1600_b2b0c9ef.webp",
     alt:
       "Tekne mekanik tesisat sistemi",
   },
@@ -237,8 +237,8 @@ const fallbackProjects: Project[] = [
       "Akü, şarj cihazı, BMS, sigorta ve güç dağıtım panosu.",
     results:
       "Bağlantı düzeni sadeleştirildi; bakım ve arıza tespiti için daha okunabilir bir altyapı hedeflendi.",
-    before: "/images/project-electrical-before.jpg",
-    after: "/images/project-electrical-after.jpg",
+    before: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
+    after: "/manus-storage/perla-service-marine-electronics_a9f3a57f_2b833740.webp",
   },
 
   {
@@ -254,8 +254,8 @@ const fallbackProjects: Project[] = [
       "İçten takma motor, şaft, kaplin, pervane ve dümen hattı.",
     results:
       "Tahrik hattındaki kontrol noktaları servis planına alınarak sonraki bakım adımları netleştirildi.",
-    before: "/images/project-propulsion-before.jpg",
-    after: "/images/project-propulsion-after.jpg",
+    before: "/manus-storage/perla-service-propulsion_1dad9846.jpg",
+    after: "/manus-storage/perla-service-mechanical_1537487f.jpg",
   },
 
   {
@@ -271,8 +271,8 @@ const fallbackProjects: Project[] = [
       "Yakıt, sintine, deniz suyu, pompa ve vana hatları.",
     results:
       "Sızdırmazlık ve erişim öncelikleri görünür hale getirilerek planlı bakım akışına dönüştürüldü.",
-    before: "/images/project-mechanical-before.jpg",
-    after: "/images/project-mechanical-after.jpg",
+    before: "/manus-storage/perla-service-mechanical_1537487f.jpg",
+    after: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
   },
 ];
 
@@ -292,7 +292,7 @@ const fallbackKnowledge: KnowledgePost[] = [
     body:
       "Akü, şarj ve BMS sistemlerinin birlikte değerlendirilmesi; güvenli ve sürdürülebilir bir marin enerji altyapısı için temel adımdır.",
     coverImage:
-      "/images/perla-service-marine-electronics.jpg",
+      "/manus-storage/perla-service-marine-electronics-1600_858e312b.webp",
     publishedAt: null,
   },
 
@@ -307,7 +307,7 @@ const fallbackKnowledge: KnowledgePost[] = [
     body:
       "Motor ve tahrik sistemlerinde titreşim, bağlantı, şaft, kaplin ve pervane kontrolleri bakım planının önemli parçalarıdır.",
     coverImage:
-      "/images/perla-service-propulsion.jpg",
+      "/manus-storage/perla-service-propulsion-v2-1600_5ff2ef59.webp",
     publishedAt: null,
   },
 
@@ -322,7 +322,7 @@ const fallbackKnowledge: KnowledgePost[] = [
     body:
       "Mekanik tesisatlarda sızdırmazlık, hortum bağlantıları, pompalar, vanalar ve servis erişimi düzenli olarak kontrol edilmelidir.",
     coverImage:
-      "/images/perla-service-mechanical.jpg",
+      "/manus-storage/perla-service-mechanical-v2-1600_b2b0c9ef.webp",
     publishedAt: null,
   },
 ];
@@ -490,7 +490,7 @@ export function AboutNew() {
         </div>
 
         <img
-          src="/images/perla-about-technical-planning.jpg"
+          src="/manus-storage/perla-about-technical-planning-1600_a1702930.webp"
           alt="Tekne refit süreci için teknik plan ve ölçüm araçlarını inceleyen uzman"
           loading="lazy"
           decoding="async"
