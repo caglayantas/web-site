@@ -1,73 +1,79 @@
 /**
  * Perla Marine: tekne ve yat bakım-onarım hizmetlerini, konuya özgü alt başlıklarla
- * anlaşılır ve taranabilir kartlar halinde sunar.
+ * anlaşılır ve taranabilir kartlar halinde sunar. İçerik /yonetim/hizmetler panelinden
+ * yönetilen Supabase "services" tablosundan gelir.
  */
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Anchor, ArrowUpRight, BatteryCharging, Check, ClipboardCheck, Droplets, Factory, Radio, Sailboat, Settings2, Thermometer, Wrench } from "lucide-react";
+import { getPublishedServices, type ServiceRow } from "@/lib/content";
+import {
+  Anchor, ArrowUpRight, BatteryCharging, Check, ClipboardCheck, Droplets, Factory,
+  Radio, Sailboat, Settings2, Thermometer, Wrench, Wind, Zap, Shield, Compass,
+  Ship, LifeBuoy, Cog, Gauge, Fuel, type LucideIcon,
+} from "lucide-react";
 
-export const serviceItems = [
-  { id: "kompozit-cozumler", title: "Kompozit Çözümler", description: "Model ve kalıp hazırlığından kompozit üretim ve tamir operasyonlarına kadar gövde, güverte ve yapısal yüzeylerde uygulama.", subtopics: ["Model ve kalıp imalatı", "Kompozit üretim", "Kompozit tamir ve bakım", "Gövde ve güverte onarımları"], image: "/manus-storage/perla-service-composite-v2_b27df9c1.webp", icon: Factory },
-  { id: "marin-elektrik", title: "Marin Elektrik", description: "Teknenin enerji üretimi, depolama, dağıtım ve kontrol altyapısını güvenli, erişilebilir ve servis edilebilir hale getiriyoruz.", subtopics: ["Akü ve şarj sistemleri", "Lityum akü ve BMS sistemleri", "Güç dağıtımı ve elektrik panoları", "12V · 24V · 48V · 110V · 220V · 380V sistemler", "Tekneye özel konsol tasarımı", "Jeneratör bağlantı ve bakım"], image: "/manus-storage/perla-service-electrical-v2_2dcf97a2.webp", icon: BatteryCharging },
-  { id: "marin-elektronigi", title: "Marin Elektroniği", description: "Seyir, haberleşme, güvenlik ve uzaktan izleme ekipmanlarının montaj, entegrasyon ve bakımını tekneye göre planlıyoruz.", subtopics: ["Navigasyon sistemleri", "Radar ve AIS", "Kamera ve güvenlik sistemleri", "Uydu ve uzaktan izleme", "Otopilot ve kumanda sistemleri", "Marin aydınlatma ve kontrol"], image: "/manus-storage/perla-service-electronics-v2_0dbb3f19.webp", icon: Radio },
-  { id: "isitma-sogutma", title: "Isıtma, Soğutma ve Havalandırma", description: "Yaşam mahallerinde konforu ve hava kalitesini koruyan iklimlendirme, ısıtma ve havalandırma sistemleri.", subtopics: ["Marin klima sistemleri", "Webasto ve yardımcı ısıtıcılar", "Fan ve havalandırma hatları", "Kanal, drenaj ve yoğuşma çözümleri", "Bakım, arıza tespiti ve yenileme"], image: "/manus-storage/perla-service-climate-v2_25339f92.webp", icon: Thermometer },
-  { id: "mekanik-tesisat", title: "Mekanik Tesisat", description: "Sıvı transferi, atık su, yakıt ve tekne yaşam sistemlerinde borulama, pompa, vana ve sızdırmazlık çözümleri.", subtopics: ["Yakıt sistemleri", "Siyah su ve gri su", "Sintine sistemleri", "Tatlı su tesisatı", "Su arıtma ve reverse osmosis su yapıcı", "Pompa, vana ve boru hatları"], image: "/manus-storage/perla-service-mechanical-v2_1cb2ebda.webp", icon: Droplets },
-  { id: "motor-tahrik-dumen", title: "Motor, Tahrik ve Dümen Sistemleri", description: "Teknenin hareket ve yönlendirme sistemlerinde montaj, bakım, ayar ve arıza giderme operasyonları.", subtopics: ["İçten ve dıştan takma motor montajı ve bakımı", "Şaft, kaplin ve pervane montajı", "Dümen sistemleri: telli, hidrolik ve elektrikli", "Motor yardımcı sistemleri", "Sanal çapa ve elektronik manevra sistemleri"], image: "/manus-storage/perla-service-propulsion-v2_d33ea0d3.webp", icon: Settings2 },
-  { id: "yelken-arma", title: "Yelken ve Arma Donanım", description: "Yelkenli teknelerde arma, vinç, makara ve güverte donanımlarını güvenli çalışma ve bakım ihtiyaçlarına göre ele alıyoruz.", subtopics: ["Vinç montajı ve bakımı", "Makara ve yelken donanımları", "Direk ve arma montajı", "Tel, halat ve bağlantı kontrolleri", "Yelken donanımı yenileme"], image: "/manus-storage/perla-service-sailing-v2_f27002a2.webp", icon: Sailboat },
-  { id: "guverte-ekipmanlari", title: "Güverte Üstü Ekipmanlar", description: "Demirleme, erişim, güvenlik ve kullanım ekipmanlarının montajını, bakımını ve tekneye uyarlanmasını gerçekleştiriyoruz.", subtopics: ["Irgat ve demirleme sistemleri", "Krom aksesuarlar", "Vardavela ve tutamaklar", "Güverte donanımı ve bağlantılar", "Kapak, menteşe ve kilit sistemleri"], image: "/manus-storage/perla-service-deck-v2_048b3582.webp", icon: Anchor },
-  { id: "uretim-danismanligi", title: "Üretim Danışmanlığı", description: "Tekne ve yat üreticilerine üretimden teslimata uzanan süreçte teknik koordinasyon, servis edilebilirlik ve saha danışmanlığı sağlıyoruz.", subtopics: ["Üretim öncesi teknik planlama", "Sistem yerleşimi ve servis erişimi", "Kompozit uygulama ve kalite kontrol", "Teknik dokümantasyon ve iş kapsamı", "Saha koordinasyonu ve teslim kontrolü"], image: "/manus-storage/perla-service-production-v2_3484d6cd.webp", icon: Factory },
-  { id: "tekneye-ozel-cozumler", title: "Tekneye Özel Çözümler", description: "Hazır bir başlığa sığmayan ihtiyaçlar için teknenin kullanım amacı, mevcut altyapısı ve bütçesine göre uygulanabilir çözüm geliştiriyoruz.", subtopics: ["Sistem keşfi ve arıza analizi", "Tekneye özel konsol ve ekipman yerleşimi", "Refit ve yenileme planlaması", "Farklı sistemlerin tek noktadan koordinasyonu", "Üretici firmalara saha ve servis danışmanlığı"], image: "/manus-storage/perla-service-custom-v2_99d82e66.webp", icon: ClipboardCheck },
-];
-
-const serviceDetailContent: Record<string, { eyebrow: string; intro: string; operations: string[]; note: string; cta: string }> = {
-  "kompozit-cozumler": { eyebrow: "Kompozit bakım ve uygulama", intro: "Gövde, güverte ve yapısal yüzeylerde mevcut hasarı doğru okuyarak kalıp, üretim ve onarım adımlarını tek bir uygulama planında birleştiriyoruz.", operations: ["Hasar, delaminasyon ve yüzey deformasyonu tespiti", "Model ve kalıp hazırlığı ile ölçü kontrolü", "Cam elyafı, karbon ve reçine uygulamaları", "Vakum infüzyon ve kontrollü kür süreçleri", "Gövde, güverte ve ekipman temellerinde tamir", "Yüzey hazırlığı, sızdırmazlık ve son kontrol"], note: "İlk incelemede hasarın yapısal etkisini, erişim koşullarını ve kullanılacak malzeme sistemini netleştiriyoruz.", cta: "Kompozit bakım talebi oluştur" },
-  "marin-elektrik": { eyebrow: "Marin elektrik bakım operasyonları", intro: "Elektrik sistemlerinde yalnızca arızayı gidermekle kalmıyor; enerji üretimi, depolama ve dağıtım zincirini birlikte değerlendirerek sonraki bakım adımını görünür hale getiriyoruz.", operations: ["Akü, şarj cihazı ve alternatör performans kontrolü", "Lityum akü, BMS ve koruma devrelerinin durum değerlendirmesi", "Güç dağıtım panoları, sigortalar, kablo uçları ve bağlantı torklarının kontrolü", "12V, 24V, 48V ve yüksek gerilimli sistemlerde ölçüm ve arıza tespiti", "Jeneratör bağlantıları, enerji transferi ve kıyı besleme güvenlik kontrolleri", "Tekneye özel konsol, etiketleme ve servis erişimi düzenlemeleri"], note: "Teknenin mevcut enerji mimarisini, kullanım profilini ve servis erişimini dinleyerek uygulanabilir bir kontrol planı oluşturuyoruz.", cta: "Elektrik bakım talebi oluştur" },
-  "marin-elektronigi": { eyebrow: "Marin elektronik servis ve entegrasyon", intro: "Seyir güvenliğini destekleyen elektronik sistemleri tekne üzerindeki mevcut altyapıyla uyumlu, erişilebilir ve güncellenebilir bir düzende ele alıyoruz.", operations: ["Radar, AIS ve navigasyon ekranlarının fonksiyon kontrolü", "GPS, pusula, otopilot ve haberleşme sistemleri entegrasyonu", "Kamera, güvenlik ve uzaktan izleme bağlantılarının kontrolü", "NMEA/ethernet ağlarında bağlantı ve veri akışı incelemesi", "Marin aydınlatma ve kumanda sistemlerinde arıza tespiti", "Kullanıcı arayüzü, etiketleme ve temel kullanım aktarımı"], note: "Elektronik arızalarda cihazı değiştirmeden önce enerji, ağ ve bağlantı katmanlarını ayrı ayrı test ediyoruz.", cta: "Elektronik servis talebi oluştur" },
-  "isitma-sogutma": { eyebrow: "İklimlendirme ve havalandırma bakımı", intro: "Kabin konforunu ve hava kalitesini korumak için marin klima, Webasto ve havalandırma hatlarını birlikte kontrol ediyoruz.", operations: ["Marin klima performans ve soğutucu devre kontrolü", "Webasto ve yardımcı ısıtıcıların çalışma testi", "Fan, kanal, drenaj ve yoğuşma hatlarının incelenmesi", "Kompresör, pompa, filtre ve kumanda paneli kontrolleri", "Koku, gürültü, düşük debi ve düzensiz sıcaklık arızalarının analizi", "Bakım periyodu, temizlik ve yenileme önerileri"], note: "Belirtiyi yalnızca cihazda değil; hava akışı, drenaj ve elektrik beslemesiyle birlikte değerlendiriyoruz.", cta: "İklimlendirme bakım talebi oluştur" },
-  "mekanik-tesisat": { eyebrow: "Mekanik tesisat bakım operasyonları", intro: "Yakıt, su, atık ve sintine sistemlerinde sızdırmazlık, akış ve servis erişimini birlikte gözeten bir bakım yaklaşımı uyguluyoruz.", operations: ["Yakıt, siyah su ve gri su hatlarında kaçak kontrolü", "Sintine pompaları, şamandıralar ve alarm devreleri testi", "Tatlı su, hidrofor ve reverse osmosis sistemlerinin kontrolü", "Pompa, vana, filtre ve boru bağlantılarında servis incelemesi", "Koku, düşük basınç, geri tepme ve düzensiz akış analizi", "Hat etiketleme, erişim düzeni ve periyodik bakım planı"], note: "Tesisat müdahalelerinde tek bir ekipmanı değil, hattın başlangıçtan çıkışa kadar olan bütünlüğünü kontrol ediyoruz.", cta: "Mekanik bakım talebi oluştur" },
-  "motor-tahrik-dumen": { eyebrow: "Motor, tahrik ve dümen bakımı", intro: "Teknenin hareket ve yönlendirme sistemlerinde güvenli çalışma, doğru ayar ve arıza öncesi belirtilerin takibini birlikte planlıyoruz.", operations: ["İçten ve dıştan takma motorlarda bakım ve çalışma kontrolü", "Şaft, kaplin, pervane ve yataklama incelemesi", "Telli, hidrolik ve elektrikli dümen sistemlerinde boşluk kontrolü", "Soğutma, yakıt, egzoz ve yardımcı motor devrelerinin kontrolü", "Titreşim, ses, ısınma ve performans belirtilerinin analizi", "Sanal çapa ve elektronik manevra sistemlerinin fonksiyon testi"], note: "Motor ve tahrik işlerinde mekanik, elektrik ve gövde bağlantılarını aynı bakım planında değerlendiriyoruz.", cta: "Tahrik bakım talebi oluştur" },
-  "yelken-arma": { eyebrow: "Yelken ve arma donanım bakımı", intro: "Yelkenli teknelerde arma ve güverte donanımının güvenli çalışma düzenini, bağlantı ve yük noktalarını kontrol ederek koruyoruz.", operations: ["Vinç, makara ve yelken donanımlarında çalışma testi", "Direk, arma, tel ve halat bağlantılarının görsel kontrolü", "Korozyon, aşınma ve gevşeme belirtilerinin takibi", "Güverte bağlantı noktaları ve yük aktarım yüzeylerinin incelenmesi", "Yelken donanımı yenileme ve servis erişimi planı", "Sezon öncesi ve sezon sonrası bakım önerileri"], note: "Arma bakımında ekipmanın tek başına durumundan çok, bağlantıların birlikte çalışmasını esas alıyoruz.", cta: "Arma bakım talebi oluştur" },
-  "uretim-danismanligi": { eyebrow: "Üretim ve teknik koordinasyon danışmanlığı", intro: "Üretici firmaların üretim hedefleriyle sahadaki bakım gerçeklerini buluşturarak daha erişilebilir, servis edilebilir ve kontrollü tekne sistemleri planlamalarına destek oluyoruz.", operations: ["Üretim öncesi teknik ihtiyaç ve sistem planlaması", "Kompozit, elektrik, mekanik ve elektronik iş kapsamlarının koordinasyonu", "Servis erişimi, bakım yapılabilirliği ve ekipman yerleşimi değerlendirmesi", "Teknik dokümantasyon, kontrol listeleri ve teslim kriterleri", "Saha uygulaması, üretim ekibi ve tedarikçi koordinasyonu", "Teslim öncesi teknik kontrol ve sonraki bakım önerileri"], note: "Danışmanlık yaklaşımımız, üretici ekibin sorumluluğunu devralmak değil; kararların sahada uygulanabilir ve uzun vadede servis edilebilir olmasına teknik katkı sunmaktır.", cta: "Üretim danışmanlığı talebi oluştur" },
-  "guverte-ekipmanlari": { eyebrow: "Güverte üstü ekipman bakımı", intro: "Demirleme, erişim ve kullanım ekipmanlarının güvenliğini; bağlantı, hareket ve yüzey koşullarıyla birlikte kontrol ediyoruz.", operations: ["Irgat, zincirlik ve demirleme sistemlerinde çalışma testi", "Krom aksesuar, vardavela ve tutamak bağlantılarının kontrolü", "Kapak, menteşe, kilit ve güverte donanımı incelemesi", "Korozyon, gevşeme ve sızdırmazlık problemlerinin tespiti", "Ekipman yerleşimi ve ergonomik kullanım değerlendirmesi", "Bakım, parça değişimi ve son kontrol planı"], note: "Güverte ekipmanlarında güvenli kullanım için bağlantı noktaları ve çevre yüzeyler birlikte ele alınır.", cta: "Güverte ekipmanı talebi oluştur" },
-  "tekneye-ozel-cozumler": { eyebrow: "Tekneye özel bakım ve refit planı", intro: "Birden fazla sistemin aynı anda ele alınması gereken durumlarda mevcut altyapıyı okuyup uygulanabilir, sıralı bir müdahale planı oluşturuyoruz.", operations: ["Tekne, sistem ve arıza bağlamının birlikte keşfi", "Önceliklendirilmiş bakım ve refit kapsamı", "Tekneye özel konsol ve ekipman yerleşimi", "Farklı ekip ve sistemlerin iş programı koordinasyonu", "Üretici firmalara saha ve servis danışmanlığı", "Teslim sonrası kontrol ve sonraki bakım adımı"], note: "Hazır bir kategoriye sığmayan ihtiyaçlarda hedefimiz, belirsizliği azaltan açık bir iş kapsamı sunmaktır.", cta: "Tekneye özel değerlendirme talebi oluştur" },
+export const ICON_OPTIONS: Record<string, LucideIcon> = {
+  Anchor, BatteryCharging, ClipboardCheck, Droplets, Factory, Radio, Sailboat,
+  Settings2, Thermometer, Wrench, Wind, Zap, Shield, Compass, Ship, LifeBuoy,
+  Cog, Gauge, Fuel,
 };
 
-export const electricalOperations = serviceDetailContent["marin-elektrik"].operations;
+function resolveIcon(name: string): LucideIcon {
+  return ICON_OPTIONS[name] ?? Wrench;
+}
 
 type ServiceGridProps = { expanded?: boolean };
 
 export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
-  const items = expanded ? serviceItems : serviceItems.slice(0, 4);
-  const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
-  const activeService = activeServiceId ? serviceItems.find((item) => item.id === activeServiceId) : undefined;
-  const activeDetail = activeServiceId ? serviceDetailContent[activeServiceId] : undefined;
+  const [services, setServices] = useState<ServiceRow[] | null>(null);
+  useEffect(() => {
+    let mounted = true;
+    getPublishedServices().then((data) => { if (mounted) setServices(data); }).catch(() => { if (mounted) setServices([]); });
+    return () => { mounted = false; };
+  }, []);
 
-  const openService = (id: string) => setActiveServiceId(id);
-  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>, id: string) => {
-    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openService(id); }
+  const items = services ? (expanded ? services : services.slice(0, 4)) : [];
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
+  const activeService = activeServiceId ? items.find((item) => item.slug === activeServiceId) ?? services?.find((item) => item.slug === activeServiceId) : undefined;
+
+  const openService = (slug: string) => setActiveServiceId(slug);
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>, slug: string) => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openService(slug); }
   };
+
+  if (services === null) {
+    return (
+      <div className={`service-grid ${expanded ? "service-grid--expanded" : ""}`}>
+        {[0, 1, 2, 3].map((index) => <div className="home-content-skeleton" key={`service-skeleton-${index}`} aria-hidden="true" />)}
+      </div>
+    );
+  }
+
+  if (services.length === 0) {
+    return <p className="home-content-empty">Henüz yayınlanmış hizmet bulunmuyor.</p>;
+  }
 
   return (
     <>
       <div className={`service-grid ${expanded ? "service-grid--expanded" : ""}`}>
         {items.map((item) => {
-          const Icon = item.icon;
+          const Icon = resolveIcon(item.icon);
           return (
-            <article className="service-card service-card--interactive" id={item.id} key={item.id} onClick={() => openService(item.id)} onKeyDown={(event) => handleCardKeyDown(event, item.id)} role="button" tabIndex={0} aria-haspopup="dialog" aria-expanded={activeServiceId === item.id}>
-              <div className="service-card__media"><img className="service-card__image" src={item.image} alt={`${item.title} bakım ve uygulama hizmeti`} width={960} height={640} loading="lazy" decoding="async" /><span className="service-card__view">Detayları incele <ArrowUpRight size={14} aria-hidden="true" /></span></div>
+            <article className="service-card service-card--interactive" id={item.slug} key={item.slug} onClick={() => openService(item.slug)} onKeyDown={(event) => handleCardKeyDown(event, item.slug)} role="button" tabIndex={0} aria-haspopup="dialog" aria-expanded={activeServiceId === item.slug}>
+              <div className="service-card__media">{item.image && <img className="service-card__image" src={item.image} alt={`${item.title} bakım ve uygulama hizmeti`} width={960} height={640} loading="lazy" decoding="async" />}<span className="service-card__view">Detayları incele <ArrowUpRight size={14} aria-hidden="true" /></span></div>
               <div className="service-card__body"><div className="service-card__topline"><span className="service-card__signal"><Icon size={20} strokeWidth={1.55} aria-hidden="true" /></span><span className="service-card__rule" aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.description}</p><ul className="service-card__subtopics">{item.subtopics.map((subtopic) => <li key={subtopic}>{subtopic}</li>)}</ul></div>
             </article>
           );
         })}
       </div>
 
-      <Dialog open={Boolean(activeService && activeDetail)} onOpenChange={(open) => { if (!open) setActiveServiceId(null); }}>
+      <Dialog open={Boolean(activeService)} onOpenChange={(open) => { if (!open) setActiveServiceId(null); }}>
         <DialogContent className="service-modal__content">
           <div className="service-modal__scroll">
-            {activeService && activeDetail && <>
-              <DialogHeader><p className="eyebrow">{activeDetail.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeDetail.intro}</DialogDescription></DialogHeader>
-              <div className="service-modal__columns"><div><p className="service-modal__label">Bakım kapsamı</p><ul className="check-list check-list--dark">{activeDetail.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>Perla Marine yaklaşımı</strong><br />{activeDetail.note}</p></div></div>
-              <a className="button button--navy" href="/iletisim">{activeDetail.cta} <ArrowUpRight size={17} /></a>
+            {activeService && <>
+              <DialogHeader><p className="eyebrow">{activeService.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeService.intro}</DialogDescription></DialogHeader>
+              <div className="service-modal__columns"><div><p className="service-modal__label">Bakım kapsamı</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>Perla Marine yaklaşımı</strong><br />{activeService.note}</p></div></div>
+              <a className="button button--navy" href="/iletisim">{activeService.cta} <ArrowUpRight size={17} /></a>
             </>}
           </div>
         </DialogContent>
