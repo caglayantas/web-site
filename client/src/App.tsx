@@ -12,6 +12,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import BackToTop from "@/components/BackToTop";
 import PageHead from "@/components/PageHead";
+import CookieConsent from "@/components/CookieConsent";
 
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
@@ -282,6 +283,8 @@ function App() {
             {!isAdminRoute && <SiteFooter />}
 
             {!isAdminRoute && <BackToTop />}
+
+            {!isAdminRoute && <CookieConsent />}
 
           </div>
 
