@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import {
   ArrowLeft,
   ArrowRight,
@@ -916,85 +917,6 @@ export function ServicesNew() {
 }
 
 /* =========================================================
-   BEFORE / AFTER
-========================================================= */
-
-function BeforeAfterSlider({
-  before,
-  after,
-  beforeAlt,
-  afterAlt,
-}: {
-  before: string;
-  after: string;
-  beforeAlt: string;
-  afterAlt: string;
-}) {
-  const [position, setPosition] =
-    useState(50);
-
-  return (
-    <div className="before-after">
-      <div className="before-after__base">
-        <img
-          src={after}
-          alt={afterAlt}
-          loading="lazy"
-        />
-      </div>
-
-      <div
-        className="before-after__overlay"
-        style={{
-          width: `${position}%`,
-        }}
-      >
-        <img
-          src={before}
-          alt={beforeAlt}
-          loading="lazy"
-        />
-      </div>
-
-      <div
-        className="before-after__divider"
-        style={{
-          left: `${position}%`,
-        }}
-        aria-hidden="true"
-      >
-        <span>
-          <ArrowLeft size={14} />
-          <ArrowRight size={14} />
-        </span>
-      </div>
-
-      <input
-        className="before-after__range"
-        type="range"
-        min="0"
-        max="100"
-        value={position}
-        onChange={(event) =>
-          setPosition(
-            Number(event.target.value)
-          )
-        }
-        aria-label="Önce ve sonra görsellerini karşılaştır"
-      />
-
-      <span className="before-after__label before-after__label--before">
-        Önce
-      </span>
-
-      <span className="before-after__label before-after__label--after">
-        Sonra
-      </span>
-    </div>
-  );
-}
-
-/* =========================================================
    PROJECT LIGHTBOX
 ========================================================= */
 
@@ -1337,6 +1259,7 @@ export function ProjectsNew() {
                     }
                     beforeAlt={`${project.title} önce · mevcut durum`}
                     afterAlt={`${project.title} sonra · hedeflenen kapsam`}
+                    label={project.title}
                   />
 
                   <button
