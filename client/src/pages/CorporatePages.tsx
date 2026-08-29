@@ -332,9 +332,9 @@ const fallbackKnowledge: KnowledgePost[] = [
    PAGE HERO
 ========================================================= */
 
-function PageHero({ data }: { data: PageData }) {
+function PageHero({ data, compact = false }: { data: PageData; compact?: boolean }) {
   return (
-    <section className="page-hero">
+    <section className={`page-hero${compact ? " page-hero--compact" : ""}`}>
       <div className="page-hero__copy">
         <p className="eyebrow">{data.eyebrow}</p>
 
@@ -1887,6 +1887,7 @@ export function ContactNew() {
     <PageFrame>
       <PageHero
         data={pageData.contact}
+        compact
       />
 
       <section className="new-contact-layout">

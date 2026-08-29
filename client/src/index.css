@@ -645,6 +645,12 @@ textarea:focus-visible {
 .page-hero__copy > p:last-child { max-width: 520px; color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.75; }
 .page-hero__media { min-height: 520px; overflow: hidden; }
 .page-hero__media img { width: 100%; height: 100%; object-fit: cover; opacity: .72; filter: saturate(.74) contrast(1.08); }
+.page-hero--compact { min-height: 230px; }
+.page-hero--compact .page-hero__copy { padding: clamp(26px, 4vw, 40px) clamp(24px, 6vw, 64px); max-width: 640px; }
+.page-hero--compact .page-hero__copy h1 { margin: 8px 0 10px; font: clamp(26px, 2.6vw, 36px)/1.1 var(--serif); }
+.page-hero--compact .page-hero__copy > p:last-child { display: none; }
+.page-hero--compact .page-hero__media { min-height: 230px; }
+@media (max-width: 680px) { .page-hero--compact { min-height: 0; grid-template-columns: 1fr; } .page-hero--compact .page-hero__media { display: none; } }
 .corporate-intro, .corporate-section, .contact-layout { width: min(100% - 48px, 1280px); margin: 0 auto; }
 .corporate-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr); gap: clamp(36px, 9vw, 150px); padding: clamp(70px, 9vw, 130px) 0; border-bottom: 1px solid #e4ded4; }
 .corporate-intro h2, .corporate-section h2, .contact-layout h2 { margin: 12px 0 0; color: var(--navy); font: clamp(35px, 4.2vw, 60px)/1.04 var(--serif); letter-spacing: -.025em; }
@@ -699,7 +705,7 @@ textarea:focus-visible {
 .project-detail-card__copy p { grid-column: 1 / -1; max-width: 720px; margin: 0; color: #687786; font-size: 13px; line-height: 1.7; }
 .project-detail-card__copy a { grid-column: 2; grid-row: 2 / span 2; align-self: center; }
 .knowledge-card p { margin: -22px 0 28px; color: #687786; font-size: 12px; line-height: 1.65; }
-.new-contact-layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(40px, 9vw, 140px); width: min(100% - 48px, 1280px); margin: 0 auto; padding: clamp(70px, 9vw, 120px) 0; }
+.new-contact-layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(40px, 9vw, 140px); width: min(100% - 48px, 1280px); margin: 0 auto; padding: clamp(32px, 5vw, 56px) 0 clamp(70px, 9vw, 120px); }
 .new-contact-copy h2 { margin: 12px 0 18px; color: var(--navy); font: clamp(37px, 4.2vw, 59px)/1.04 var(--serif); letter-spacing: -.025em; }
 .new-contact-copy > p:not(.eyebrow) { color: #687786; font-size: 14px; line-height: 1.8; }
 .new-contact-form { display: grid; gap: 15px; padding: clamp(24px, 4vw, 42px); background: var(--ivory); border-top: 3px solid var(--gold); }
