@@ -827,6 +827,13 @@ textarea:focus-visible {
 @media (prefers-reduced-motion: reduce) { .before-after-slider__arrow { transition: none; } }
 
 /* Proje yönetim paneli */
+.admin-mobile-nav { display: none; }
+@media (max-width: 900px) {
+  .admin-mobile-nav { display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 10px 12px; background: var(--navy); position: sticky; top: 0; z-index: 60; -webkit-overflow-scrolling: touch; }
+  .admin-mobile-nav__link { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; padding: 8px 12px; border-radius: 6px; color: rgba(255,255,255,.72); font-size: 12px; font-weight: 700; white-space: nowrap; text-decoration: none; background: transparent; border: 0; cursor: pointer; }
+  .admin-mobile-nav__link.is-active { color: var(--navy); background: var(--gold-light); }
+  .admin-mobile-nav__link--logout { margin-left: auto; color: #f3b6a8; }
+}
 .admin-projects-page { min-height: 100vh; max-width: 1180px; margin: 0 auto; padding: 42px 28px 72px; background: #f8f6f1; color: var(--navy); }
 .admin-page-header, .admin-project-list__header, .admin-project-form__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
 .admin-page-header { padding-bottom: 30px; border-bottom: 1px solid #ded8ce; }
