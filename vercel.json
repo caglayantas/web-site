@@ -4,7 +4,6 @@
   "outputDirectory": "dist/public",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/manus-storage/:path*", "destination": "/manus-storage/:path*" },
     { "source": "/((?!api/|manus-storage/).*)", "destination": "/index.html" }
   ]
 }
