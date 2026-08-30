@@ -307,7 +307,7 @@ h1, h2, h3 { color: inherit; }
   .section-heading { margin-bottom: 39px; }
   .service-grid, .service-grid--expanded, .journal-grid, .article-grid { grid-template-columns: 1fr; }
   .service-card { min-height: 390px; }
-  .service-card__image { height: 145px; }
+  .service-card__image { height: 190px; }
   .service-card__body { padding: 20px; }
   .service-card h3 { margin-top: 24px; }
   .system-feature__copy, .consulting-band__copy, .service-detail-feature__content { padding: 68px 20px; }
@@ -1079,7 +1079,7 @@ textarea:focus-visible {
 .home-page-compact .section--services-intro { background: #f1ede5; }
 .home-page-compact .service-grid { gap: 10px; border: 0; }
 .home-page-compact .service-card { min-height: 350px; border: 1px solid #ddd5c7; background: #faf8f3; }
-.home-page-compact .service-card__image { height: 118px; }
+.home-page-compact .service-card__image { height: 190px; }
 .home-page-compact .service-card__body { padding: 17px 18px 20px; }
 .home-page-compact .service-card h3 { margin: 18px 0 8px; font-size: 22px; }
 .home-page-compact .service-card__subtopics { margin-top: 13px; }
@@ -1101,7 +1101,7 @@ textarea:focus-visible {
 .home-page-compact .faq-item summary { padding: 17px 0; font-size: 21px; }
 .home-page-compact .contact-cta--home { padding-top: clamp(28px, 5.4vw, 48px); padding-bottom: clamp(28px, 5.4vw, 48px); }
 @media (max-width: 900px) { .home-page-compact .hero-section { min-height: 590px; } .home-page-compact .trust-strip > div { padding-left: 18px; padding-right: 18px; } .home-page-compact .trust-strip > div + div { padding-left: 18px; } }
-@media (max-width: 680px) { .home-page-compact .hero-section { min-height: 560px; } .home-page-compact .hero-section__content { padding: 58px 0 52px; } .home-page-compact .section { padding-top: 42px; padding-bottom: 42px; } .home-page-compact .section-heading { margin-bottom: 24px; } .home-page-compact .section-heading h2 { font-size: clamp(19px, 8.5vw, 27px); } .home-page-compact .service-grid { gap: 8px; } .home-page-compact .service-card { min-height: 0; } .home-page-compact .service-card__image { height: 128px; } .home-page-compact .home-project-grid, .home-page-compact .home-before-after-grid { gap: 9px; } .home-page-compact .contact-cta--home { padding-top: 48px; padding-bottom: 48px; } }
+@media (max-width: 680px) { .home-page-compact .hero-section { min-height: 560px; } .home-page-compact .hero-section__content { padding: 58px 0 52px; } .home-page-compact .section { padding-top: 42px; padding-bottom: 42px; } .home-page-compact .section-heading { margin-bottom: 24px; } .home-page-compact .section-heading h2 { font-size: clamp(19px, 8.5vw, 27px); } .home-page-compact .service-grid { gap: 8px; } .home-page-compact .service-card { min-height: 0; } .home-page-compact .service-card__image { height: 165px; } .home-page-compact .home-project-grid, .home-page-compact .home-before-after-grid { gap: 9px; } .home-page-compact .contact-cta--home { padding-top: 48px; padding-bottom: 48px; } }
 
 /* Ana sayfa proje carousel’i, süreç şeridi ve mobil CTA */
 .hero-section__actions .button--outline-light { background: transparent; }
