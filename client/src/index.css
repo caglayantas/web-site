@@ -561,7 +561,8 @@ textarea:focus-visible {
 .service-card:hover .service-card__view, .service-card:focus-visible .service-card__view { opacity: 1; transform: translateY(0); }
 .service-card--interactive { cursor: pointer; }
 .service-card--interactive:focus-visible { outline: 3px solid var(--gold); outline-offset: -3px; }
-.service-modal__content { position: fixed !important; top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important; transform: translate(-50%, -50%) !important; margin: 0 !important; z-index: 9999 !important; width: calc(100vw - 32px) !important; max-width: 640px !important; border: 1px solid rgba(199,155,72,.38); border-radius: 0; background: var(--paper); color: var(--navy); }
+.radix-dialog-content { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; display: grid; outline: none; box-sizing: border-box; }
+.service-modal__content { position: fixed; top: 50%; left: 50%; right: auto; bottom: auto; transform: translate(-50%, -50%); margin: 0; z-index: 9999; width: calc(100vw - 32px); max-width: 640px; border: 1px solid rgba(199,155,72,.38); border-radius: 0; background: var(--paper); color: var(--navy); }
 .service-modal__content [data-slot="dialog-close"] { position: absolute !important; top: 14px !important; right: 14px !important; left: auto !important; bottom: auto !important; }
 .service-modal__content [data-slot="dialog-header"] { text-align: left; }
 .service-modal__content [data-slot="dialog-title"] { max-width: 680px; margin: 0; color: var(--navy); font: clamp(21px, 4.4vw, 36px)/1.05 var(--serif); letter-spacing: -.025em; }
