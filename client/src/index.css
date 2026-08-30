@@ -848,6 +848,25 @@ textarea:focus-visible {
 .admin-page-header p:not(.eyebrow) { max-width: 600px; margin: 0; color: #596271; }
 .admin-project-list { margin-top: 34px; }
 .admin-project-list__header { align-items: center; margin-bottom: 14px; }
+.admin-listings-toggle { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; padding: 18px 22px; border: 1px solid #d7dce3; background: #fff; }
+.admin-listings-toggle strong { display: block; margin-bottom: 4px; color: var(--navy); font-size: 14px; }
+.admin-listings-toggle p { margin: 0; max-width: 520px; color: #687786; font-size: 12.5px; line-height: 1.6; }
+.admin-toggle-switch { position: relative; flex: 0 0 auto; width: 46px; height: 26px; border: 0; border-radius: 999px; background: #cfd6dd; cursor: pointer; transition: background 160ms var(--ease-out); }
+.admin-toggle-switch span { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.28); transition: transform 160ms var(--ease-out); }
+.admin-toggle-switch.is-on { background: var(--navy); }
+.admin-toggle-switch.is-on span { transform: translateX(20px); }
+.admin-toggle-switch:disabled { opacity: .6; cursor: default; }
+.listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 26px; }
+.listings-grid__card { border: 1px solid #e4ded4; background: var(--paper); }
+.listings-grid__card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.listings-grid__placeholder { display: grid; place-items: center; aspect-ratio: 16/9; background: var(--ivory); color: var(--gold); }
+.listings-grid__body { padding: 22px; }
+.listings-grid__body h2 { margin: 0 0 6px; color: var(--navy); font: 21px/1.2 var(--serif); }
+.listings-grid__meta { margin: 0 0 4px; color: #8a7651; font-size: 11.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.listings-grid__engine { margin: 0 0 12px; color: #687786; font-size: 12.5px; }
+.listings-grid__description { margin: 0 0 18px; color: #546373; font-size: 13.5px; line-height: 1.65; }
+.listings-grid__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid #ece5d8; }
+.listings-grid__footer strong { color: var(--navy); font: 18px/1 var(--serif); }
 .admin-project-list__header h2 { margin: 0; font: 34px/1.1 var(--serif); }
 .admin-project-list__header span { color: #6f7782; font-size: 13px; }
 .admin-project-row { display: grid; grid-template-columns: 190px 1fr auto; gap: 22px; align-items: center; padding: 18px; margin-bottom: 12px; border: 1px solid #e0dbd2; background: #fff; box-shadow: 0 8px 24px rgba(4,31,61,.04); }

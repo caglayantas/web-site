@@ -65,6 +65,8 @@ const AdminKnowledge = lazy(() => import("@/pages/AdminKnowledge"));
 const AdminFAQ = lazy(() => import("@/pages/AdminFAQ"));
 const AdminServices = lazy(() => import("@/pages/AdminServices"));
 const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
+const AdminListings = lazy(() => import("@/pages/AdminListings"));
+const Listings = lazy(() => import("@/pages/Listings"));
 const ServiceRegions = lazy(() => import("@/pages/ServiceRegions"));
 
 const ProjectDraftPreview = lazy(() =>
@@ -130,6 +132,7 @@ function Router() {
       <Route path="/" component={Home} />
 
       <Route path="/hakkimizda" component={AboutNew} />
+      <Route path="/ilanlar" component={Listings} />
       <Route path="/hizmet-bolgelerimiz" component={ServiceRegions} />
 
       <Route path="/hizmetler" component={ServicesNew} />
@@ -221,6 +224,11 @@ function Router() {
       <Route
         path="/yonetim/is-ortaklari"
         component={AdminPartners}
+      />
+
+      <Route
+        path="/yonetim/ilanlar"
+        component={AdminListings}
       />
 
       {/* ======================================================

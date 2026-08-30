@@ -43,6 +43,22 @@ export type FaqRow = {
   sortOrder: number;
 };
 
+export type BoatListingRow = {
+  id: number;
+  title: string;
+  price: string;
+  year: string;
+  lengthMeters: string;
+  engineInfo: string;
+  location: string;
+  description: string;
+  coverImage: string | null;
+  status: "draft" | "published";
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type ServiceRow = {
   id: number;
   slug: string;
@@ -117,6 +133,37 @@ const mapFaq = (row: any): FaqRow => ({
   status: row.status,
   sortOrder: row.sort_order,
 });
+
+const mapBoatListing = (row: any): BoatListingRow => ({
+  id: row.id,
+  title: row.title,
+  price: row.price,
+  year: row.year,
+  lengthMeters: row.length_meters,
+  engineInfo: row.engine_info,
+  location: row.location,
+  description: row.description,
+  coverImage: row.cover_image,
+  status: row.status,
+  sortOrder: row.sort_order,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const boatListingToRow = (p: Partial<BoatListingRow>) => {
+  const row: Record<string, unknown> = {};
+  if (p.title !== undefined) row.title = p.title;
+  if (p.price !== undefined) row.price = p.price;
+  if (p.year !== undefined) row.year = p.year;
+  if (p.lengthMeters !== undefined) row.length_meters = p.lengthMeters;
+  if (p.engineInfo !== undefined) row.engine_info = p.engineInfo;
+  if (p.location !== undefined) row.location = p.location;
+  if (p.description !== undefined) row.description = p.description;
+  if (p.coverImage !== undefined) row.cover_image = p.coverImage;
+  if (p.status !== undefined) row.status = p.status;
+  if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
+  return row;
+};
 
 const mapService = (row: any): ServiceRow => ({
   id: row.id,
@@ -245,6 +292,23 @@ export async function getPublishedFaqs(): Promise<FaqRow[]> {
   return (data ?? []).map(mapFaq);
 }
 
+export async function getPublishedBoatListings(): Promise<BoatListingRow[]> {
+  const { data, error } = await supabase.from("boat_listings").select("*").eq("status", "published").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapBoatListing);
+}
+
+export async function getListingsEnabled(): Promise<boolean> {
+  const { data, error } = await supabase.from("site_settings").select("value").eq("key", "listings_enabled").maybeSingle();
+  if (error || !data) return false;
+  return data.value === "true";
+}
+
+export async function setListingsEnabled(enabled: boolean): Promise<void> {
+  const { error } = await supabase.from("site_settings").upsert({ key: "listings_enabled", value: enabled ? "true" : "false" });
+  if (error) throw error;
+}
+
 export async function getPublishedServices(): Promise<ServiceRow[]> {
   const { data, error } = await supabase.from("services").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
@@ -339,6 +403,29 @@ export async function deleteFaq(id: number): Promise<void> {
   if (error) throw error;
 }
 
+export async function getAllBoatListings(): Promise<BoatListingRow[]> {
+  const { data, error } = await supabase.from("boat_listings").select("*").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapBoatListing);
+}
+
+export async function createBoatListing(input: Partial<BoatListingRow>): Promise<BoatListingRow> {
+  const { data, error } = await supabase.from("boat_listings").insert(boatListingToRow(input)).select("*").single();
+  if (error) throw error;
+  return mapBoatListing(data);
+}
+
+export async function updateBoatListing(id: number, changes: Partial<BoatListingRow>): Promise<BoatListingRow> {
+  const { data, error } = await supabase.from("boat_listings").update(boatListingToRow(changes)).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapBoatListing(data);
+}
+
+export async function deleteBoatListing(id: number): Promise<void> {
+  const { error } = await supabase.from("boat_listings").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function getAllServices(): Promise<ServiceRow[]> {
   const { data, error } = await supabase.from("services").select("*").order("sort_order", { ascending: true });
   if (error) throw error;
@@ -387,7 +474,7 @@ export async function deletePartner(id: number): Promise<void> {
 
 // ---- Image uploads (Supabase Storage, replacing Manus Forge storage) ----
 
-export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners", file: File): Promise<string> {
+export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners" | "listings", file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {contentType: file.type });

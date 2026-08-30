@@ -1,6 +1,7 @@
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import { getListingsEnabled } from "@/lib/content";
 
 function WhatsAppIcon() {
   return (
@@ -23,10 +24,19 @@ export default function SiteHeader() {
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [listingsEnabled, setListingsEnabled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const firstMenuLinkRef = useRef<HTMLAnchorElement>(null);
   const mobileNavRef = useRef<HTMLElement>(null);
   const hasOpenedMenu = useRef(false);
+
+  useEffect(() => {
+    getListingsEnabled().then(setListingsEnabled).catch(() => setListingsEnabled(false));
+  }, []);
+
+  const activeNavigation = listingsEnabled
+    ? [...navigation, { href: "/ilanlar", label: "İlanlar", path: "/ilanlar" }]
+    : navigation;
 
   useEffect(() => {
     const updateHeader = () => setIsScrolled(window.scrollY > 18);
@@ -85,7 +95,7 @@ export default function SiteHeader() {
         </a>
 
         <nav className="desktop-nav" aria-label="Ana navigasyon">
-          {navigation.map((item) => (
+          {activeNavigation.map((item) => (
             <a key={item.href} href={item.href} className={location === item.path || (item.path !== "/" && location.startsWith(`${item.path}/`)) ? "is-active" : ""}>
               {item.label}
             </a>
@@ -115,7 +125,7 @@ export default function SiteHeader() {
         {isOpen && (
           <nav ref={mobileNavRef} id="mobile-navigation" className="mobile-nav" aria-label="Mobil navigasyon">
             <p className="mobile-nav__intro">Tekneniz için doğru bakım ve teknik servis adımını birlikte netleştirelim.</p>
-            {navigation.map((item, index) => (
+            {activeNavigation.map((item, index) => (
               <a
                 key={item.href}
                 ref={index === 0 ? firstMenuLinkRef : undefined}
