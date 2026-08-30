@@ -503,12 +503,14 @@ export function AboutNew() {
           </p>
         </div>
 
-        <img
-          src="/manus-storage/perla-about-technical-planning-1600_a1702930.webp"
-          alt="Tekne refit süreci için teknik plan ve ölçüm araçlarını inceleyen uzman"
-          loading="lazy"
-          decoding="async"
-        />
+        <div className="about-image-frame">
+          <img
+            src="/manus-storage/perla-about-technical-planning-1600_a1702930.webp"
+            alt="Tekne refit süreci için teknik plan ve ölçüm araçlarını inceleyen uzman"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </section>
 
       <section
@@ -615,6 +617,7 @@ export function AboutNew() {
 
         <div className="about-promise-grid">
           <article>
+            <span className="about-promise-grid__number">01</span>
             <ClipboardCheck
               size={23}
               aria-hidden="true"
@@ -631,6 +634,7 @@ export function AboutNew() {
           </article>
 
           <article>
+            <span className="about-promise-grid__number">02</span>
             <Settings2
               size={23}
               aria-hidden="true"
@@ -647,6 +651,7 @@ export function AboutNew() {
           </article>
 
           <article>
+            <span className="about-promise-grid__number">03</span>
             <ShieldCheck
               size={23}
               aria-hidden="true"

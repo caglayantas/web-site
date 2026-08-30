@@ -1828,7 +1828,6 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .about-copy { max-width:650px; }
 .about-copy h2, .about-panel h2, .about-promise h2, .about-trust h2 { margin:12px 0 20px; font:clamp(21px, 4.4vw, 38px)/1.02 var(--serif); letter-spacing:-.04em; color:var(--navy); }
 .about-copy p:last-child, .about-panel p, .about-promise .section-heading > p, .about-trust__intro > p, .about-consulting > p { color:#66727f; font-size:15px; line-height:1.8; }
-.about-identity > img { width:100%; aspect-ratio:1.12/1; object-fit:cover; display:block; }
 .about-vision-mission { display:grid; grid-template-columns:1fr 1fr; }
 .about-panel { padding:clamp(24px, 6vw, 48px) clamp(20px,5vw,72px) 0; overflow:hidden; }
 .about-panel--navy { background:var(--navy); color:#f8f2e8; }
@@ -1837,9 +1836,15 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .about-panel--ivory { background:#f4eee3; }
 .about-panel img { width:100%; aspect-ratio:1.7/1; object-fit:cover; display:block; margin-top:34px; }
 .about-promise { padding:clamp(34px, 8vw, 64px) clamp(20px,6vw,88px); background:#fffdf8; }
+.about-image-frame { position: relative; }
+.about-image-frame::before { content: ""; position: absolute; top: 20px; left: 20px; right: -20px; bottom: -20px; border: 1px solid var(--gold); z-index: 0; pointer-events: none; }
+.about-image-frame img { position: relative; z-index: 1; }
+.about-identity > .about-image-frame img { width:100%; aspect-ratio:1.12/1; object-fit:cover; display:block; }
 .about-promise-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; margin-top:36px; background:#ddd4c7; }
-.about-promise-grid article { min-height:180px; padding:28px; background:#fffdf8; }
-.about-promise-grid svg { color:#b58a3b; }
+.about-promise-grid article { position: relative; min-height:180px; padding:28px; background:#fffdf8; transition: background 200ms var(--ease-out); }
+.about-promise-grid article:hover { background: var(--ivory); }
+.about-promise-grid__number { position: absolute; top: 22px; right: 26px; color: #ddd4c7; font: 800 34px/1 var(--serif); letter-spacing: -.02em; }
+.about-promise-grid svg { position: relative; color:#b58a3b; }
 .about-promise-grid h3, .about-trust__grid h3 { margin:20px 0 10px; color:var(--navy); font:24px/1.1 var(--serif); }
 .about-promise-grid p, .about-trust__grid p { margin:0; color:#66727f; font-size:13px; line-height:1.7; }
 .about-promise-image { position:relative; margin-top:28px; }
@@ -1855,7 +1860,7 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .about-trust__grid svg { color:#d2a34f; }
 .about-trust__grid h3 { color:#f8f2e8; }
 .about-trust__grid p { color:rgba(248,242,232,.7); }
-@media (max-width:760px) { .about-identity, .about-vision-mission, .about-trust { grid-template-columns:1fr; } .about-identity { padding-top:58px; } .about-identity > img { aspect-ratio:1.35/1; } .about-promise-grid, .about-trust__grid { grid-template-columns:1fr; } .about-panel { padding-top:58px; } .about-promise-image > div { left:12px; right:12px; bottom:12px; } .about-promise-image strong { font-size:20px; } }
+@media (max-width:760px) { .about-identity, .about-vision-mission, .about-trust { grid-template-columns:1fr; } .about-identity { padding-top:58px; } .about-identity > .about-image-frame img { aspect-ratio:1.35/1; } .about-image-frame::before { top:12px; left:12px; right:-12px; bottom:-12px; } .about-promise-grid, .about-trust__grid { grid-template-columns:1fr; } .about-panel { padding-top:58px; } .about-promise-image > div { left:12px; right:12px; bottom:12px; } .about-promise-image strong { font-size:20px; } }
 
 /* Kurumsal referans ve PDF profili */
 .about-references { display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,6vw,86px); align-items:center; padding:clamp(34px, 8vw, 60px) clamp(20px,6vw,88px); background:#f4eee3; }
