@@ -62,6 +62,19 @@ export type ServiceRow = {
   updatedAt?: string;
 };
 
+export type PartnerRow = {
+  id: number;
+  name: string;
+  logo: string | null;
+  relationship: string;
+  description: string;
+  website: string;
+  status: "draft" | "published";
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 const mapProject = (row: any): ProjectRow => ({
   id: row.id,
   slug: row.slug,
@@ -142,6 +155,31 @@ const serviceToRow = (p: Partial<ServiceRow>) => {
   return row;
 };
 
+const mapPartner = (row: any): PartnerRow => ({
+  id: row.id,
+  name: row.name,
+  logo: row.logo,
+  relationship: row.relationship,
+  description: row.description,
+  website: row.website,
+  status: row.status,
+  sortOrder: row.sort_order,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const partnerToRow = (p: Partial<PartnerRow>) => {
+  const row: Record<string, unknown> = {};
+  if (p.name !== undefined) row.name = p.name;
+  if (p.logo !== undefined) row.logo = p.logo;
+  if (p.relationship !== undefined) row.relationship = p.relationship;
+  if (p.description !== undefined) row.description = p.description;
+  if (p.website !== undefined) row.website = p.website;
+  if (p.status !== undefined) row.status = p.status;
+  if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
+  return row;
+};
+
 const projectToRow = (p: Partial<ProjectRow>) => {
   const row: Record<string, unknown> = {};
   if (p.slug !== undefined) row.slug = p.slug;
@@ -211,6 +249,12 @@ export async function getPublishedServices(): Promise<ServiceRow[]> {
   const { data, error } = await supabase.from("services").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(mapService);
+}
+
+export async function getPublishedPartners(): Promise<PartnerRow[]> {
+  const { data, error } = await supabase.from("partners").select("*").eq("status", "published").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapPartner);
 }
 
 // ---- Admin reads/writes (require an authenticated Supabase session; enforced by RLS) ----
@@ -318,9 +362,32 @@ export async function deleteService(id: number): Promise<void> {
   if (error) throw error;
 }
 
+export async function getAllPartners(): Promise<PartnerRow[]> {
+  const { data, error } = await supabase.from("partners").select("*").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapPartner);
+}
+
+export async function createPartner(input: Partial<PartnerRow>): Promise<PartnerRow> {
+  const { data, error } = await supabase.from("partners").insert(partnerToRow(input)).select("*").single();
+  if (error) throw error;
+  return mapPartner(data);
+}
+
+export async function updatePartner(id: number, changes: Partial<PartnerRow>): Promise<PartnerRow> {
+  const { data, error } = await supabase.from("partners").update(partnerToRow(changes)).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapPartner(data);
+}
+
+export async function deletePartner(id: number): Promise<void> {
+  const { error } = await supabase.from("partners").delete().eq("id", id);
+  if (error) throw error;
+}
+
 // ---- Image uploads (Supabase Storage, replacing Manus Forge storage) ----
 
-export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services", file: File): Promise<string> {
+export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners", file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {contentType: file.type });

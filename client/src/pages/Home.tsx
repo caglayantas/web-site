@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ServiceGrid from "@/components/ServiceGrid";
 import ServiceFAQ from "@/components/ServiceFAQ";
-import { getPublishedKnowledgePosts, getPublishedProjects, type KnowledgePostRow, type ProjectRow } from "@/lib/content";
+import { getPublishedKnowledgePosts, getPublishedProjects, getPublishedPartners, type KnowledgePostRow, type ProjectRow, type PartnerRow } from "@/lib/content";
 import { ArrowDownRight, ArrowUpRight, BatteryCharging, CalendarClock, Check, ChevronRight, ClipboardCheck, Clock3, FileText, MapPin, Settings2, ShieldCheck, Wrench, MoveRight } from "lucide-react";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -22,9 +22,11 @@ export default function Home() {
   const [projectsData, setProjectsData] = useState<ProjectRow[] | null>(null);
   const [projectsError, setProjectsError] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(true);
+  const [partnersData, setPartnersData] = useState<PartnerRow[] | null>(null);
   useEffect(() => {
     getPublishedKnowledgePosts().then(setKnowledgeData).catch(() => setKnowledgeError(true)).finally(() => setKnowledgeLoading(false));
     getPublishedProjects().then(setProjectsData).catch(() => setProjectsError(true)).finally(() => setProjectsLoading(false));
+    getPublishedPartners().then(setPartnersData).catch(() => setPartnersData([]));
   }, []);
   const technicalCards = knowledgeError ? technicalFallback : (knowledgeData ?? []).slice(0, 3);
   const displayProjects = projectsError ? projectFallback : (projectsData ?? []).filter((project) => project.status === "published").slice(0, 3);
@@ -122,6 +124,32 @@ export default function Home() {
           <div className="home-process-strip__steps">{processSteps.map(({ title, body, icon: Icon }) => <article key={title}><span className="home-process-strip__icon"><Icon size={21} strokeWidth={1.25} aria-hidden="true" /></span><div><h3>{title}</h3><p>{body}</p></div></article>)}</div>
         </section>
       </div>
+
+      {partnersData && partnersData.length > 0 && (
+        <section className="section partners-band">
+          <div className="section-heading">
+            <div><p className="eyebrow">Bayilikler ve İş Ortaklarımız</p><h2>Güvendiğimiz markalarla çalışıyoruz.</h2></div>
+          </div>
+          <div className="partners-band__grid">
+            {partnersData.map((partner) => {
+              const card = (
+                <>
+                  {partner.logo && <img className="partners-band__logo" src={partner.logo} alt={`${partner.name} logosu`} loading="lazy" decoding="async" />}
+                  <div className="partners-band__copy">
+                    <h3>{partner.name}</h3>
+                    <p>{partner.relationship}</p>
+                  </div>
+                </>
+              );
+              return partner.website ? (
+                <a className="partners-band__card" key={partner.id} href={partner.website} target="_blank" rel="noopener noreferrer">{card}</a>
+              ) : (
+                <div className="partners-band__card" key={partner.id}>{card}</div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section id="teknik-bilgiler" className="section journal-section">
         <div className="section-heading section-heading--split">

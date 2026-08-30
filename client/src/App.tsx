@@ -64,6 +64,7 @@ const AdminKnowledge = lazy(() => import("@/pages/AdminKnowledge"));
 
 const AdminFAQ = lazy(() => import("@/pages/AdminFAQ"));
 const AdminServices = lazy(() => import("@/pages/AdminServices"));
+const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
 
 const ProjectDraftPreview = lazy(() =>
   import("@/pages/ProjectDraftPreview")
@@ -213,6 +214,11 @@ function Router() {
       <Route
         path="/yonetim/hizmetler"
         component={AdminServices}
+      />
+
+      <Route
+        path="/yonetim/is-ortaklari"
+        component={AdminPartners}
       />
 
       {/* ======================================================
