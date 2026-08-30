@@ -43,6 +43,12 @@ const regions: Region[] = [
     intro: "Marmara'daki marinalarda bulunan teknelere, talep ve kapsamına göre planlanan saha ziyaretleriyle bakım ve onarım hizmeti sunuyoruz.",
     marinas: ["Ataköy Marina (İstanbul)", "West İstanbul Marina", "Setur Kalamış & Fenerbahçe (İstanbul)", "Viaport Tuzla Marina (İstanbul)", "Setur Yalova Marina", "Güzelyalı Yat Limanı (Bursa/Mudanya)", "Setur Ayvalık Marina (Balıkesir)"],
   },
+  {
+    id: "diger",
+    title: "Diğer Bölgeler / Türkiye Geneli",
+    intro: "Yukarıdaki bölgelerin dışında, Türkiye'nin diğer kıyı noktalarındaki talepleri de değerlendiriyoruz. Kapsam ve mesafeye göre saha ziyareti planlayıp size dönüş yapıyoruz.",
+    marinas: [],
+  },
 ];
 
 export default function ServiceRegions() {
@@ -75,15 +81,19 @@ export default function ServiceRegions() {
             <article className="service-regions-grid__card" id={region.id} key={region.id}>
               <h2>{region.title}</h2>
               <p>{region.intro}</p>
-              <p className="service-regions-grid__label">Bölgedeki marinalardan bazıları</p>
-              <ul>
-                {region.marinas.map((marina) => <li key={marina}>{marina}</li>)}
-              </ul>
+              {region.marinas.length > 0 && (
+                <>
+                  <p className="service-regions-grid__label">Bölgedeki marinalardan bazıları</p>
+                  <ul>
+                    {region.marinas.map((marina) => <li key={marina}>{marina}</li>)}
+                  </ul>
+                </>
+              )}
             </article>
           ))}
         </div>
         <div className="service-regions-cta">
-          <p>Tekneniz yukarıdaki bölgelerin dışında bir marinada mı? Yine de bize ulaşın; kapsam ve mesafeye göre değerlendirip size dönüş yapalım.</p>
+          <p>Talebinizi paylaşın; kapsam ve mesafeye göre en uygun sonraki adımı birlikte belirleyelim.</p>
           <Link className="button button--gold" href="/iletisim">Bölgenizi belirtin, talebinizi iletin <ArrowUpRight size={16} /></Link>
         </div>
       </section>
