@@ -18,17 +18,21 @@ function estimateReadingMinutes(body: string) {
 function ReadingProgress() {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
+    let frame = 0;
     const onScroll = () => {
-      const article = document.querySelector(".knowledge-post__sections");
-      if (!article) return;
-      const rect = article.getBoundingClientRect();
-      const total = rect.height - window.innerHeight * 0.5;
-      const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
-      setProgress(total > 0 ? Math.min(100, (scrolled / total) * 100) : 0);
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const article = document.querySelector(".knowledge-post__sections");
+        if (!article) return;
+        const rect = article.getBoundingClientRect();
+        const total = rect.height - window.innerHeight * 0.5;
+        const scrolled = Math.min(Math.max(-rect.top, 0), Math.max(total, 1));
+        setProgress(total > 0 ? Math.min(100, (scrolled / total) * 100) : 0);
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); };
   }, []);
   return <div className="knowledge-post__progress" aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>;
 }

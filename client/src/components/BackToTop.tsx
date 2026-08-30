@@ -42,14 +42,20 @@ export default function BackToTop() {
 
   useEffect(() => {
     let frame = 0;
+    let lastToneCheck = 0;
     const updateScrollState = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame((now) => {
         const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
         const nextProgress = Math.min(Math.max((window.scrollY / maxScroll) * 100, 0), 100);
         setProgress(nextProgress);
         setVisible(window.scrollY > 480);
-        setTone(getSectionTone());
+        // getSectionTone() forces a layout (elementsFromPoint + getComputedStyle); only
+        // recompute it a few times a second instead of on every scroll frame.
+        if (now - lastToneCheck > 200) {
+          lastToneCheck = now;
+          setTone(getSectionTone());
+        }
       });
     };
 
