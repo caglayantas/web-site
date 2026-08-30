@@ -16,8 +16,9 @@ const emptyForm: PartnerForm = {
 };
 
 async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, zoom: number, fileName: string) {
-  const size = 600;
-  const aspect = 1;
+  const outputWidth = 1600;
+  const outputHeight = 900;
+  const aspect = outputWidth / outputHeight;
   const imageAspect = bitmap.width / bitmap.height;
   const baseHeight = imageAspect > aspect ? bitmap.height : bitmap.width / aspect;
   const baseWidth = baseHeight * aspect;
@@ -26,11 +27,11 @@ async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, z
   const sx = Math.max(0, Math.min(bitmap.width - cropWidth, (bitmap.width - cropWidth) * focalX));
   const sy = Math.max(0, Math.min(bitmap.height - cropHeight, (bitmap.height - cropHeight) * focalY));
   const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas kullanılamıyor");
-  context.drawImage(bitmap, sx, sy, cropWidth, cropHeight, 0, 0, size, size);
+  context.drawImage(bitmap, sx, sy, cropWidth, cropHeight, 0, 0, outputWidth, outputHeight);
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.9));
   if (!blob) throw new Error("WebP dönüşümü başarısız");
   return new File([blob], `${fileName.replace(/\.[^.]+$/, "") || "logo"}.webp`, { type: "image/webp" });
@@ -119,14 +120,14 @@ function LogoField({ value, onChange }: { value: string; onChange: (url: string)
         <input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => void chooseFile(event.target.files?.[0])} />
         <span className="admin-upload-dropzone__icon">{isPending ? <span className="admin-spinner" /> : <ImagePlus size={20} />}</span>
         <strong>{isPending ? "WebP hazırlanıyor ve yükleniyor…" : dragging ? "Bırakın" : value ? "Logoyu değiştir" : "Logo seçin veya sürükleyin"}</strong>
-        <small>Kare (1:1) olarak kırpılıp yüklenir · maksimum 8 MB</small>
+        <small>16:9 oranında kırpılıp yüklenir · maksimum 8 MB</small>
       </label>
       {preview && <img className="admin-upload-preview admin-upload-preview--cover" style={{ maxWidth: 160 }} src={preview} alt="Logo önizleme" />}
       {error && <small className="admin-form-error" role="alert">{error}</small>}
       {sourceFile && sourcePreview && (
         <div className="admin-cover-crop" role="dialog" aria-modal="true" aria-label="Logoyu kırp">
           <div className="admin-cover-crop__header">
-            <div><strong>Logoyu kırp</strong><small>Kare (1:1) oranında kullanılacak alanı seçin.</small></div>
+            <div><strong>Logoyu kırp</strong><small>16:9 oranında kullanılacak alanı seçin.</small></div>
             <button type="button" className="admin-icon-button" onClick={cancelCrop} aria-label="Kırpmayı iptal et"><X size={17} /></button>
           </div>
           <div className="admin-cover-crop__stage">
