@@ -14,6 +14,7 @@ const navigation = [
   { href: "/", label: "Ana Sayfa", path: "/" },
   { href: "/hakkimizda", label: "Hakkımızda", path: "/hakkimizda" },
   { href: "/hizmetler", label: "Hizmetler", path: "/hizmetler" },
+  { href: "/hizmet-bolgelerimiz", label: "Bölgelerimiz", path: "/hizmet-bolgelerimiz" },
   { href: "/projeler", label: "Projeler", path: "/projeler" },
   { href: "/teknik-bilgiler", label: "Teknik Bilgiler", path: "/teknik-bilgiler" },
 ];
