@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { MoveHorizontal } from "lucide-react";
 
 type BeforeAfterSliderProps = {
@@ -14,14 +14,25 @@ export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, 
   const [position, setPosition] = useState(50);
   const [dragging, setDragging] = useState(false);
   const [showHint, setShowHint] = useState(true);
+  const rafRef = useRef<number | null>(null);
+  const pendingClientX = useRef<number | null>(null);
 
   const dismissHint = () => setShowHint(false);
-  const updatePosition = (clientX: number) => {
+  const applyPosition = (clientX: number) => {
     const element = sliderRef.current;
     if (!element) return;
     const rect = element.getBoundingClientRect();
     setPosition(Math.max(4, Math.min(96, ((clientX - rect.left) / rect.width) * 100)));
   };
+  const updatePosition = useCallback((clientX: number) => {
+    pendingClientX.current = clientX;
+    if (rafRef.current !== null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      if (pendingClientX.current !== null) applyPosition(pendingClientX.current);
+    });
+  }, []);
+  useEffect(() => () => { if (rafRef.current !== null) cancelAnimationFrame(rafRef.current); }, []);
 
   const stopDrag = () => setDragging(false);
   const startDrag = (event: PointerEvent<HTMLElement>) => {
@@ -71,9 +82,10 @@ export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, 
       onPointerCancel={stopDrag}
     >
       <img className="before-after-slider__image before-after-slider__image--after" src={after} alt={afterAlt} />
-      <div className="before-after-slider__before" style={{ width: `${position}%` }}>
+      <div className="before-after-slider__before" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
         <img className="before-after-slider__image" src={before} alt={beforeAlt} />
       </div>
+      <div className="before-after-slider__divider" style={{ left: `${position}%` }} aria-hidden="true" />
       <span className={`before-after-slider__label before-after-slider__label--before${beforeLabelActive ? " is-active" : " is-muted"}`} style={{ opacity: beforeLabelOpacity }}>ÖNCE</span>
       <span className={`before-after-slider__label before-after-slider__label--after${afterLabelActive ? " is-active" : " is-muted"}`} style={{ opacity: afterLabelOpacity }}>SONRA</span>
       {showHint && <span className="before-after-slider__hint"><MoveHorizontal size={14} aria-hidden="true" /><span className="before-after-slider__hint-long">Tutarak sağa-sola sürükleyin</span><span className="before-after-slider__hint-short">Sürükleyin</span></span>}
