@@ -144,7 +144,7 @@ $files = @(
   'client\public\manus-storage\perla-service-sailing_4b18debf.jpg',
   'client\public\manus-storage\perla-service-solar-lithium_abffea2c (1).jpg',
   'client\public\manus-storage\perla-service-solar-lithium_abffea2c.jpg',
-  'client\public\manus-storage\perla-service-visual-reference_b9fd4aed.jpg',
+  'client\public\manus-storage\perla-service-visual-reference_b9fd4aed.jpg'
 )
 
 $removed = 0
