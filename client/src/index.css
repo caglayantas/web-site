@@ -1279,7 +1279,8 @@ textarea:focus-visible {
 .home-page-compact .faq-section--compact h2 { font-size: clamp(17px, 3vw, 26px); }
 .home-page-compact .faq-section--compact .faq-item summary { padding: 13px 0; font-size: 18px; }
 .home-page-compact .faq-section--compact .faq-item > p { margin-bottom: 16px; font-size: 13px; }
-.before-after-slider__image, .before-after-slider__before .before-after-slider__image { height: 100%; min-height: 100%; aspect-ratio: auto; object-position: center center; }
+.admin-live-preview__media .before-after-slider__image, .admin-live-preview__media .before-after-slider__before .before-after-slider__image,
+.draft-preview-hero__media .before-after-slider__image, .draft-preview-hero__media .before-after-slider__before .before-after-slider__image { height: 100%; min-height: 100%; aspect-ratio: auto; object-position: center center; }
 .before-after-slider__range { top: 0; bottom: 0; height: 100%; }
 .home-page-compact + .site-footer, .home-page-compact ~ .site-footer { padding-top: 28px; padding-bottom: 20px; }
 .site-footer__top { padding-top: 30px; padding-bottom: 30px; }
