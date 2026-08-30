@@ -65,6 +65,24 @@ export function renderKnowledgeBody(body: string) {
   return renderMarkdownToHtml(body);
 }
 
+export type KnowledgeTocEntry = { id: string; text: string; level: number };
+
+/** Same rendering as renderKnowledgeBody, but also returns a table of contents built from h2/h3 headings with stable anchor IDs injected into the HTML. */
+export function renderKnowledgeBodyWithToc(body: string): { html: string; toc: KnowledgeTocEntry[] } {
+  const html = renderKnowledgeBody(body);
+  const toc: KnowledgeTocEntry[] = [];
+  const withIds = html.replace(/<h([23])>(.*?)<\/h\1>/g, (_match, level: string, inner: string) => {
+    const plainText = inner.replace(/<[^>]+>/g, "");
+    const base = slugify(plainText) || `bolum-${toc.length + 1}`;
+    let id = base;
+    let counter = 2;
+    while (toc.some((entry) => entry.id === id)) { id = `${base}-${counter}`; counter += 1; }
+    toc.push({ id, text: plainText, level: Number(level) });
+    return `<h${level} id="${id}">${inner}</h${level}>`;
+  });
+  return { html: withIds, toc };
+}
+
 export function slugify(value: string) {
   return value.toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s").replace(/ö/g, "o").replace(/ç/g, "c").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 160);
 }

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createKnowledgePost, updateKnowledgePost, deleteKnowledgePost, getAllKnowledgePosts, uploadImage, type KnowledgePostRow } from "@/lib/content";
 import { renderMarkdownToHtml, slugify } from "@/lib/markdown";
-import { Check, Crop, Eye, FileText, ImagePlus, Pencil, Plus, Save, Trash2, X, ZoomIn } from "lucide-react";
+import { Bold, Check, Crop, Eye, FileText, Heading2, Heading3, ImagePlus, Italic, Link2, List as ListIcon, ListOrdered, Pencil, Plus, Quote, Save, Trash2, X, ZoomIn } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 type KnowledgeForm = { id?: number; slug: string; category: string; title: string; excerpt: string; coverImage: string; body: string; seoTitle: string; seoDescription: string; publishedAt: string; status: "draft" | "published"; featured: boolean; sortOrder: number };
@@ -138,7 +138,91 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
   );
 }
 
-function MarkdownEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) { const [preview, setPreview] = useState(false); return <div className="markdown-editor"><div className="markdown-editor__toolbar"><span><FileText size={16} /> Markdown gövde</span><button type="button" onClick={() => setPreview((current) => !current)} aria-pressed={preview}><Eye size={15} /> {preview ? "Düzenle" : "Önizle"}</button></div>{preview ? <div className="markdown-editor__preview knowledge-card__body" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(value) }} /> : <Textarea value={value} onChange={(event) => onChange(event.target.value)} rows={18} aria-label="Markdown teknik içerik gövdesi" placeholder="# Başlık\n\nTeknik içeriğinizi buraya yazın..." />}<small>Başlık, kalın metin, italik, bağlantı, madde listesi, alıntı ve kod bloğu desteklenir.</small></div>; }
+function MarkdownEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [preview, setPreview] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const applyWrap = (before: string, after: string = before) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = value.slice(start, end) || "metin";
+    const next = `${value.slice(0, start)}${before}${selected}${after}${value.slice(end)}`;
+    onChange(next);
+    requestAnimationFrame(() => { el.focus(); el.setSelectionRange(start + before.length, start + before.length + selected.length); });
+  };
+
+  const applyLinePrefix = (prefix: string) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    const selectedBlock = value.slice(lineStart, end) || "başlık";
+    const lines = selectedBlock.split("\n").map((line) => `${prefix}${line}`).join("\n");
+    const next = `${value.slice(0, lineStart)}${lines}${value.slice(end)}`;
+    onChange(next);
+    requestAnimationFrame(() => { el.focus(); el.setSelectionRange(lineStart, lineStart + lines.length); });
+  };
+
+  const applyOrderedList = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
+    const selectedBlock = value.slice(lineStart, end) || "madde";
+    const lines = selectedBlock.split("\n").map((line, index) => `${index + 1}. ${line}`).join("\n");
+    const next = `${value.slice(0, lineStart)}${lines}${value.slice(end)}`;
+    onChange(next);
+    requestAnimationFrame(() => { el.focus(); el.setSelectionRange(lineStart, lineStart + lines.length); });
+  };
+
+  const applyLink = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = value.slice(start, end) || "bağlantı metni";
+    const insertion = `[${selected}](https://)`;
+    const next = `${value.slice(0, start)}${insertion}${value.slice(end)}`;
+    onChange(next);
+    const urlStart = start + selected.length + 3;
+    requestAnimationFrame(() => { el.focus(); el.setSelectionRange(urlStart, urlStart + "https://".length); });
+  };
+
+  const buttons: { label: string; icon: typeof Bold; onClick: () => void }[] = [
+    { label: "Kalın", icon: Bold, onClick: () => applyWrap("**") },
+    { label: "İtalik", icon: Italic, onClick: () => applyWrap("*") },
+    { label: "Alt başlık", icon: Heading2, onClick: () => applyLinePrefix("## ") },
+    { label: "Küçük alt başlık", icon: Heading3, onClick: () => applyLinePrefix("### ") },
+    { label: "Madde listesi", icon: ListIcon, onClick: () => applyLinePrefix("- ") },
+    { label: "Numaralı liste", icon: ListOrdered, onClick: applyOrderedList },
+    { label: "Alıntı", icon: Quote, onClick: () => applyLinePrefix("> ") },
+    { label: "Bağlantı", icon: Link2, onClick: applyLink },
+  ];
+
+  return (
+    <div className="markdown-editor">
+      <div className="markdown-editor__toolbar">
+        <span><FileText size={16} /> Markdown gövde</span>
+        <div className="markdown-editor__format-buttons">
+          {!preview && buttons.map(({ label, icon: Icon, onClick }) => (
+            <button key={label} type="button" title={label} aria-label={label} onClick={onClick}><Icon size={15} /></button>
+          ))}
+        </div>
+        <button type="button" className="markdown-editor__preview-toggle" onClick={() => setPreview((current) => !current)} aria-pressed={preview}><Eye size={15} /> {preview ? "Düzenle" : "Önizle"}</button>
+      </div>
+      {preview ? (
+        <div className="markdown-editor__preview knowledge-card__body" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(value) }} />
+      ) : (
+        <Textarea ref={textareaRef} value={value} onChange={(event) => onChange(event.target.value)} rows={18} aria-label="Markdown teknik içerik gövdesi" placeholder={"# Başlık\n\nTeknik içeriğinizi buraya yazın..."} />
+      )}
+      <small>Üstteki butonlarla biçimlendirebilir; başlık, kalın metin, italik, bağlantı, madde listesi, alıntı ve kod bloğu desteklenir.</small>
+    </div>
+  );
+}
 
 function KnowledgeFormPanel({ value, onChange, onCancel, onSaved }: { value: KnowledgeForm; onChange: (value: KnowledgeForm) => void; onCancel: () => void; onSaved: () => void }) { const [isSaving, setIsSaving] = useState(false); const [saveError, setSaveError] = useState(false); const set = <K extends keyof KnowledgeForm>(key: K, next: KnowledgeForm[K]) => onChange({ ...value, [key]: next }); const updateTitle = (title: string) => onChange({ ...value, title, slug: value.id ? value.slug : slugify(title) }); const submit = async (event: React.FormEvent) => { event.preventDefault(); const { id, publishedAt, ...rest } = value; const payload = { ...rest, publishedAt: publishedAt ? new Date(publishedAt).toISOString() : null }; setIsSaving(true); setSaveError(false); try { if (id !== undefined) await updateKnowledgePost(id, payload); else await createKnowledgePost(payload); onSaved(); } catch { setSaveError(true); } finally { setIsSaving(false); } }; return <form className="admin-project-form" onSubmit={submit}><div className="admin-project-form__header"><div><p className="eyebrow">{value.id ? "İçeriği düzenle" : "Yeni teknik bilgi"}</p><h2>{value.id ? value.title : "Markdown teknik bilgi ekle"}</h2></div><button type="button" className="admin-icon-button" onClick={onCancel} aria-label="Formu kapat"><X size={18} /></button></div><div className="admin-project-form__grid"><label>URL anahtarı<Input required value={value.slug} onChange={(event) => set("slug", slugify(event.target.value))} placeholder="lityum-bms-bakim-kontrolu" /></label><label>Kategori<select required value={value.category} onChange={(event) => set("category", event.target.value)}><option value="" disabled>Bir kategori seçin</option>{!KNOWLEDGE_CATEGORY_OPTIONS.includes(value.category) && value.category && <option value={value.category}>{value.category} (eski)</option>}{KNOWLEDGE_CATEGORY_OPTIONS.map((category) => <option key={category} value={category}>{category}</option>)}</select></label><label className="admin-project-form__full">Başlık<Input required value={value.title} onChange={(event) => updateTitle(event.target.value)} /></label><CoverImageField value={value.coverImage} onChange={(url) => set("coverImage", url)} /><label className="admin-project-form__full">Kısa özet<Textarea required value={value.excerpt} onChange={(event) => set("excerpt", event.target.value)} rows={3} /></label><label>SEO başlığı<Input value={value.seoTitle} maxLength={240} onChange={(event) => set("seoTitle", event.target.value)} placeholder="Boşsa yazı başlığı kullanılır" /></label><label>SEO açıklaması<Textarea value={value.seoDescription} maxLength={320} onChange={(event) => set("seoDescription", event.target.value)} rows={2} placeholder="Arama sonuçlarında görünecek açıklama" /></label><label>Yayın tarihi<Input type="datetime-local" value={value.publishedAt} onChange={(event) => set("publishedAt", event.target.value)} /></label><div className="admin-project-form__full"><span className="admin-field-label">İçerik gövdesi</span><MarkdownEditor value={value.body} onChange={(body) => set("body", body)} /></div><label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as KnowledgeForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select></label><label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label><label className="admin-checkbox-field"><input type="checkbox" checked={value.featured} onChange={(event) => set("featured", event.target.checked)} /> Ana sayfada öne çıkar</label></div>{saveError && <p className="admin-form-error" role="alert">İçerik kaydedilemedi. Slug, SEO alanları ve markdown gövdesini kontrol edip tekrar deneyin.</p>}<div className="admin-project-form__actions"><Button type="button" variant="outline" onClick={onCancel}>Vazgeç</Button><Button type="submit" disabled={isSaving}><Save size={16} /> {isSaving ? "Kaydediliyor…" : "İçeriği kaydet"}</Button></div></form>; }
 
