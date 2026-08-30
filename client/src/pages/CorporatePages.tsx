@@ -211,12 +211,24 @@ const serviceGroups = [
     "Vinç, makara, direk, arma, tel, halat ve yelken donanımlarının montajı ve bakımı.",
   ],
   [
+    "Güverte ekipmanları",
+    "Irgat, demirleme, krom aksesuar, vardavela ve güverte donanımı bakımı.",
+  ],
+  [
     "Üretim danışmanlığı",
     "Üretim planlama, servis erişimi, teknik dokümantasyon ve saha koordinasyonu.",
   ],
   [
     "Tekneye özel çözümler",
     "Teknenin kullanım amacı ve mevcut altyapısına göre keşif, refit ve sistem koordinasyonu.",
+  ],
+  [
+    "Teknik checkup",
+    "Sezon öncesi/sonrası genel durum kontrolü ve bakım önceliklerinin belirlenmesi.",
+  ],
+  [
+    "Survey / Ekspertiz",
+    "Alım-satım öncesi bağımsız teknik durum tespiti ve raporlama.",
   ],
 ];
 
@@ -783,7 +795,7 @@ export function AboutNew() {
 
           <a
             className="button button--outline"
-            href="/iletisim"
+            href={`/iletisim?kategori=${encodeURIComponent("Üretim danışmanlığı")}`}
           >
             İş birliğini konuşun
             <ArrowUpRight size={16} />
@@ -847,7 +859,7 @@ export function AboutNew() {
 
         <a
           className="button button--navy"
-          href="/iletisim"
+          href={`/iletisim?kategori=${encodeURIComponent("Üretim danışmanlığı")}`}
         >
           Kurumsal kapsamı konuşun
           <ArrowUpRight size={17} />
@@ -1307,7 +1319,7 @@ export function ProjectsNew() {
                     </div>
                   </div>
 
-                  <a href="/iletisim">
+                  <a href={`/iletisim?kategori=${encodeURIComponent(project.label)}`}>
                     <strong>
                       Bu kapsamı konuşun
                       <ArrowUpRight
@@ -1680,6 +1692,13 @@ export function ContactNew() {
     useState<FormState>(
       emptyForm
     );
+
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("kategori");
+    if (!requested) return;
+    const match = serviceGroups.find(([title]) => title.toLowerCase() === requested.toLowerCase());
+    if (match) setValues((current) => ({ ...current, service: match[0] }));
+  }, []);
 
   const [consent, setConsent] =
     useState(false);

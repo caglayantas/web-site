@@ -139,7 +139,7 @@ export default function Home() {
           <p className="eyebrow eyebrow--light">Teknik check-up</p>
           <h2 id="checkup-title">Teknenizin gerçek durumunu biliyor musunuz?</h2>
           <p>Profesyonel teknik check-up ile teknenizin temel sistemlerini kontrol ediyor, anlaşılır bir bakım raporunu sizinle paylaşıyoruz.</p>
-          <a className="button button--gold" href="/iletisim">Check-up talep et <ArrowUpRight size={17} /></a>
+          <a className="button button--gold" href="/iletisim?kategori=Teknik%20checkup">Check-up talep et <ArrowUpRight size={17} /></a>
         </div>
         <div className="checkup-cta__benefits" aria-label="Teknik check-up kapsamı">
           {checkupBenefits.map(({ title, icon: Icon }) => <div className="checkup-cta__benefit" key={title}><Icon size={26} strokeWidth={1.35} aria-hidden="true" /><span>{title}</span></div>)}

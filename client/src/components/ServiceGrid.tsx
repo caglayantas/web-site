@@ -22,6 +22,19 @@ function resolveIcon(name: string): LucideIcon {
   return ICON_OPTIONS[name] ?? Wrench;
 }
 
+const SERVICE_CONTACT_CATEGORY: Record<string, string> = {
+  "kompozit-cozumler": "Kompozit çözümler",
+  "marin-elektrik": "Marin elektrik",
+  "marin-elektronigi": "Marin elektroniği",
+  "isitma-sogutma": "Isıtma-soğutma",
+  "mekanik-tesisat": "Mekanik tesisat",
+  "motor-tahrik-dumen": "Motor, tahrik ve dümen",
+  "yelken-arma": "Yelken ve arma donanım",
+  "guverte-ekipmanlari": "Güverte ekipmanları",
+  "uretim-danismanligi": "Üretim danışmanlığı",
+  "tekneye-ozel-cozumler": "Tekneye özel çözümler",
+};
+
 type ServiceGridProps = { expanded?: boolean };
 
 export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
@@ -73,7 +86,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
             {activeService && <>
               <DialogHeader><p className="eyebrow">{activeService.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeService.intro}</DialogDescription></DialogHeader>
               <div className="service-modal__columns"><div><p className="service-modal__label">Bakım kapsamı</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>Perla Marine yaklaşımı</strong><br />{activeService.note}</p></div></div>
-              <a className="button button--navy" href="/iletisim">{activeService.cta} <ArrowUpRight size={17} /></a>
+              <a className="button button--navy" href={`/iletisim?kategori=${encodeURIComponent(SERVICE_CONTACT_CATEGORY[activeService.slug] ?? activeService.title)}`}>{activeService.cta} <ArrowUpRight size={17} /></a>
             </>}
           </div>
         </DialogContent>
