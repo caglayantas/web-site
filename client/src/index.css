@@ -23,7 +23,6 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
-body { overflow-x: hidden; }
 body { margin: 0; background: var(--paper); color: var(--navy-deep); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
 button, input, textarea, select { font: inherit; }
 button, a, select { -webkit-tap-highlight-color: transparent; }
