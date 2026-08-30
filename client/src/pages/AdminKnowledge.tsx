@@ -25,7 +25,8 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
   const [zoom, setZoom] = useState(1);
   const bitmapRef = useRef<ImageBitmap | null>(null);
   useEffect(() => { setPreview(value); }, [value]);
-  useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); bitmapRef.current?.close(); }, [sourcePreview]);
+  useEffect(() => () => { bitmapRef.current?.close(); }, []);
+  useEffect(() => () => { if (sourcePreview) URL.revokeObjectURL(sourcePreview); }, [sourcePreview]);
 
   const chooseFile = async (file?: File) => {
     if (!file) return;
