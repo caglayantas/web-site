@@ -23,7 +23,21 @@ type ProjectForm = {
   sortOrder: number;
 };
 
-const emptyForm: ProjectForm = { slug: "", label: "", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", status: "draft", sortOrder: 0 };
+const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", status: "draft", sortOrder: 0 };
+const PROJECT_CATEGORY_OPTIONS = [
+  "Kompozit çözümler",
+  "Marin elektrik",
+  "Marin elektroniği",
+  "Isıtma-soğutma",
+  "Mekanik tesisat",
+  "Motor, tahrik ve dümen",
+  "Yelken ve arma donanım",
+  "Güverte ekipmanları",
+  "Üretim danışmanlığı",
+  "Tekneye özel çözümler",
+  "Teknik checkup",
+  "Survey / Ekspertiz",
+];
 const PROJECT_DRAFT_KEY = "perla-marine-project-draft-v2";
 const PLACEHOLDER_PROJECT_TEXT = /(bvnmv|cnbv|asdasd|jhjh|mnbv|ngch|vngch)/i;
 
@@ -179,7 +193,7 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
     {Object.keys(errors).length > 0 && <div className="admin-form-summary" role="alert" aria-live="polite"><strong>{serverError ? "Proje kaydedilemedi:" : "Projeyi kaydetmeden önce şu alanları düzeltin:"}</strong>{serverError && <p>{serverError}</p>}<ul>{Object.entries(errors).filter(([key, message]) => key !== "form" && Boolean(message)).map(([key, message]) => <li key={key}><a href={`#${key}-field`}>{message}</a></li>)}</ul></div>}
     <div className="admin-project-form__grid">
       <label className={field("slug")}>URL anahtarı<Input id="slug-field" maxLength={160} {...fieldProps("slug")} value={value.slug} onChange={(event) => set("slug", event.target.value)} placeholder="aku-guc-dagitim" />{hint("slug", slugTouched ? "Bu alanı manuel düzenliyorsunuz." : "Başlıktan otomatik oluşturulur; isterseniz sonradan değiştirebilirsiniz.")}<CharacterCount value={value.slug} max={160} /></label>
-      <label className={field("label")}>Kategori<Input id="label-field" maxLength={120} {...fieldProps("label")} value={value.label} onChange={(event) => set("label", event.target.value)} placeholder="Marin elektrik" />{hint("label", "Projenin bağlı olduğu hizmet kategorisini yazın.")}<CharacterCount value={value.label} max={120} /></label>
+      <label className={field("label")}>Kategori<select id="label-field" {...fieldProps("label")} value={value.label} onChange={(event) => set("label", event.target.value)}><option value="" disabled>Bir kategori seçin</option>{!PROJECT_CATEGORY_OPTIONS.includes(value.label) && value.label && <option value={value.label}>{value.label} (eski)</option>}{PROJECT_CATEGORY_OPTIONS.map((category) => <option key={category} value={category}>{category}</option>)}</select>{hint("label", "Projenin bağlı olduğu hizmet kategorisini seçin.")}</label>
       <label className={`admin-project-form__full${field("title")}`}>Proje başlığı<Input id="title-field" maxLength={220} {...fieldProps("title")} value={value.title} onChange={(event) => set("title", event.target.value)} placeholder="Akü ve güç dağıtım sistemi" />{hint("title", "Ziyaretçinin proje kartında göreceği kısa ve açıklayıcı başlık.")}<CharacterCount value={value.title} max={220} /></label>
       <label className={`admin-project-form__full${field("detail")}`}>Kısa açıklama<Textarea id="detail-field" maxLength={500} {...fieldProps("detail")} value={value.detail} onChange={(event) => set("detail", event.target.value)} placeholder="Yapılan bakım ve yenileme operasyonlarını açıklayın." rows={3} />{hint("detail", "Sorunu, yapılan müdahaleyi ve kapsamı en az 10 karakterle özetleyin.")}<CharacterCount value={value.detail} max={500} /></label>
       <label className="admin-project-form__full">Proje kapsamı<Textarea maxLength={800} value={value.scope} onChange={(event) => set("scope", event.target.value)} placeholder="Kontrol edilen ve uygulanan bakım adımlarını yazın." rows={3} /><small className="admin-form-hint">Kontrol edilen sistemleri ve uygulanan bakım adımlarını ayrıntılandırın.</small><CharacterCount value={value.scope} max={800} /></label>
