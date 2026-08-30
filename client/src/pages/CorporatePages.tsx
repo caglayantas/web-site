@@ -347,22 +347,21 @@ const fallbackKnowledge: KnowledgePost[] = [
 
 function PageHero({ data, compact = false }: { data: PageData; compact?: boolean }) {
   return (
-    <section className={`page-hero${compact ? " page-hero--compact" : ""}`}>
-      <div className="page-hero__copy">
+    <section
+      className={`page-hero${compact ? " page-hero--compact" : ""}`}
+      style={{
+        backgroundImage: `linear-gradient(100deg, rgba(4,20,38,.95) 0%, rgba(4,20,38,.88) 38%, rgba(4,20,38,.55) 68%, rgba(4,20,38,.3) 100%), url(${data.image})`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
+      <div className="page-hero__content">
+        <div className="page-hero__route" aria-hidden="true" />
         <p className="eyebrow">{data.eyebrow}</p>
 
         <h1>{data.title}</h1>
 
-        <p>{data.lead}</p>
-      </div>
-
-      <div className="page-hero__media">
-        <img
-          src={data.image}
-          alt={data.alt}
-          loading="eager"
-          decoding="async"
-        />
+        <p className="page-hero__intro">{data.lead}</p>
       </div>
     </section>
   );
