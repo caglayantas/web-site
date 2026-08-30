@@ -22,6 +22,7 @@ export default function SiteFooter() {
           <p className="footer-label">Keşfedin</p>
           <a href="/hakkimizda">Hakkımızda</a>
           <a href="/hizmetler">Hizmetler</a>
+          <a href="/hizmet-bolgelerimiz">Hizmet Bölgelerimiz</a>
           <a href="/teknik-bilgiler">Teknik Bilgiler</a>
           <a href="/sss">SSS</a>
           <a href="/site-haritasi">Site haritası</a>

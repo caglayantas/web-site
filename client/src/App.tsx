@@ -65,6 +65,7 @@ const AdminKnowledge = lazy(() => import("@/pages/AdminKnowledge"));
 const AdminFAQ = lazy(() => import("@/pages/AdminFAQ"));
 const AdminServices = lazy(() => import("@/pages/AdminServices"));
 const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
+const ServiceRegions = lazy(() => import("@/pages/ServiceRegions"));
 
 const ProjectDraftPreview = lazy(() =>
   import("@/pages/ProjectDraftPreview")
@@ -129,6 +130,7 @@ function Router() {
       <Route path="/" component={Home} />
 
       <Route path="/hakkimizda" component={AboutNew} />
+      <Route path="/hizmet-bolgelerimiz" component={ServiceRegions} />
 
       <Route path="/hizmetler" component={ServicesNew} />
 
