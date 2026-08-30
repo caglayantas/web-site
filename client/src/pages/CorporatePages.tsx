@@ -79,6 +79,7 @@ type FormState = {
   name: string;
   email: string;
   service: string;
+  region: string;
   message: string;
 };
 
@@ -1628,8 +1629,18 @@ const emptyForm: FormState = {
   name: "",
   email: "",
   service: "",
+  region: "",
   message: "",
 };
+
+const REGION_OPTIONS = [
+  "İzmir",
+  "Muğla (Bodrum, Marmaris, Fethiye, Göcek, Datça)",
+  "Aydın (Kuşadası, Didim)",
+  "Antalya (Kemer, Kaş, Finike, Alanya)",
+  "Marmara (İstanbul, Yalova, Bursa, Balıkesir)",
+  "Diğer",
+];
 
 export function validateCorporateContact(
   values: FormState,
@@ -1829,6 +1840,7 @@ export function ContactNew() {
        * name
        * email
        * service
+       * region
        * message
        * status
        * created_at
@@ -1853,6 +1865,9 @@ export function ContactNew() {
 
             service:
               values.service.trim(),
+
+            region:
+              values.region.trim(),
 
             message:
               values.message.trim(),
@@ -2120,6 +2135,41 @@ export function ContactNew() {
                 {errors.service}
               </small>
             )}
+          </label>
+
+          {/* REGION */}
+
+          <label>
+            Tekneniz hangi bölgede? (opsiyonel)
+
+            <select
+              id="region-field"
+              name="region"
+              value={
+                values.region
+              }
+              onChange={(event) =>
+                update(
+                  "region",
+                  event.target.value
+                )
+              }
+            >
+              <option value="">
+                Bir bölge seçin
+              </option>
+
+              {REGION_OPTIONS.map(
+                (label) => (
+                  <option
+                    key={label}
+                    value={label}
+                  >
+                    {label}
+                  </option>
+                )
+              )}
+            </select>
           </label>
 
           {/* MESSAGE */}
