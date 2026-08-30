@@ -65,22 +65,29 @@ export function renderKnowledgeBody(body: string) {
   return renderMarkdownToHtml(body);
 }
 
-export type KnowledgeTocEntry = { id: string; text: string; level: number };
+export type KnowledgeSection = { id: string; title: string; html: string };
 
-/** Same rendering as renderKnowledgeBody, but also returns a table of contents built from h2/h3 headings with stable anchor IDs injected into the HTML. */
-export function renderKnowledgeBodyWithToc(body: string): { html: string; toc: KnowledgeTocEntry[] } {
+/** Splits the rendered body into an intro block (content before the first h2) and a list of sections, one per h2 heading (h3s remain inside their parent section's HTML). Used to render the article as focused, collapsible sections instead of one long scroll. */
+export function renderKnowledgeSections(body: string): { intro: string; sections: KnowledgeSection[] } {
   const html = renderKnowledgeBody(body);
-  const toc: KnowledgeTocEntry[] = [];
-  const withIds = html.replace(/<h([23])>(.*?)<\/h\1>/g, (_match, level: string, inner: string) => {
-    const plainText = inner.replace(/<[^>]+>/g, "");
-    const base = slugify(plainText) || `bolum-${toc.length + 1}`;
+  const h2Regex = /<h2>(.*?)<\/h2>/g;
+  const matches = Array.from(html.matchAll(h2Regex));
+  if (matches.length === 0) return { intro: html, sections: [] };
+  const intro = html.slice(0, matches[0].index);
+  const usedIds = new Set<string>();
+  const sections: KnowledgeSection[] = matches.map((match, index) => {
+    const start = match.index as number;
+    const end = index + 1 < matches.length ? (matches[index + 1].index as number) : html.length;
+    const sectionHtml = html.slice(start, end).replace(/^<h2>.*?<\/h2>/, "");
+    const plainTitle = match[1].replace(/<[^>]+>/g, "");
+    const base = slugify(plainTitle) || `bolum-${index + 1}`;
     let id = base;
     let counter = 2;
-    while (toc.some((entry) => entry.id === id)) { id = `${base}-${counter}`; counter += 1; }
-    toc.push({ id, text: plainText, level: Number(level) });
-    return `<h${level} id="${id}">${inner}</h${level}>`;
+    while (usedIds.has(id)) { id = `${base}-${counter}`; counter += 1; }
+    usedIds.add(id);
+    return { id, title: plainTitle, html: sectionHtml };
   });
-  return { html: withIds, toc };
+  return { intro, sections };
 }
 
 export function slugify(value: string) {
