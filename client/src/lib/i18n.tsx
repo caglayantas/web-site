@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useLocation } from "wouter";
 
 export type Lang = "tr" | "en";
@@ -148,6 +148,10 @@ export function stripLangPrefix(path: string): string {
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const lang: Lang = location === "/en" || location.startsWith("/en/") ? "en" : "tr";
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   const value = useMemo(() => {
     const t = (key: TKey) => dict[lang][key] ?? dict.tr[key];
