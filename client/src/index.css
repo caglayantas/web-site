@@ -951,7 +951,7 @@ textarea:focus-visible {
 .project-comparison__lightbox-link { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; width: max-content; margin-left: auto; padding: 0; border: 0; color: var(--navy); background: transparent; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .project-comparison__lightbox-link:hover, .project-comparison__lightbox-link:focus-visible { color: var(--gold); }
 .project-comparison__thumb-strip { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-.project-comparison__thumb { flex: 0 0 auto; width: 44px; height: 44px; padding: 0; border: 1px solid #e1d9cc; background: none; cursor: pointer; overflow: hidden; }
+.project-comparison__thumb { flex: 0 0 auto; width: 68px; height: 68px; padding: 0; border: 1px solid #e1d9cc; background: none; cursor: pointer; overflow: hidden; }
 .project-comparison__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 200ms var(--ease-out); }
 .project-comparison__thumb:hover img { transform: scale(1.08); }
 .project-comparison__thumb-all { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; margin-left: 4px; color: var(--navy); background: transparent; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; cursor: pointer; }
