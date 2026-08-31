@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ArrowUpRight, Anchor } from "lucide-react";
+import { ArrowUpRight, Anchor, Wrench } from "lucide-react";
 import { getPublishedBoatListings, getListingsEnabled, type BoatListingRow } from "@/lib/content";
 import PageHero from "@/components/PageHero";
-import NotFound from "@/pages/NotFound";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -30,7 +29,18 @@ export default function Listings() {
   }, [enabled]);
 
   if (enabled === null) return <div className="corporate-page"><div className="corporate-intro"><p>Yükleniyor…</p></div></div>;
-  if (!enabled) return <NotFound />;
+  if (!enabled) {
+    return (
+      <div className="corporate-page listings-unavailable">
+        <div className="listings-unavailable__box">
+          <Wrench size={30} aria-hidden="true" />
+          <h1>Sayfa şu anda kullanıma kapalı</h1>
+          <p>Bu sayfa şu anda teknik düzenlemelerden dolayı kullanıma kapalıdır. Bir süre sonra tekrar deneyiniz.</p>
+          <Link className="button button--gold" href="/">Ana sayfaya dön</Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
