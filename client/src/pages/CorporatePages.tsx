@@ -1287,19 +1287,36 @@ export function ProjectsNew() {
                   </button>
 
                   {project.gallery.length > 0 && (
-                    <button
-                      type="button"
-                      className="project-comparison__gallery-badge"
-                      onClick={() =>
-                        setActiveIndex(
-                          index
-                        )
-                      }
-                      aria-label={`${project.title} için ${project.gallery.length} ek fotoğrafı görüntüle`}
-                    >
-                      <ImageIcon size={13} />
-                      +{project.gallery.length} fotoğraf
-                    </button>
+                    <div className="project-comparison__thumb-strip">
+                      {project.gallery.slice(0, 3).map((url: string, photoIndex: number) => (
+                        <button
+                          type="button"
+                          key={url}
+                          className="project-comparison__thumb"
+                          onClick={() =>
+                            setActiveIndex(
+                              index
+                            )
+                          }
+                          aria-label={`${project.title} için ${photoIndex + 1}. ek fotoğrafı büyüt`}
+                        >
+                          <img src={url} alt="" loading="lazy" decoding="async" />
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="project-comparison__thumb-all"
+                        onClick={() =>
+                          setActiveIndex(
+                            index
+                          )
+                        }
+                        aria-label={`${project.title} için tüm fotoğrafları görüntüle`}
+                      >
+                        <ImageIcon size={13} />
+                        Tüm fotoğraflar
+                      </button>
+                    </div>
                   )}
                 </div>
 
