@@ -172,7 +172,7 @@ function PartnerFormPanel({ value, onChange, onCancel, onSaved }: { value: Partn
   return (
     <form className="admin-project-form" onSubmit={submit}>
       <div className="admin-project-form__header">
-        <div><p className="eyebrow">{value.id ? "Bayiliği/iş ortağını düzenle" : "Yeni bayilik / iş ortağı"}</p><h2>{value.id ? value.name : "Yeni ekle"}</h2></div>
+        <div><p className="eyebrow">{value.id ? "Markayı düzenle" : "Yeni marka"}</p><h2>{value.id ? value.name : "Yeni ekle"}</h2></div>
         <button type="button" className="admin-icon-button" onClick={onCancel} aria-label="Formu kapat"><X size={18} /></button>
       </div>
       <div className="admin-project-form__grid">
@@ -204,18 +204,18 @@ export default function AdminPartners() {
     description: partner.description, website: partner.website, status: partner.status, sortOrder: partner.sortOrder,
   });
   const saved = () => { setForm(null); refresh(); };
-  const handleRemove = (id: number) => { if (window.confirm("Bu bayiliği/iş ortağını kaldırmak istediğinize emin misiniz?")) deletePartner(id).then(refresh); };
+  const handleRemove = (id: number) => { if (window.confirm("Bu markayı kaldırmak istediğinize emin misiniz?")) deletePartner(id).then(refresh); };
 
   return (
     <DashboardLayout>
       <div className="admin-projects-page">
         <header className="admin-page-header">
-          <div><p className="eyebrow">Perla Marine · Yönetim</p><h1>Bayilikler ve İş Ortaklarım</h1><p>Ürün bayiliklerinizi, yetkili servis unvanlarınızı ve iş ortaklıklarınızı kod değiştirmeden yönetin.</p></div>
+          <div><p className="eyebrow">Perla Marine · Yönetim</p><h1>Markalarımız</h1><p>Bayilik ve iş ortaklıklarınızı, kullanım izni aldığınız marka logolarını kod değiştirmeden yönetin.</p></div>
           <Button onClick={() => setForm(emptyForm)}><Plus size={17} /> Yeni ekle</Button>
         </header>
         {form && <PartnerFormPanel value={form} onChange={setForm} onCancel={() => setForm(null)} onSaved={saved} />}
-        <section className="admin-project-list" aria-label="Bayilik ve iş ortağı listesi">
-          <div className="admin-project-list__header"><h2>Tüm bayilikler / iş ortakları</h2><span>{list?.length ?? 0} kayıt</span></div>
+        <section className="admin-project-list" aria-label="Marka listesi">
+          <div className="admin-project-list__header"><h2>Tüm markalar</h2><span>{list?.length ?? 0} kayıt</span></div>
           {list === null && !listError ? <p className="admin-empty">Yükleniyor…</p> : listError ? <p className="admin-form-error" role="alert">Liste yüklenemedi. Yönetici yetkinizi kontrol edin.</p> : list?.length ? list.map((partner) => (
             <article className="admin-project-row" key={partner.id}>
               {partner.logo ? <img className="admin-knowledge-cover" style={{ objectFit: "contain", background: "#fff" }} src={partner.logo} alt="" /> : <div className="admin-knowledge-row__icon"><Handshake size={28} /></div>}
@@ -232,7 +232,7 @@ export default function AdminPartners() {
                 <Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => handleRemove(partner.id)}><Trash2 size={15} /> Sil</Button>
               </div>
             </article>
-          )) : <div className="admin-empty"><p>Henüz bayilik veya iş ortağı eklenmedi.</p><Button onClick={() => setForm(emptyForm)}><Plus size={16} /> İlkini ekle</Button></div>}
+          )) : <div className="admin-empty"><p>Henüz marka eklenmedi.</p><Button onClick={() => setForm(emptyForm)}><Plus size={16} /> İlkini ekle</Button></div>}
         </section>
       </div>
     </DashboardLayout>

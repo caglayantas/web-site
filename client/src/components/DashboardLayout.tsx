@@ -32,7 +32,7 @@ const menuItems = [
   { icon: Wrench, label: "Projeler", path: "/yonetim/projeler" },
   { icon: BookOpen, label: "Teknik bilgiler", path: "/yonetim/teknik-bilgiler" },
   { icon: HelpCircle, label: "SSS", path: "/yonetim/sss" },
-  { icon: Handshake, label: "Bayilikler / İş Ortakları", path: "/yonetim/is-ortaklari" },
+  { icon: Handshake, label: "Markalarımız", path: "/yonetim/is-ortaklari" },
   { icon: Anchor, label: "Tekne İlanları", path: "/yonetim/ilanlar" },
   { icon: ExternalLink, label: "Siteyi görüntüle", path: "/" },
 ];

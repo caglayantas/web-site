@@ -128,7 +128,7 @@ export default function Home() {
       {partnersData && partnersData.length > 0 && (
         <section className="section partners-band">
           <div className="section-heading">
-            <div><p className="eyebrow">Bayilikler ve İş Ortaklarımız</p><h2>Güvendiğimiz markalarla çalışıyoruz.</h2></div>
+            <div><p className="eyebrow">Markalarımız</p><h2>Güvendiğimiz markalarla çalışıyoruz.</h2></div>
           </div>
           <div className="partners-band__grid">
             {partnersData.map((partner) => {
