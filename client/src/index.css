@@ -863,9 +863,13 @@ textarea:focus-visible {
 .admin-toggle-switch:disabled { opacity: .6; cursor: default; }
 .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 26px; }
 .listings-grid__card { border: 1px solid #e4ded4; background: var(--paper); }
-.listings-grid__card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+.listings-grid__image-button { display: block; width: 100%; padding: 0; border: 0; cursor: zoom-in; }
+.listings-grid__card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; transition: opacity 160ms var(--ease-out); }
+.listings-grid__image-button:hover img { opacity: .88; }
 .listings-grid__gallery { display: flex; gap: 4px; overflow-x: auto; padding: 4px; background: var(--ivory); }
-.listings-grid__gallery img { flex: 0 0 auto; width: 76px; aspect-ratio: 1; object-fit: cover; }
+.listings-grid__gallery button { flex: 0 0 auto; padding: 0; border: 0; cursor: zoom-in; }
+.listings-grid__gallery img { width: 76px; aspect-ratio: 1; object-fit: cover; transition: opacity 160ms var(--ease-out); }
+.listings-grid__gallery button:hover img { opacity: .8; }
 .listings-grid__placeholder { display: grid; place-items: center; aspect-ratio: 16/9; background: var(--ivory); color: var(--gold); }
 .listings-grid__body { padding: 22px; }
 .listings-grid__body h2 { margin: 0 0 6px; color: var(--navy); font: 21px/1.2 var(--serif); }
@@ -946,6 +950,8 @@ textarea:focus-visible {
 .project-comparison--slider .before-after-slider { min-height: 260px; }
 .project-comparison__lightbox-link { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; width: max-content; margin-left: auto; padding: 0; border: 0; color: var(--navy); background: transparent; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
 .project-comparison__lightbox-link:hover, .project-comparison__lightbox-link:focus-visible { color: var(--gold); }
+.project-comparison__gallery-badge { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; width: max-content; margin-left: auto; padding: 0; border: 0; color: #687786; background: transparent; font-size: 10px; font-weight: 800; letter-spacing: .06em; cursor: pointer; }
+.project-comparison__gallery-badge:hover, .project-comparison__gallery-badge:focus-visible { color: var(--gold); }
 @media (max-width: 680px) { .project-comparison--slider .before-after-slider { min-height: 220px; } }
 .before-after-slider__label { transition: opacity 280ms var(--ease-out), color 280ms var(--ease-out), background-color 280ms var(--ease-out), transform 280ms var(--ease-out), box-shadow 280ms var(--ease-out); }
 .before-after-slider__label.is-active { color: var(--navy); background: var(--gold-light); box-shadow: 0 7px 18px rgba(3,24,47,.18); transform: translateY(-1px); }

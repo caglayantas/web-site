@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   Compass,
   Factory,
+  Image as ImageIcon,
   Mail,
   MessageCircle,
   Phone,
@@ -62,6 +63,7 @@ type Project = {
   results: string;
   before: string;
   after: string;
+  gallery: string[];
 };
 
 type KnowledgePost = {
@@ -253,6 +255,7 @@ const fallbackProjects: Project[] = [
       "Bağlantı düzeni sadeleştirildi; bakım ve arıza tespiti için daha okunabilir bir altyapı hedeflendi.",
     before: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
     after: "/manus-storage/perla-service-marine-electronics_a9f3a57f_2b833740.webp",
+    gallery: [],
   },
 
   {
@@ -270,6 +273,7 @@ const fallbackProjects: Project[] = [
       "Tahrik hattındaki kontrol noktaları servis planına alınarak sonraki bakım adımları netleştirildi.",
     before: "/manus-storage/perla-service-propulsion_1dad9846.jpg",
     after: "/manus-storage/perla-service-mechanical_1537487f.jpg",
+    gallery: [],
   },
 
   {
@@ -287,6 +291,7 @@ const fallbackProjects: Project[] = [
       "Sızdırmazlık ve erişim öncelikleri görünür hale getirilerek planlı bakım akışına dönüştürüldü.",
     before: "/manus-storage/perla-service-mechanical_1537487f.jpg",
     after: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
+    gallery: [],
   },
 ];
 
@@ -950,14 +955,14 @@ function ProjectLightbox({
 
       if (event.key === "ArrowRight") {
         setImageIndex(
-          (current) => (current + 1) % 2
+          (current) => (current + 1) % (2 + project.gallery.length)
         );
       }
 
       if (event.key === "ArrowLeft") {
         setImageIndex(
           (current) =>
-            (current - 1 + 2) % 2
+            (current - 1 + 2 + project.gallery.length) % (2 + project.gallery.length)
         );
       }
     };
@@ -979,12 +984,16 @@ function ProjectLightbox({
         onKeyDown
       );
     };
-  }, [onClose]);
+  }, [onClose, project.gallery.length]);
 
-  const image =
-    imageIndex === 0
-      ? project.before
-      : project.after;
+  const images = [project.before, project.after, ...project.gallery];
+  const image = images[imageIndex];
+  const captionFor = (index: number) =>
+    index === 0
+      ? "Önce · mevcut durum"
+      : index === 1
+      ? "Sonra · hedeflenen kapsam"
+      : `Ek fotoğraf ${index - 1}`;
 
   return (
     <div
@@ -1019,7 +1028,7 @@ function ProjectLightbox({
             onClick={() =>
               setImageIndex(
                 (current) =>
-                  (current - 1 + 2) % 2
+                  (current - 1 + images.length) % images.length
               )
             }
             aria-label="Önceki görsel"
@@ -1029,11 +1038,7 @@ function ProjectLightbox({
 
           <img
             src={image}
-            alt={`${project.title} ${
-              imageIndex === 0
-                ? "önce"
-                : "sonra"
-            } görseli`}
+            alt={`${project.title} — ${captionFor(imageIndex)}`}
           />
 
           <button
@@ -1042,7 +1047,7 @@ function ProjectLightbox({
             onClick={() =>
               setImageIndex(
                 (current) =>
-                  (current + 1) % 2
+                  (current + 1) % images.length
               )
             }
             aria-label="Sonraki görsel"
@@ -1058,9 +1063,8 @@ function ProjectLightbox({
             </strong>
 
             <span>
-              {imageIndex === 0
-                ? "Önce · mevcut durum"
-                : "Sonra · hedeflenen kapsam"}
+              {captionFor(imageIndex)}
+              {images.length > 2 ? ` · ${imageIndex + 1}/${images.length}` : ""}
             </span>
           </div>
 
@@ -1186,6 +1190,10 @@ export function ProjectsNew() {
                 after:
                   project.after_image ??
                   "",
+                gallery:
+                  Array.isArray(project.gallery_images)
+                    ? project.gallery_images
+                    : [],
               })
             );
 
@@ -1277,6 +1285,22 @@ export function ProjectsNew() {
                       size={13}
                     />
                   </button>
+
+                  {project.gallery.length > 0 && (
+                    <button
+                      type="button"
+                      className="project-comparison__gallery-badge"
+                      onClick={() =>
+                        setActiveIndex(
+                          index
+                        )
+                      }
+                      aria-label={`${project.title} için ${project.gallery.length} ek fotoğrafı görüntüle`}
+                    >
+                      <ImageIcon size={13} />
+                      +{project.gallery.length} fotoğraf
+                    </button>
+                  )}
                 </div>
 
                 <div className="project-detail-card__copy">
