@@ -11,6 +11,7 @@ export type ProjectRow = {
   results: string | null;
   beforeImage: string;
   afterImage: string;
+  galleryImages: string[];
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -103,6 +104,7 @@ const mapProject = (row: any): ProjectRow => ({
   results: row.results,
   beforeImage: row.before_image,
   afterImage: row.after_image,
+  galleryImages: Array.isArray(row.gallery_images) ? row.gallery_images : [],
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -241,6 +243,7 @@ const projectToRow = (p: Partial<ProjectRow>) => {
   if (p.results !== undefined) row.results = p.results;
   if (p.beforeImage !== undefined) row.before_image = p.beforeImage;
   if (p.afterImage !== undefined) row.after_image = p.afterImage;
+  if (p.galleryImages !== undefined) row.gallery_images = p.galleryImages;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;

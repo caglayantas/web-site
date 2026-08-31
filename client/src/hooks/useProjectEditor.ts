@@ -11,11 +11,12 @@ export type ProjectForm = {
   results: string;
   beforeImage: string;
   afterImage: string;
+  galleryImages: string[];
   status: "draft" | "published";
   sortOrder: number;
 };
 
-export const emptyForm: ProjectForm = { slug: "", label: "", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", status: "draft", sortOrder: 0 };
+export const emptyForm: ProjectForm = { slug: "", label: "", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], status: "draft", sortOrder: 0 };
 export const PROJECT_DRAFT_KEY = "perla-marine-project-draft-v2";
 export type FormErrors = Partial<Record<keyof ProjectForm | "form", string>>;
 export type SavedProject = Omit<ProjectForm, "scope" | "systems" | "results"> & { id: number; scope: string | null; systems: string | null; results: string | null; createdAt?: Date; updatedAt?: Date };

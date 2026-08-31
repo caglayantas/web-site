@@ -1800,6 +1800,8 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .project-post__header { max-width: 760px; margin: 42px 0 34px; }
 .project-post__header h1 { margin: 14px 0 18px; font: clamp(27px, 7vw, 51px)/.96 var(--serif); letter-spacing: -.04em; }
 .project-post__header p { max-width: 680px; color: #687786; font-size: 17px; line-height: 1.7; }
+.project-post__gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-top: 14px; }
+.project-post__gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .project-post__facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; margin-top: 42px; }
 .project-post__facts section { padding: 22px; border-top: 2px solid var(--gold); background: #fffdf8; }
 .project-post__facts h2 { margin: 0 0 12px; color: var(--navy); font: 29px/1.05 var(--serif); }

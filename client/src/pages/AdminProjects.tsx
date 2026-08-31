@@ -19,11 +19,12 @@ type ProjectForm = {
   results: string;
   beforeImage: string;
   afterImage: string;
+  galleryImages: string[];
   status: "draft" | "published";
   sortOrder: number;
 };
 
-const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", status: "draft", sortOrder: 0 };
+const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], status: "draft", sortOrder: 0 };
 const PROJECT_CATEGORY_OPTIONS = [
   "Kompozit çözümler",
   "Marin elektrik",
@@ -131,6 +132,75 @@ function ImageUploadField({ field, label, value, fieldError, onChange, onError }
   return <div className={`admin-upload-field${visibleError ? " has-error" : ""}`}><span id={`${field}-label`}>{label}</span><label className={`admin-upload-dropzone${dragging ? " is-dragging" : ""}${visibleError ? " has-error" : ""}`} aria-describedby={visibleError ? `${field}-error` : undefined} aria-invalid={Boolean(visibleError)} onDragEnter={(event) => { event.preventDefault(); setDragging(true); }} onDragOver={(event) => event.preventDefault()} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); void handleFile(event.dataTransfer.files?.[0]); }}><input id={`${field}-field`} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" onChange={(event) => void handleFile(event.target.files?.[0])} /><span className="admin-upload-dropzone__icon">{isPending ? <Loader2 className="animate-spin" size={20} /> : <ImagePlus size={20} />}</span><strong>{isPending ? "Görsel yükleniyor…" : dragging ? "Bırakın" : value ? "Görseli değiştir" : "Görsel seçin veya sürükleyin"}</strong><small>JPG, PNG, WebP · maksimum 8 MB</small></label>{preview && <img className="admin-upload-preview" src={preview} alt={`${label} önizleme`} />}{preview && !value && <small className="admin-upload-pending">Önizleme hazır · kaydetmeden önce yükleniyor</small>}{visibleError && <small id={`${field}-error`} className="admin-form-error" role="alert">{visibleError}</small>}</div>;
 }
 
+async function resizeToWebp(file: File, maxDimension: number): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) { bitmap.close(); throw new Error("Canvas kullanılamıyor"); }
+  context.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86));
+  if (!blob) throw new Error("WebP dönüşümü başarısız");
+  return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "foto"}.webp`, { type: "image/webp" });
+}
+
+function ProjectGalleryField({ value, onChange }: { value: string[]; onChange: (urls: string[]) => void }) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState("");
+
+  const addFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setError("");
+    setIsPending(true);
+    const uploaded: string[] = [];
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith("image/")) continue;
+        if (file.size > 10 * 1024 * 1024) { setError(`"${file.name}" 10 MB'dan büyük, atlandı.`); continue; }
+        const webpFile = await resizeToWebp(file, 1600);
+        const url = await uploadImage("projects", webpFile);
+        uploaded.push(url);
+      }
+      onChange([...value, ...uploaded]);
+    } catch (uploadError) {
+      const reason = uploadError instanceof Error ? uploadError.message : "Bilinmeyen hata";
+      setError(`Bazı fotoğraflar yüklenemedi: ${reason}`);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const removeAt = (index: number) => onChange(value.filter((_, i) => i !== index));
+
+  return (
+    <div className="admin-upload-field admin-project-form__full">
+      <span>Ek fotoğraflar (opsiyonel)</span>
+      <label className="admin-upload-dropzone">
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" multiple onChange={(event) => void addFiles(event.target.files)} />
+        <span className="admin-upload-dropzone__icon">{isPending ? <Loader2 className="animate-spin" size={20} /> : <ImagePlus size={20} />}</span>
+        <strong>{isPending ? "Fotoğraflar yükleniyor…" : "Birden fazla fotoğraf seçin"}</strong>
+        <small>Önce/sonra görsellerine ek olarak, projeden daha fazla fotoğraf ekleyin</small>
+      </label>
+      {error && <small className="admin-form-error" role="alert">{error}</small>}
+      {value.length > 0 && (
+        <div className="admin-gallery-grid">
+          {value.map((url, index) => (
+            <div className="admin-gallery-grid__item" key={url}>
+              <img src={url} alt={`Fotoğraf ${index + 1}`} />
+              <button type="button" onClick={() => removeAt(index)} aria-label={`${index + 1}. fotoğrafı kaldır`}><X size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SavedProjectSummary({ project, onClose }: { project: SavedProject; onClose: () => void }) {
   const previewUrl = project.status === "published" ? `/projeler#${encodeURIComponent(project.slug)}` : `/yonetim/projeler/preview/${encodeURIComponent(project.slug)}`;
   const previewLabel = project.status === "published" ? "Yayındaki görünümü aç" : "Taslak önizlemeyi aç";
@@ -201,6 +271,7 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
       <label>Bakım sonucu<Textarea maxLength={800} value={value.results} onChange={(event) => set("results", event.target.value)} placeholder="Operasyon sonrasında elde edilen teknik durumu yazın." rows={3} /><small className="admin-form-hint">Bakım sonrasında elde edilen durumu ve gözlemlenen sonucu belirtin.</small><CharacterCount value={value.results} max={800} /></label>
       <ImageUploadField field="beforeImage" label="Önce görseli" fieldError={errors.beforeImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.beforeImage = message; else delete nextErrors.beforeImage; return nextErrors; })} value={value.beforeImage} onChange={(url) => set("beforeImage", url)} />
       <ImageUploadField field="afterImage" label="Sonra görseli" fieldError={errors.afterImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.afterImage = message; else delete nextErrors.afterImage; return nextErrors; })} value={value.afterImage} onChange={(url) => set("afterImage", url)} />
+      <ProjectGalleryField value={value.galleryImages} onChange={(urls) => set("galleryImages", urls)} />
       <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ProjectForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select><small className="admin-form-hint">Taslak kayıtlar public sayfalarda gösterilmez.</small></label>
       <label className={field("sortOrder")}>Sıra<Input id="sortOrder-field" type="number" min={0} {...fieldProps("sortOrder")} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} />{hint("sortOrder", "Küçük sayı listede daha üstte görünür.")}</label>
     </div>
@@ -219,7 +290,7 @@ export default function AdminProjects() {
   useEffect(() => { refreshProjects(); }, []);
   const [form, setForm] = useState<ProjectForm | null>(null);
   const [savedProject, setSavedProject] = useState<SavedProject | null>(null);
-  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, status: project.status, sortOrder: project.sortOrder }); };
+  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, status: project.status, sortOrder: project.sortOrder }); };
   const startNewProject = () => { setSavedProject(null); setForm(emptyForm); };
   const saved = (project: SavedProject) => { clearProjectDraft(); setForm(null); setSavedProject(project); refreshProjects(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) deleteProject(id).then(refreshProjects); };
