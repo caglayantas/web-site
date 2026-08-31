@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { loadAnalytics } from "@/lib/analytics";
+import { useLanguage } from "@/lib/i18n";
 
 export const COOKIE_CONSENT_KEY = "perla-cookie-consent";
 
 export default function CookieConsent() {
+  const { t, toPath } = useLanguage();
   const [visible, setVisible] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [analyticsChecked, setAnalyticsChecked] = useState(true);
@@ -39,42 +41,42 @@ export default function CookieConsent() {
 
   if (showPreferences) {
     return (
-      <div className="cookie-consent cookie-consent--preferences" role="dialog" aria-label="Çerez tercihleri" aria-live="polite">
+      <div className="cookie-consent cookie-consent--preferences" role="dialog" aria-label={t("cookie.prefsTitle")} aria-live="polite">
         <div className="cookie-consent__preferences-header">
-          <strong>Çerez tercihleri</strong>
-          <p>Hangi çerez kategorilerine izin vereceğinizi seçin. Detaylar için <Link href="/cerez">Çerez Politikamızı</Link> inceleyebilirsiniz.</p>
+          <strong>{t("cookie.prefsTitle")}</strong>
+          <p>{t("cookie.prefsDesc")} <Link href={toPath("/cerez")}>{t("cookie.policyLink")}</Link>.</p>
         </div>
         <div className="cookie-consent__preference-row">
           <label>
-            <input type="checkbox" checked disabled aria-label="Zorunlu çerezler, her zaman aktif" />
-            <span>Zorunlu çerezler</span>
+            <input type="checkbox" checked disabled aria-label={t("cookie.necessary")} />
+            <span>{t("cookie.necessary")}</span>
           </label>
-          <small>Sitenin temel işlevleri için gereklidir, kapatılamaz.</small>
+          <small>{t("cookie.necessaryDesc")}</small>
         </div>
         <div className="cookie-consent__preference-row">
           <label>
             <input type="checkbox" checked={analyticsChecked} onChange={(event) => setAnalyticsChecked(event.target.checked)} />
-            <span>Analiz çerezleri</span>
+            <span>{t("cookie.analytics")}</span>
           </label>
-          <small>Ziyaretçi istatistiklerini anlamamıza yardımcı olur (Google Analytics).</small>
+          <small>{t("cookie.analyticsDesc")}</small>
         </div>
         <div className="cookie-consent__actions">
-          <button type="button" className="cookie-consent__reject" onClick={() => setShowPreferences(false)}>Geri</button>
-          <button type="button" className="cookie-consent__accept" onClick={savePreferences}>Tercihleri Kaydet</button>
+          <button type="button" className="cookie-consent__reject" onClick={() => setShowPreferences(false)}>{t("cookie.back")}</button>
+          <button type="button" className="cookie-consent__accept" onClick={savePreferences}>{t("cookie.savePrefs")}</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="cookie-consent" role="dialog" aria-label="Çerez tercihleri" aria-live="polite">
+    <div className="cookie-consent" role="dialog" aria-label={t("cookie.prefsTitle")} aria-live="polite">
       <p className="cookie-consent__copy">
-        Sitemizde temel işlevler için zorunlu çerezler ve, izniniz dahilinde, ziyaretçi istatistiklerini anlamamıza yardımcı olan analiz çerezleri kullanıyoruz. Detaylar için <Link href="/cerez">Çerez Politikamızı</Link> inceleyebilirsiniz.
+        {t("cookie.text")} <Link href={toPath("/cerez")}>{t("cookie.policyLink")}</Link>.
       </p>
       <div className="cookie-consent__actions">
-        <button type="button" className="cookie-consent__reject" onClick={reject}>Reddet</button>
-        <button type="button" className="cookie-consent__preferences" onClick={() => setShowPreferences(true)}>Tercihler</button>
-        <button type="button" className="cookie-consent__accept" onClick={accept}>Kabul Et</button>
+        <button type="button" className="cookie-consent__reject" onClick={reject}>{t("cookie.reject")}</button>
+        <button type="button" className="cookie-consent__preferences" onClick={() => setShowPreferences(true)}>{t("cookie.preferences")}</button>
+        <button type="button" className="cookie-consent__accept" onClick={accept}>{t("cookie.accept")}</button>
       </div>
     </div>
   );

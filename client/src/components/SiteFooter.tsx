@@ -1,4 +1,5 @@
 import { ArrowUpRight, Instagram } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
 
 function WhatsAppIcon() {
   return (
@@ -9,47 +10,48 @@ function WhatsAppIcon() {
 }
 
 export default function SiteFooter() {
+  const { t, toPath } = useLanguage();
   return (
     <footer className="site-footer">
       <div className="site-footer__route" aria-hidden="true"><span /></div>
       <div className="site-footer__top">
         <div className="footer-brand">
           <img className="footer-brand__logo" src="/manus-storage/perla-marine-logo-236c7830_dc603e8f.webp" alt="Perla Marine" />
-          <p>Denizde güven, detaylarda başlayan özenli bakım ve doğru uygulamayla büyür.</p>
+          <p>{t("footer.tagline")}</p>
         </div>
 
         <div className="footer-nav">
-          <p className="footer-label">Keşfedin</p>
-          <a href="/hakkimizda">Hakkımızda</a>
-          <a href="/hizmetler">Hizmetler</a>
-          <a href="/hizmet-bolgelerimiz">Hizmet Bölgelerimiz</a>
-          <a href="/teknik-bilgiler">Teknik Bilgiler</a>
-          <a href="/sss">SSS</a>
-          <a href="/site-haritasi">Site haritası</a>
+          <p className="footer-label">{t("footer.explore")}</p>
+          <a href={toPath("/hakkimizda")}>{t("footer.about")}</a>
+          <a href={toPath("/hizmetler")}>{t("footer.services")}</a>
+          <a href={toPath("/hizmet-bolgelerimiz")}>{t("footer.regions")}</a>
+          <a href={toPath("/teknik-bilgiler")}>{t("footer.knowledge")}</a>
+          <a href={toPath("/sss")}>{t("footer.faq")}</a>
+          <a href={toPath("/site-haritasi")}>{t("footer.sitemap")}</a>
         </div>
 
         <div className="footer-nav">
-          <p className="footer-label">İletişim</p>
-          <a href="/iletisim">Bize ulaşın <ArrowUpRight size={14} /></a>
+          <p className="footer-label">{t("footer.contact")}</p>
+          <a href={toPath("/iletisim")}>{t("footer.getInTouch")} <ArrowUpRight size={14} /></a>
           <a href="tel:+905454353201">+90 545 435 32 01</a>
           <a href="mailto:info@perlamarine.com">info@perlamarine.com</a>
-          <div className="footer-social-links" aria-label="Sosyal medya ve WhatsApp bağlantıları">
-            <a className="footer-social-link footer-social-link--icon" href="https://www.instagram.com/perlamarine.tr/" target="_blank" rel="noreferrer" aria-label="Perla Marine Instagram hesabı">
+          <div className="footer-social-links" aria-label="Social media">
+            <a className="footer-social-link footer-social-link--icon" href="https://www.instagram.com/perlamarine.tr/" target="_blank" rel="noreferrer" aria-label="Perla Marine Instagram">
               <Instagram size={25} aria-hidden="true" />
             </a>
-            <a className="footer-social-link footer-social-link--icon footer-social-link--whatsapp" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" aria-label="WhatsApp ile Perla Marine’e ulaşın" title="WhatsApp ile iletişime geçin">
+            <a className="footer-social-link footer-social-link--icon footer-social-link--whatsapp" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" aria-label="WhatsApp" title="WhatsApp">
               <WhatsAppIcon />
             </a>
           </div>
         </div>
       </div>
       <div className="site-footer__bottom">
-        <p>© {new Date().getFullYear()} Perla Marine. Tüm hakları saklıdır.</p>
-        <div className="footer-legal-links" aria-label="Yasal bilgiler">
-          <a href="/kvkk">KVKK / Aydınlatma</a>
-          <a href="/gizlilik">Gizlilik</a>
-          <a href="/cerez">Çerez politikası</a>
-          <button type="button" className="footer-cookie-link" onClick={() => { localStorage.removeItem("perla-cookie-consent"); window.location.reload(); }}>Çerez tercihlerini değiştir</button>
+        <p>© {new Date().getFullYear()} Perla Marine. {t("footer.rights")}</p>
+        <div className="footer-legal-links" aria-label="Legal">
+          <a href={toPath("/kvkk")}>{t("footer.kvkk")}</a>
+          <a href={toPath("/gizlilik")}>{t("footer.privacy")}</a>
+          <a href={toPath("/cerez")}>{t("footer.cookie")}</a>
+          <button type="button" className="footer-cookie-link" onClick={() => { localStorage.removeItem("perla-cookie-consent"); window.location.reload(); }}>{t("footer.cookiePrefs")}</button>
         </div>
       </div>
     </footer>

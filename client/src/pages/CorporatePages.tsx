@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/lib/i18n";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ServiceGrid from "@/components/ServiceGrid";
 import {
@@ -93,7 +94,7 @@ export type CorporateContactErrors = Partial<FormState> & {
    PAGE DATA
 ========================================================= */
 
-const pageData: Record<string, PageData> = {
+const pageDataTr: Record<string, PageData> = {
   about: {
     eyebrow: "Kurumsal kimliğimiz",
     title: (
@@ -179,6 +180,98 @@ const pageData: Record<string, PageData> = {
       "Perla Marine teknisyeni kuru havuzda bir yatı inceliyor",
   },
 };
+
+const pageDataEn: Record<string, PageData> = {
+  about: {
+    eyebrow: "Our Identity",
+    title: (
+      <>
+        Confidence at sea,
+        <br />
+        <em>built with discipline on land.</em>
+      </>
+    ),
+    lead:
+      "Perla Marine is a corporate marine solutions partner that manages boat and yacht maintenance, repair, refit, and technical service processes with engineering discipline, field experience, and transparent communication.",
+    image:
+      "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
+    alt:
+      "Marine expert inspecting a motor yacht in dry dock",
+  },
+
+  services: {
+    eyebrow: "Services",
+    title: (
+      <>
+        Clarify your maintenance decision
+        <br />
+        with the right scope and <em>actionable work.</em>
+      </>
+    ),
+    lead:
+      "Boat-specific service solutions for composite, marine electrical, electronics, climate control, mechanical systems, propulsion & steering, and deck systems.",
+    image:
+      "/manus-storage/perla-service-composite-v2-1600_cb23463b.webp",
+    alt:
+      "Yacht composite mold, fiber material and technical production equipment",
+  },
+
+  projects: {
+    eyebrow: "Projects",
+    title: (
+      <>
+        Every boat is different.
+        <br />
+        <em>So is the right solution.</em>
+      </>
+    ),
+    lead:
+      "We approach maintenance and refit scope based on current condition, usage profile, and the next actionable step.",
+    image:
+      "/manus-storage/perla-service-propulsion-v2-1600_5ff2ef59.webp",
+    alt:
+      "Engine and propulsion system maintenance detail",
+  },
+
+  knowledge: {
+    eyebrow: "Technical Notes",
+    title: (
+      <>
+        Better maintenance
+        <br />
+        <em>starts with clearer information.</em>
+      </>
+    ),
+    lead:
+      "Technical notes, checklists, and application guides that support maintenance decisions for boat owners and manufacturer teams.",
+    image:
+      "/manus-storage/perla-service-marine-electronics-1600_858e312b.webp",
+    alt:
+      "Marine electronics and navigation displays",
+  },
+
+  contact: {
+    eyebrow: "Contact Us",
+    title: (
+      <>
+        Tell us about your boat.
+        <br />
+        <em>Let's plan the next step together.</em>
+      </>
+    ),
+    lead:
+      "Share the current condition, your priority, and your timeline; let's clarify the right maintenance and repair scope together.",
+    image:
+      "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
+    alt:
+      "Perla Marine technician inspecting a yacht in dry dock",
+  },
+};
+
+function usePageData(): Record<string, PageData> {
+  const { lang } = useLanguage();
+  return lang === "en" ? pageDataEn : pageDataTr;
+}
 
 /* =========================================================
    SERVICE DATA
@@ -465,7 +558,7 @@ export function AboutNew() {
 
   return (
     <PageFrame>
-      <PageHero data={pageData.about} />
+      <PageHero data={usePageData().about} />
 
       <section
         className="about-identity"
@@ -892,7 +985,7 @@ export function ServicesNew() {
 
   return (
     <PageFrame>
-      <PageHero data={pageData.services} />
+      <PageHero data={usePageData().services} />
 
       <section className="corporate-section">
         <div className="section-heading section-heading--split">
@@ -1220,7 +1313,7 @@ export function ProjectsNew() {
 
   return (
     <PageFrame>
-      <PageHero data={pageData.projects} />
+      <PageHero data={usePageData().projects} />
 
       <section className="corporate-section">
         <div className="section-heading section-heading--split">
@@ -1551,7 +1644,7 @@ export function KnowledgeNew() {
   return (
     <PageFrame>
       <PageHero
-        data={pageData.knowledge}
+        data={usePageData().knowledge}
       />
 
       <section className="corporate-section">
@@ -1738,6 +1831,7 @@ export function validateCorporateContact(
 ========================================================= */
 
 export function ContactNew() {
+  const { t } = useLanguage();
   usePageMetadata(
     "/iletisim",
     "İletişim | Perla Marine Tekne Teknik Check-up ve Servis",
@@ -1965,24 +2059,22 @@ export function ContactNew() {
   return (
     <PageFrame>
       <PageHero
-        data={pageData.contact}
+        data={usePageData().contact}
         compact
       />
 
       <section className="new-contact-layout">
         <div className="new-contact-copy">
           <p className="eyebrow">
-            İletişim kanalları
+            {t("contact.channelsEyebrow")}
           </p>
 
           <h2>
-            İhtiyacınız için uygun yolu seçin.
+            {t("contact.channelsTitle")}
           </h2>
 
           <p>
-            Form üzerinden kapsamlı bilgi
-            paylaşabilir, WhatsApp veya e-posta
-            üzerinden doğrudan yazabilirsiniz.
+            {t("contact.channelsIntro")}
           </p>
 
           <div className="contact-channel-grid">
@@ -1994,7 +2086,7 @@ export function ContactNew() {
               <MessageCircle
                 size={18}
               />
-              WhatsApp ile yazın
+              {t("contact.whatsapp")}
             </a>
 
             <a href="tel:+905454353201">
@@ -2029,11 +2121,11 @@ export function ContactNew() {
 
           <div className="new-contact-form__heading">
             <span>
-              TEKNİK DEĞERLENDİRME
+              {t("contact.formEyebrow").toUpperCase()}
             </span>
 
             <p>
-              Teknenizi anlatın
+              {t("contact.formTitle")}
             </p>
           </div>
 
@@ -2055,7 +2147,7 @@ export function ContactNew() {
 
           <div className="new-contact-form__row">
           <label>
-            Adınız ve soyadınız
+            {t("contact.name")}
 
             <input
               id="name-field"
@@ -2093,7 +2185,7 @@ export function ContactNew() {
           {/* EMAIL */}
 
           <label>
-            E-posta adresiniz
+            {t("contact.email")}
 
             <input
               id="email-field"
@@ -2132,7 +2224,7 @@ export function ContactNew() {
           {/* SERVICE */}
 
           <label>
-            İhtiyaç kategorisi
+            {t("contact.category")}
 
             <select
               id="service-field"
@@ -2156,7 +2248,7 @@ export function ContactNew() {
               }
             >
               <option value="">
-                Bir kategori seçin
+                {t("contact.categoryPlaceholder")}
               </option>
 
               {serviceGroups.map(
@@ -2185,7 +2277,7 @@ export function ContactNew() {
           {/* REGION */}
 
           <label>
-            Tekneniz hangi bölgede? (opsiyonel)
+            {t("contact.region")}
 
             <select
               id="region-field"
@@ -2201,7 +2293,7 @@ export function ContactNew() {
               }
             >
               <option value="">
-                Bir bölge seçin
+                {t("contact.regionPlaceholder")}
               </option>
 
               {REGION_OPTIONS.map(
@@ -2220,7 +2312,7 @@ export function ContactNew() {
           {/* MESSAGE */}
 
           <label>
-            Mevcut durum ve hedef
+            {t("contact.message")}
 
             <textarea
               id="message-field"
@@ -2243,7 +2335,7 @@ export function ContactNew() {
                   ? "message-error"
                   : undefined
               }
-              placeholder="Teknenizin mevcut durumunu ve ihtiyacınızı kısaca anlatın."
+              placeholder={t("contact.messagePlaceholder")}
             />
 
             {errors.message && (
@@ -2288,9 +2380,7 @@ export function ContactNew() {
             />
 
             <span>
-              KVKK aydınlatma metnini okudum
-              ve iletişim kurulmasını kabul
-              ediyorum.
+              {t("contact.consent")}
             </span>
           </label>
 
@@ -2314,8 +2404,8 @@ export function ContactNew() {
             }
           >
             {isSubmitting
-              ? "Gönderiliyor…"
-              : "Talebi gönder"}
+              ? t("contact.sending")
+              : t("contact.submit")}
 
             {!isSubmitting && (
               <ArrowUpRight
@@ -2389,9 +2479,7 @@ export function ContactNew() {
             <BatteryCharging
               size={14}
             />
-            Bilgileriniz yalnızca ilk
-            teknik değerlendirme için
-            kullanılır.
+            {t("contact.disclaimer")}
           </p>
         </form>
       </section>

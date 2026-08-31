@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getListingsEnabled } from "@/lib/content";
+import { useLanguage, type TKey } from "@/lib/i18n";
 
 function WhatsAppIcon() {
   return (
@@ -11,17 +12,18 @@ function WhatsAppIcon() {
   );
 }
 
-const navigation = [
-  { href: "/", label: "Ana Sayfa", path: "/" },
-  { href: "/hakkimizda", label: "Hakkımızda", path: "/hakkimizda" },
-  { href: "/hizmetler", label: "Hizmetler", path: "/hizmetler" },
-  { href: "/hizmet-bolgelerimiz", label: "Bölgelerimiz", path: "/hizmet-bolgelerimiz" },
-  { href: "/projeler", label: "Projeler", path: "/projeler" },
-  { href: "/teknik-bilgiler", label: "Teknik Bilgiler", path: "/teknik-bilgiler" },
+const navItems: { key: TKey; path: string }[] = [
+  { key: "nav.home", path: "/" },
+  { key: "nav.about", path: "/hakkimizda" },
+  { key: "nav.services", path: "/hizmetler" },
+  { key: "nav.regions", path: "/hizmet-bolgelerimiz" },
+  { key: "nav.projects", path: "/projeler" },
+  { key: "nav.knowledge", path: "/teknik-bilgiler" },
 ];
 
 export default function SiteHeader() {
   const [location] = useLocation();
+  const { lang, t, toPath, stripLang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [listingsEnabled, setListingsEnabled] = useState(false);
@@ -35,8 +37,10 @@ export default function SiteHeader() {
   }, []);
 
   const activeNavigation = listingsEnabled
-    ? [...navigation, { href: "/ilanlar", label: "İlanlar", path: "/ilanlar" }]
-    : navigation;
+    ? [...navItems, { key: "nav.listings" as TKey, path: "/ilanlar" }]
+    : navItems;
+
+  const currentPath = stripLang(location);
 
   useEffect(() => {
     const updateHeader = () => setIsScrolled(window.scrollY > 18);
@@ -86,7 +90,7 @@ export default function SiteHeader() {
   return (
     <header className={`site-header ${isScrolled ? "site-header--scrolled" : ""}`}>
       <div className="site-header__inner">
-        <a className="brand-lockup" href="/" aria-label="Perla Marine ana sayfa">
+        <a className="brand-lockup" href={toPath("/")} aria-label="Perla Marine">
           <img
             className="brand-lockup__logo"
             src="/manus-storage/perla-marine-logo-real-transparent_d043978f.png"
@@ -94,17 +98,20 @@ export default function SiteHeader() {
           />
         </a>
 
-        <nav className="desktop-nav" aria-label="Ana navigasyon">
+        <nav className="desktop-nav" aria-label={lang === "tr" ? "Ana navigasyon" : "Main navigation"}>
           {activeNavigation.map((item) => (
-            <a key={item.href} href={item.href} className={location === item.path || (item.path !== "/" && location.startsWith(`${item.path}/`)) ? "is-active" : ""}>
-              {item.label}
+            <a key={item.path} href={toPath(item.path)} className={currentPath === item.path || (item.path !== "/" && currentPath.startsWith(`${item.path}/`)) ? "is-active" : ""}>
+              {t(item.key)}
             </a>
           ))}
           <div className="nav-contact-actions">
-            <a className="nav-contact" href="/iletisim">
-              Bize ulaşın <span aria-hidden="true">↗</span>
+            <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
+              {lang === "tr" ? "EN" : "TR"}
             </a>
-            <a className="nav-whatsapp" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" aria-label="WhatsApp ile Perla Marine’e ulaşın" title="WhatsApp ile iletişime geçin">
+            <a className="nav-contact" href={toPath("/iletisim")}>
+              {t("nav.contact")} <span aria-hidden="true">↗</span>
+            </a>
+            <a className="nav-whatsapp" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" aria-label="WhatsApp" title="WhatsApp">
               <WhatsAppIcon />
             </a>
           </div>
@@ -114,7 +121,7 @@ export default function SiteHeader() {
           ref={menuButtonRef}
           className="mobile-menu-button"
           type="button"
-          aria-label={isOpen ? "Menüyü kapat" : "Menüyü aç"}
+          aria-label={isOpen ? (lang === "tr" ? "Menüyü kapat" : "Close menu") : (lang === "tr" ? "Menüyü aç" : "Open menu")}
           aria-expanded={isOpen}
           aria-controls="mobile-navigation"
           onClick={() => setIsOpen((current) => !current)}
@@ -123,23 +130,26 @@ export default function SiteHeader() {
         </button>
 
         {isOpen && (
-          <nav ref={mobileNavRef} id="mobile-navigation" className="mobile-nav" aria-label="Mobil navigasyon">
-            <p className="mobile-nav__intro">Tekneniz için doğru bakım ve teknik servis adımını birlikte netleştirelim.</p>
+          <nav ref={mobileNavRef} id="mobile-navigation" className="mobile-nav" aria-label={lang === "tr" ? "Mobil navigasyon" : "Mobile navigation"}>
+            <p className="mobile-nav__intro">{lang === "tr" ? "Tekneniz için doğru bakım ve teknik servis adımını birlikte netleştirelim." : "Let's work out the right maintenance and service step for your boat together."}</p>
             {activeNavigation.map((item, index) => (
               <a
-                key={item.href}
+                key={item.path}
                 ref={index === 0 ? firstMenuLinkRef : undefined}
-                href={item.href}
+                href={toPath(item.path)}
                 onClick={() => setIsOpen(false)}
               >
-                {item.label}
+                {t(item.key)}
               </a>
             ))}
+            <a href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : (currentPath === "/" ? "/" : currentPath)} onClick={() => setIsOpen(false)} className="mobile-nav__lang">
+              {lang === "tr" ? "English" : "Türkçe"}
+            </a>
             <div className="mobile-nav__actions">
-              <a className="mobile-nav__contact" href="/iletisim" onClick={() => setIsOpen(false)}>
-                Bize ulaşın <span aria-hidden="true">↗</span>
+              <a className="mobile-nav__contact" href={toPath("/iletisim")} onClick={() => setIsOpen(false)}>
+                {t("nav.contact")} <span aria-hidden="true">↗</span>
               </a>
-              <a className="mobile-nav__social" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" onClick={() => setIsOpen(false)} aria-label="WhatsApp ile Perla Marine’e ulaşın">
+              <a className="mobile-nav__social" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" onClick={() => setIsOpen(false)} aria-label="WhatsApp">
                 <WhatsAppIcon /> WhatsApp
               </a>
             </div>

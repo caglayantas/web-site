@@ -428,6 +428,7 @@ textarea:focus-visible {
 .legal-page__content { max-width: 760px; }
 .legal-page__content p { color: #5f6f80; font-size: 15px; line-height: 1.9; }
 .legal-page__updated { margin: 0 0 34px; color: #8a95a3; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.legal-page__disclaimer { margin: 0 0 34px; padding: 14px 18px; border-left: 3px solid var(--gold); background: var(--ivory); color: #546373; font-size: 13px; line-height: 1.6; font-style: italic; }
 .legal-page__section { margin-bottom: 30px; }
 .legal-page__section h2 { margin: 0 0 12px; color: var(--navy); font: 24px/1.25 var(--serif); letter-spacing: -.01em; }
 .legal-page__section p { margin: 0 0 8px; }
@@ -519,6 +520,9 @@ textarea:focus-visible {
 /* WhatsApp iletişim bağlantıları */
 .nav-contact-actions { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
 .nav-contact-actions .nav-contact { margin-left: 0; }
+.nav-lang-switch { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid #d8d0c0; color: var(--navy); font-size: 11px; font-weight: 800; letter-spacing: .04em; text-decoration: none; transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out); }
+.nav-lang-switch:hover { background: var(--ivory); border-color: var(--gold); }
+.mobile-nav__lang { display: inline-block; margin-top: 6px; color: var(--gold); font-weight: 800; text-transform: uppercase; font-size: 12px; letter-spacing: .06em; }
 .nav-whatsapp { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; color: #fff; background: #168c4a; border: 1px solid #168c4a; transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 160ms var(--ease-out); }
 .nav-whatsapp:hover { background: #0f713a; border-color: #0f713a; }
 .nav-whatsapp:active, .footer-social-link--whatsapp:active { transform: scale(.96); }

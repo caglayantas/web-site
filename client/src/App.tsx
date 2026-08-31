@@ -23,6 +23,7 @@ import { Route, Switch, useLocation } from "wouter";
 
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { LanguageProvider } from "@/lib/i18n";
 
 // ============================================================
 // Lazy loaded pages
@@ -188,6 +189,26 @@ function Router() {
       />
 
       {/* ======================================================
+          ENGLISH (/en) MIRROR ROUTES
+         ====================================================== */}
+
+      <Route path="/en" component={Home} />
+      <Route path="/en/hakkimizda" component={AboutNew} />
+      <Route path="/en/ilanlar" component={Listings} />
+      <Route path="/en/hizmet-bolgelerimiz" component={ServiceRegions} />
+      <Route path="/en/hizmetler" component={ServicesNew} />
+      <Route path="/en/projeler/:slug" component={ProjectDetail} />
+      <Route path="/en/projeler" component={ProjectsNew} />
+      <Route path="/en/teknik-bilgiler/:slug" component={KnowledgePost} />
+      <Route path="/en/teknik-bilgiler" component={KnowledgeNew} />
+      <Route path="/en/iletisim" component={ContactNew} />
+      <Route path="/en/sss" component={() => <ServiceFAQ />} />
+      <Route path="/en/kvkk" component={() => <Legal type="kvkk" />} />
+      <Route path="/en/gizlilik" component={() => <Legal type="gizlilik" />} />
+      <Route path="/en/cerez" component={() => <Legal type="cerez" />} />
+      <Route path="/en/site-haritasi" component={Sitemap} />
+
+      {/* ======================================================
           ADMIN PANEL
          ====================================================== */}
 
@@ -257,6 +278,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <LanguageProvider>
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
 
@@ -306,6 +328,7 @@ function App() {
 
         </TooltipProvider>
       </ThemeProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }
