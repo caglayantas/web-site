@@ -53,6 +53,7 @@ export type BoatListingRow = {
   location: string;
   description: string;
   coverImage: string | null;
+  galleryImages: string[];
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -144,6 +145,7 @@ const mapBoatListing = (row: any): BoatListingRow => ({
   location: row.location,
   description: row.description,
   coverImage: row.cover_image,
+  galleryImages: Array.isArray(row.gallery_images) ? row.gallery_images : [],
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -160,6 +162,7 @@ const boatListingToRow = (p: Partial<BoatListingRow>) => {
   if (p.location !== undefined) row.location = p.location;
   if (p.description !== undefined) row.description = p.description;
   if (p.coverImage !== undefined) row.cover_image = p.coverImage;
+  if (p.galleryImages !== undefined) row.gallery_images = p.galleryImages;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;

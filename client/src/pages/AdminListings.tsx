@@ -8,12 +8,12 @@ import { useEffect, useRef, useState } from "react";
 
 type ListingForm = {
   id?: number; title: string; price: string; year: string; lengthMeters: string; engineInfo: string;
-  location: string; description: string; coverImage: string; status: "draft" | "published"; sortOrder: number;
+  location: string; description: string; coverImage: string; galleryImages: string[]; status: "draft" | "published"; sortOrder: number;
 };
 
 const emptyForm: ListingForm = {
   title: "", price: "", year: "", lengthMeters: "", engineInfo: "", location: "",
-  description: "", coverImage: "", status: "draft", sortOrder: 0,
+  description: "", coverImage: "", galleryImages: [], status: "draft", sortOrder: 0,
 };
 
 async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, zoom: number, fileName: string) {
@@ -149,6 +149,75 @@ function CoverImageField({ value, onChange }: { value: string; onChange: (url: s
   );
 }
 
+async function resizeToWebp(file: File, maxDimension: number): Promise<File> {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+  const width = Math.round(bitmap.width * scale);
+  const height = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) { bitmap.close(); throw new Error("Canvas kullanılamıyor"); }
+  context.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.86));
+  if (!blob) throw new Error("WebP dönüşümü başarısız");
+  return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "foto"}.webp`, { type: "image/webp" });
+}
+
+function GalleryField({ value, onChange }: { value: string[]; onChange: (urls: string[]) => void }) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState("");
+
+  const addFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setError("");
+    setIsPending(true);
+    const uploaded: string[] = [];
+    try {
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith("image/")) continue;
+        if (file.size > 10 * 1024 * 1024) { setError(`"${file.name}" 10 MB'dan büyük, atlandı.`); continue; }
+        const webpFile = await resizeToWebp(file, 1600);
+        const url = await uploadImage("listings", webpFile);
+        uploaded.push(url);
+      }
+      onChange([...value, ...uploaded]);
+    } catch (uploadError) {
+      const reason = uploadError instanceof Error ? uploadError.message : "Bilinmeyen hata";
+      setError(`Bazı fotoğraflar yüklenemedi: ${reason}`);
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const removeAt = (index: number) => onChange(value.filter((_, i) => i !== index));
+
+  return (
+    <div className="admin-upload-field admin-project-form__full">
+      <span>Ek fotoğraflar</span>
+      <label className="admin-upload-dropzone">
+        <input type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" multiple onChange={(event) => void addFiles(event.target.files)} />
+        <span className="admin-upload-dropzone__icon">{isPending ? <span className="admin-spinner" /> : <ImagePlus size={20} />}</span>
+        <strong>{isPending ? "Fotoğraflar yükleniyor…" : "Birden fazla fotoğraf seçin"}</strong>
+        <small>Teknenin farklı açılardan fotoğraflarını ekleyin · her biri otomatik küçültülür</small>
+      </label>
+      {error && <small className="admin-form-error" role="alert">{error}</small>}
+      {value.length > 0 && (
+        <div className="admin-gallery-grid">
+          {value.map((url, index) => (
+            <div className="admin-gallery-grid__item" key={url}>
+              <img src={url} alt={`Fotoğraf ${index + 1}`} />
+              <button type="button" onClick={() => removeAt(index)} aria-label={`${index + 1}. fotoğrafı kaldır`}><X size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ListingFormPanel({ value, onChange, onCancel, onSaved }: { value: ListingForm; onChange: (value: ListingForm) => void; onCancel: () => void; onSaved: () => void }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
@@ -184,6 +253,7 @@ function ListingFormPanel({ value, onChange, onCancel, onSaved }: { value: Listi
         <label>Motor bilgisi<Input value={value.engineInfo} onChange={(event) => set("engineInfo", event.target.value)} placeholder="Volvo Penta D4, 2x225 HP" /></label>
         <label>Konum<Input value={value.location} onChange={(event) => set("location", event.target.value)} placeholder="Çeşme, İzmir" /></label>
         <CoverImageField value={value.coverImage} onChange={(url) => set("coverImage", url)} />
+        <GalleryField value={value.galleryImages} onChange={(urls) => set("galleryImages", urls)} />
         <label className="admin-project-form__full">Açıklama<Textarea required value={value.description} onChange={(event) => set("description", event.target.value)} rows={6} placeholder="Teknenin genel durumu, ekipmanları ve öne çıkan özellikleri..." /></label>
         <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ListingForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select></label>
         <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
@@ -236,7 +306,7 @@ export default function AdminListings() {
   const editListing = (listing: BoatListingRow) => setForm({
     id: listing.id, title: listing.title, price: listing.price, year: listing.year, lengthMeters: listing.lengthMeters,
     engineInfo: listing.engineInfo, location: listing.location, description: listing.description,
-    coverImage: listing.coverImage ?? "", status: listing.status, sortOrder: listing.sortOrder,
+    coverImage: listing.coverImage ?? "", galleryImages: listing.galleryImages, status: listing.status, sortOrder: listing.sortOrder,
   });
   const saved = () => { setForm(null); refresh(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu ilanı kaldırmak istediğinize emin misiniz?")) deleteBoatListing(id).then(refresh); };

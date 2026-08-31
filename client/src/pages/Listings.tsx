@@ -64,6 +64,13 @@ export default function Listings() {
                 ) : (
                   <div className="listings-grid__placeholder" aria-hidden="true"><Anchor size={28} /></div>
                 )}
+                {listing.galleryImages.length > 0 && (
+                  <div className="listings-grid__gallery">
+                    {listing.galleryImages.map((url, index) => (
+                      <img key={url} src={url} alt={`${listing.title} — fotoğraf ${index + 2}`} loading="lazy" decoding="async" />
+                    ))}
+                  </div>
+                )}
                 <div className="listings-grid__body">
                   <h2>{listing.title}</h2>
                   <p className="listings-grid__meta">
