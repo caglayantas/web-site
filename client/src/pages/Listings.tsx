@@ -1,26 +1,36 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { ArrowUpRight, Anchor } from "lucide-react";
-import { getPublishedBoatListings, type BoatListingRow } from "@/lib/content";
+import { getPublishedBoatListings, getListingsEnabled, type BoatListingRow } from "@/lib/content";
 import PageHero from "@/components/PageHero";
+import NotFound from "@/pages/NotFound";
 
 const SITE_URL = "https://www.perlamarine.com";
 
 export default function Listings() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
   const [data, setData] = useState<BoatListingRow[] | null>(null);
 
   useEffect(() => {
-    getPublishedBoatListings().then(setData).catch(() => setData([]));
+    getListingsEnabled().then(setEnabled).catch(() => setEnabled(false));
   }, []);
 
   useEffect(() => {
+    if (enabled) getPublishedBoatListings().then(setData).catch(() => setData([]));
+  }, [enabled]);
+
+  useEffect(() => {
+    if (!enabled) return;
     const title = "Tekne İlanları | Perla Marine";
     const description = "Perla Marine üzerinden satışa sunulan tekne ilanlarını inceleyin.";
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}/ilanlar`);
     return () => { document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
-  }, []);
+  }, [enabled]);
+
+  if (enabled === null) return <div className="corporate-page"><div className="corporate-intro"><p>Yükleniyor…</p></div></div>;
+  if (!enabled) return <NotFound />;
 
   return (
     <>
