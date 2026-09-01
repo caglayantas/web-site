@@ -11,13 +11,16 @@ import { useEffect, useRef, useState } from "react";
 type ServiceForm = {
   id?: number; slug: string; title: string; icon: string; image: string; description: string;
   subtopics: string; eyebrow: string; intro: string; operations: string; note: string; cta: string;
+  titleEn: string; descriptionEn: string; subtopicsEn: string; eyebrowEn: string; introEn: string; operationsEn: string; noteEn: string; ctaEn: string;
   status: "draft" | "published"; sortOrder: number;
 };
 
 const emptyForm: ServiceForm = {
   slug: "", title: "", icon: "Wrench", image: "", description: "",
   subtopics: "", eyebrow: "", intro: "", operations: "", note: "",
-  cta: "Bu hizmeti konuşun", status: "draft", sortOrder: 0,
+  cta: "Bu hizmeti konuşun",
+  titleEn: "", descriptionEn: "", subtopicsEn: "", eyebrowEn: "", introEn: "", operationsEn: "", noteEn: "", ctaEn: "",
+  status: "draft", sortOrder: 0,
 };
 
 const linesToList = (value: string) => value.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -164,8 +167,8 @@ function ServiceFormPanel({ value, onChange, onCancel, onSaved }: { value: Servi
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const { id, subtopics, operations, ...rest } = value;
-    const payload = { ...rest, subtopics: linesToList(subtopics), operations: linesToList(operations) };
+    const { id, subtopics, operations, subtopicsEn, operationsEn, ...rest } = value;
+    const payload = { ...rest, subtopics: linesToList(subtopics), operations: linesToList(operations), subtopicsEn: linesToList(subtopicsEn), operationsEn: linesToList(operationsEn) };
     setIsSaving(true);
     setSaveError(false);
     try {
@@ -200,6 +203,19 @@ function ServiceFormPanel({ value, onChange, onCancel, onSaved }: { value: Servi
         <label className="admin-project-form__full">Popup giriş metni<Textarea required value={value.intro} onChange={(event) => set("intro", event.target.value)} rows={3} /></label>
         <label className="admin-project-form__full">Bakım kapsamı listesi (her satıra bir tane)<Textarea value={value.operations} onChange={(event) => set("operations", event.target.value)} rows={6} placeholder={"Akü, şarj cihazı ve alternatör performans kontrolü\nLityum akü, BMS ve koruma devrelerinin durum değerlendirmesi"} /></label>
         <label className="admin-project-form__full">"Perla Marine yaklaşımı" notu<Textarea required value={value.note} onChange={(event) => set("note", event.target.value)} rows={3} /></label>
+
+        <div className="admin-project-form__full admin-en-section">
+          <p className="admin-field-label admin-en-section__title">🇬🇧 İngilizce içerik (opsiyonel — boş bırakılırsa /en sayfasında Türkçe metin görünür)</p>
+        </div>
+        <label className="admin-project-form__full">Başlık (EN)<Input value={value.titleEn} onChange={(event) => set("titleEn", event.target.value)} /></label>
+        <label className="admin-project-form__full">Kart açıklaması (EN)<Textarea value={value.descriptionEn} onChange={(event) => set("descriptionEn", event.target.value)} rows={3} /></label>
+        <label className="admin-project-form__full">Kart alt başlıkları (EN, her satıra bir tane)<Textarea value={value.subtopicsEn} onChange={(event) => set("subtopicsEn", event.target.value)} rows={4} /></label>
+        <label>Popup üst etiketi (EN)<Input value={value.eyebrowEn} onChange={(event) => set("eyebrowEn", event.target.value)} /></label>
+        <label>Buton metni (EN)<Input value={value.ctaEn} onChange={(event) => set("ctaEn", event.target.value)} /></label>
+        <label className="admin-project-form__full">Popup giriş metni (EN)<Textarea value={value.introEn} onChange={(event) => set("introEn", event.target.value)} rows={3} /></label>
+        <label className="admin-project-form__full">Bakım kapsamı listesi (EN, her satıra bir tane)<Textarea value={value.operationsEn} onChange={(event) => set("operationsEn", event.target.value)} rows={6} /></label>
+        <label className="admin-project-form__full">"Perla Marine yaklaşımı" notu (EN)<Textarea value={value.noteEn} onChange={(event) => set("noteEn", event.target.value)} rows={3} /></label>
+
         <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ServiceForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select></label>
         <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
       </div>
@@ -222,6 +238,9 @@ export default function AdminServices() {
     id: service.id, slug: service.slug, title: service.title, icon: service.icon, image: service.image ?? "",
     description: service.description, subtopics: listToLines(service.subtopics), eyebrow: service.eyebrow,
     intro: service.intro, operations: listToLines(service.operations), note: service.note, cta: service.cta,
+    titleEn: service.titleEn, descriptionEn: service.descriptionEn, subtopicsEn: listToLines(service.subtopicsEn),
+    eyebrowEn: service.eyebrowEn, introEn: service.introEn, operationsEn: listToLines(service.operationsEn),
+    noteEn: service.noteEn, ctaEn: service.ctaEn,
     status: service.status, sortOrder: service.sortOrder,
   });
   const saved = () => { setForm(null); refresh(); };

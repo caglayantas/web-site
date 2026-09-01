@@ -5,7 +5,8 @@
  */
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getPublishedServices, type ServiceRow } from "@/lib/content";
+import { getPublishedServices, localizeService, type ServiceRow } from "@/lib/content";
+import { useLanguage } from "@/lib/i18n";
 import {
   Anchor, ArrowUpRight, BatteryCharging, Check, ClipboardCheck, Droplets, Factory,
   Radio, Sailboat, Settings2, Thermometer, Wrench, Wind, Zap, Shield, Compass,
@@ -38,6 +39,7 @@ const SERVICE_CONTACT_CATEGORY: Record<string, string> = {
 type ServiceGridProps = { expanded?: boolean };
 
 export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
+  const { lang, toPath } = useLanguage();
   const [services, setServices] = useState<ServiceRow[] | null>(null);
   useEffect(() => {
     let mounted = true;
@@ -45,7 +47,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
     return () => { mounted = false; };
   }, []);
 
-  const items = services ? (expanded ? services : services.slice(0, 4)) : [];
+  const items = services ? (expanded ? services : services.slice(0, 4)).map((service) => localizeService(service, lang)) : [];
   const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
   const activeService = activeServiceId ? items.find((item) => item.slug === activeServiceId) ?? services?.find((item) => item.slug === activeServiceId) : undefined;
 
@@ -86,7 +88,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
             {activeService && <>
               <DialogHeader><p className="eyebrow">{activeService.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeService.intro}</DialogDescription></DialogHeader>
               <div className="service-modal__columns"><div><p className="service-modal__label">Bakım kapsamı</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>Perla Marine yaklaşımı</strong><br />{activeService.note}</p></div></div>
-              <a className="button button--navy" href={`/iletisim?kategori=${encodeURIComponent(SERVICE_CONTACT_CATEGORY[activeService.slug] ?? activeService.title)}`}>{activeService.cta} <ArrowUpRight size={17} /></a>
+              <a className="button button--navy" href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(SERVICE_CONTACT_CATEGORY[activeService.slug] ?? activeService.title)}`}>{activeService.cta} <ArrowUpRight size={17} /></a>
             </>}
           </div>
         </DialogContent>

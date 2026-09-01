@@ -12,6 +12,12 @@ export type ProjectRow = {
   beforeImage: string;
   afterImage: string;
   galleryImages: string[];
+  labelEn: string;
+  titleEn: string;
+  detailEn: string;
+  scopeEn: string | null;
+  systemsEn: string | null;
+  resultsEn: string | null;
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -28,6 +34,12 @@ export type KnowledgePostRow = {
   body: string;
   seoTitle: string | null;
   seoDescription: string | null;
+  categoryEn: string;
+  titleEn: string;
+  excerptEn: string;
+  bodyEn: string;
+  seoTitleEn: string | null;
+  seoDescriptionEn: string | null;
   publishedAt: string | null;
   status: "draft" | "published";
   featured: boolean;
@@ -40,6 +52,8 @@ export type FaqRow = {
   id: number;
   question: string;
   answer: string;
+  questionEn: string;
+  answerEn: string;
   status: "draft" | "published";
   sortOrder: number;
 };
@@ -74,6 +88,14 @@ export type ServiceRow = {
   operations: string[];
   note: string;
   cta: string;
+  titleEn: string;
+  descriptionEn: string;
+  subtopicsEn: string[];
+  eyebrowEn: string;
+  introEn: string;
+  operationsEn: string[];
+  noteEn: string;
+  ctaEn: string;
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -105,6 +127,12 @@ const mapProject = (row: any): ProjectRow => ({
   beforeImage: row.before_image,
   afterImage: row.after_image,
   galleryImages: Array.isArray(row.gallery_images) ? row.gallery_images : [],
+  labelEn: row.label_en ?? "",
+  titleEn: row.title_en ?? "",
+  detailEn: row.detail_en ?? "",
+  scopeEn: row.scope_en,
+  systemsEn: row.systems_en,
+  resultsEn: row.results_en,
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -121,6 +149,12 @@ const mapKnowledge = (row: any): KnowledgePostRow => ({
   body: row.body,
   seoTitle: row.seo_title,
   seoDescription: row.seo_description,
+  categoryEn: row.category_en ?? "",
+  titleEn: row.title_en ?? "",
+  excerptEn: row.excerpt_en ?? "",
+  bodyEn: row.body_en ?? "",
+  seoTitleEn: row.seo_title_en,
+  seoDescriptionEn: row.seo_description_en,
   publishedAt: row.published_at,
   status: row.status,
   featured: row.featured,
@@ -133,6 +167,8 @@ const mapFaq = (row: any): FaqRow => ({
   id: row.id,
   question: row.question,
   answer: row.answer,
+  questionEn: row.question_en ?? "",
+  answerEn: row.answer_en ?? "",
   status: row.status,
   sortOrder: row.sort_order,
 });
@@ -183,6 +219,14 @@ const mapService = (row: any): ServiceRow => ({
   operations: Array.isArray(row.operations) ? row.operations : [],
   note: row.note,
   cta: row.cta,
+  titleEn: row.title_en ?? "",
+  descriptionEn: row.description_en ?? "",
+  subtopicsEn: Array.isArray(row.subtopics_en) ? row.subtopics_en : [],
+  eyebrowEn: row.eyebrow_en ?? "",
+  introEn: row.intro_en ?? "",
+  operationsEn: Array.isArray(row.operations_en) ? row.operations_en : [],
+  noteEn: row.note_en ?? "",
+  ctaEn: row.cta_en ?? "",
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -202,6 +246,14 @@ const serviceToRow = (p: Partial<ServiceRow>) => {
   if (p.operations !== undefined) row.operations = p.operations;
   if (p.note !== undefined) row.note = p.note;
   if (p.cta !== undefined) row.cta = p.cta;
+  if (p.titleEn !== undefined) row.title_en = p.titleEn;
+  if (p.descriptionEn !== undefined) row.description_en = p.descriptionEn;
+  if (p.subtopicsEn !== undefined) row.subtopics_en = p.subtopicsEn;
+  if (p.eyebrowEn !== undefined) row.eyebrow_en = p.eyebrowEn;
+  if (p.introEn !== undefined) row.intro_en = p.introEn;
+  if (p.operationsEn !== undefined) row.operations_en = p.operationsEn;
+  if (p.noteEn !== undefined) row.note_en = p.noteEn;
+  if (p.ctaEn !== undefined) row.cta_en = p.ctaEn;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;
@@ -244,6 +296,12 @@ const projectToRow = (p: Partial<ProjectRow>) => {
   if (p.beforeImage !== undefined) row.before_image = p.beforeImage;
   if (p.afterImage !== undefined) row.after_image = p.afterImage;
   if (p.galleryImages !== undefined) row.gallery_images = p.galleryImages;
+  if (p.labelEn !== undefined) row.label_en = p.labelEn;
+  if (p.titleEn !== undefined) row.title_en = p.titleEn;
+  if (p.detailEn !== undefined) row.detail_en = p.detailEn;
+  if (p.scopeEn !== undefined) row.scope_en = p.scopeEn;
+  if (p.systemsEn !== undefined) row.systems_en = p.systemsEn;
+  if (p.resultsEn !== undefined) row.results_en = p.resultsEn;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;
@@ -259,6 +317,12 @@ const knowledgeToRow = (p: Partial<KnowledgePostRow>) => {
   if (p.body !== undefined) row.body = p.body;
   if (p.seoTitle !== undefined) row.seo_title = p.seoTitle;
   if (p.seoDescription !== undefined) row.seo_description = p.seoDescription;
+  if (p.categoryEn !== undefined) row.category_en = p.categoryEn;
+  if (p.titleEn !== undefined) row.title_en = p.titleEn;
+  if (p.excerptEn !== undefined) row.excerpt_en = p.excerptEn;
+  if (p.bodyEn !== undefined) row.body_en = p.bodyEn;
+  if (p.seoTitleEn !== undefined) row.seo_title_en = p.seoTitleEn;
+  if (p.seoDescriptionEn !== undefined) row.seo_description_en = p.seoDescriptionEn;
   if (p.publishedAt !== undefined) row.published_at = p.publishedAt;
   if (p.status !== undefined) row.status = p.status;
   if (p.featured !== undefined) row.featured = p.featured;
@@ -388,7 +452,7 @@ export async function getAllFaqs(): Promise<FaqRow[]> {
 }
 
 export async function createFaq(input: Partial<FaqRow>): Promise<FaqRow> {
-  const { data, error } = await supabase.from("faq").insert({ question: input.question, answer: input.answer, status: input.status ?? "published", sort_order: input.sortOrder ?? 0 }).select("*").single();
+  const { data, error } = await supabase.from("faq").insert({ question: input.question, answer: input.answer, question_en: input.questionEn ?? "", answer_en: input.answerEn ?? "", status: input.status ?? "published", sort_order: input.sortOrder ?? 0 }).select("*").single();
   if (error) throw error;
   return mapFaq(data);
 }
@@ -397,6 +461,8 @@ export async function updateFaq(id: number, changes: Partial<FaqRow>): Promise<F
   const row: Record<string, unknown> = {};
   if (changes.question !== undefined) row.question = changes.question;
   if (changes.answer !== undefined) row.answer = changes.answer;
+  if (changes.questionEn !== undefined) row.question_en = changes.questionEn;
+  if (changes.answerEn !== undefined) row.answer_en = changes.answerEn;
   if (changes.status !== undefined) row.status = changes.status;
   if (changes.sortOrder !== undefined) row.sort_order = changes.sortOrder;
   const { data, error } = await supabase.from("faq").update(row).eq("id", id).select("*").single();
@@ -487,4 +553,62 @@ export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "s
   if (error) throw error;
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
+}
+
+// ---- Localization helpers ----
+// Falls back to the Turkish value whenever the English field hasn't been filled in yet,
+// so English pages never show blank content while translations are still in progress.
+
+const pick = (tr: string, en: string) => (en && en.trim() ? en : tr);
+const pickNullable = (tr: string | null, en: string | null | undefined) => (en && en.trim() ? en : tr);
+const pickList = (tr: string[], en: string[]) => (en && en.length > 0 ? en : tr);
+
+export function localizeService(row: ServiceRow, lang: "tr" | "en"): ServiceRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    title: pick(row.title, row.titleEn),
+    description: pick(row.description, row.descriptionEn),
+    subtopics: pickList(row.subtopics, row.subtopicsEn),
+    eyebrow: pick(row.eyebrow, row.eyebrowEn),
+    intro: pick(row.intro, row.introEn),
+    operations: pickList(row.operations, row.operationsEn),
+    note: pick(row.note, row.noteEn),
+    cta: pick(row.cta, row.ctaEn),
+  };
+}
+
+export function localizeProject(row: ProjectRow, lang: "tr" | "en"): ProjectRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    label: pick(row.label, row.labelEn),
+    title: pick(row.title, row.titleEn),
+    detail: pick(row.detail, row.detailEn),
+    scope: pickNullable(row.scope, row.scopeEn),
+    systems: pickNullable(row.systems, row.systemsEn),
+    results: pickNullable(row.results, row.resultsEn),
+  };
+}
+
+export function localizeKnowledge(row: KnowledgePostRow, lang: "tr" | "en"): KnowledgePostRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    category: pick(row.category, row.categoryEn),
+    title: pick(row.title, row.titleEn),
+    excerpt: pick(row.excerpt, row.excerptEn),
+    body: pick(row.body, row.bodyEn),
+    seoTitle: pickNullable(row.seoTitle, row.seoTitleEn),
+    seoDescription: pickNullable(row.seoDescription, row.seoDescriptionEn),
+  };
+}
+
+export function localizeFaq(row: FaqRow, lang: "tr" | "en"): FaqRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    question: pick(row.question, row.questionEn),
+    answer: pick(row.answer, row.answerEn),
+  };
 }

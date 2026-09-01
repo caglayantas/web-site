@@ -923,6 +923,8 @@ textarea:focus-visible {
 .admin-spinner { width: 20px; height: 20px; border: 2px solid #d9c382; border-top-color: var(--navy); border-radius: 50%; animation: admin-spin 700ms linear infinite; }
 @keyframes admin-spin { to { transform: rotate(360deg); } }
 .admin-field-label { display: block; margin-bottom: 7px; color: #374151; font-size: 12px; font-weight: 700; }
+.admin-en-section { margin-top: 18px; padding: 16px 16px 4px; border: 1px dashed #b9c4cf; background: #f6f8fa; }
+.admin-en-section__title { margin: 0 !important; color: #1d4ed8; font-size: 12.5px; font-weight: 800; }
 .rich-text-editor { overflow: hidden; border: 1px solid #d7dce3; background: #fff; }
 .rich-text-toolbar { display: flex; flex-wrap: wrap; gap: 3px; padding: 7px; border-bottom: 1px solid #e3e6eb; background: #f8f7f3; }
 .rich-text-toolbar button { display: grid; place-items: center; min-width: 32px; height: 30px; border: 0; color: var(--navy); background: transparent; cursor: pointer; }
