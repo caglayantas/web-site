@@ -109,6 +109,8 @@ export type PartnerRow = {
   relationship: string;
   description: string;
   website: string;
+  relationshipEn: string;
+  descriptionEn: string;
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -266,6 +268,8 @@ const mapPartner = (row: any): PartnerRow => ({
   relationship: row.relationship,
   description: row.description,
   website: row.website,
+  relationshipEn: row.relationship_en ?? "",
+  descriptionEn: row.description_en ?? "",
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -279,6 +283,8 @@ const partnerToRow = (p: Partial<PartnerRow>) => {
   if (p.relationship !== undefined) row.relationship = p.relationship;
   if (p.description !== undefined) row.description = p.description;
   if (p.website !== undefined) row.website = p.website;
+  if (p.relationshipEn !== undefined) row.relationship_en = p.relationshipEn;
+  if (p.descriptionEn !== undefined) row.description_en = p.descriptionEn;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;
@@ -610,5 +616,14 @@ export function localizeFaq(row: FaqRow, lang: "tr" | "en"): FaqRow {
     ...row,
     question: pick(row.question, row.questionEn),
     answer: pick(row.answer, row.answerEn),
+  };
+}
+
+export function localizePartner(row: PartnerRow, lang: "tr" | "en"): PartnerRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    relationship: pick(row.relationship, row.relationshipEn),
+    description: pick(row.description, row.descriptionEn),
   };
 }

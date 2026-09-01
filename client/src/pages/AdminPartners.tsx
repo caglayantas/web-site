@@ -8,11 +8,12 @@ import { useEffect, useRef, useState } from "react";
 
 type PartnerForm = {
   id?: number; name: string; logo: string; relationship: string; description: string; website: string;
+  relationshipEn: string; descriptionEn: string;
   status: "draft" | "published"; sortOrder: number;
 };
 
 const emptyForm: PartnerForm = {
-  name: "", logo: "", relationship: "", description: "", website: "", status: "draft", sortOrder: 0,
+  name: "", logo: "", relationship: "", description: "", website: "", relationshipEn: "", descriptionEn: "", status: "draft", sortOrder: 0,
 };
 
 async function cropToWebp(bitmap: ImageBitmap, focalX: number, focalY: number, zoom: number, fileName: string) {
@@ -181,6 +182,9 @@ function PartnerFormPanel({ value, onChange, onCancel, onSaved }: { value: Partn
         <LogoField value={value.logo} onChange={(url) => set("logo", url)} />
         <label className="admin-project-form__full">Açıklama (opsiyonel)<Textarea value={value.description} onChange={(event) => set("description", event.target.value)} rows={3} placeholder="Kısa bir tanıtım cümlesi (opsiyonel)" /></label>
         <label className="admin-project-form__full">Marka web sitesi (opsiyonel)<Input type="url" value={value.website} onChange={(event) => set("website", event.target.value)} placeholder="https://" /></label>
+        <div className="admin-project-form__full admin-en-section"><p className="admin-field-label admin-en-section__title">🇬🇧 İngilizce içerik (opsiyonel — boş bırakılırsa /en sayfasında Türkçe metin görünür)</p></div>
+        <label>İlişki türü (EN)<Input value={value.relationshipEn} onChange={(event) => set("relationshipEn", event.target.value)} placeholder="Aegean Region Dealer" /></label>
+        <label className="admin-project-form__full">Açıklama (EN)<Textarea value={value.descriptionEn} onChange={(event) => set("descriptionEn", event.target.value)} rows={3} /></label>
         <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as PartnerForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select></label>
         <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
       </div>
@@ -201,7 +205,7 @@ export default function AdminPartners() {
   const [form, setForm] = useState<PartnerForm | null>(null);
   const editPartner = (partner: PartnerRow) => setForm({
     id: partner.id, name: partner.name, logo: partner.logo ?? "", relationship: partner.relationship,
-    description: partner.description, website: partner.website, status: partner.status, sortOrder: partner.sortOrder,
+    description: partner.description, website: partner.website, relationshipEn: partner.relationshipEn, descriptionEn: partner.descriptionEn, status: partner.status, sortOrder: partner.sortOrder,
   });
   const saved = () => { setForm(null); refresh(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu markayı kaldırmak istediğinize emin misiniz?")) deletePartner(id).then(refresh); };

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ServiceGrid from "@/components/ServiceGrid";
 import ServiceFAQ from "@/components/ServiceFAQ";
-import { getPublishedKnowledgePosts, getPublishedProjects, getPublishedPartners, type KnowledgePostRow, type ProjectRow, type PartnerRow } from "@/lib/content";
+import { getPublishedKnowledgePosts, getPublishedProjects, getPublishedPartners, localizePartner, type KnowledgePostRow, type ProjectRow, type PartnerRow } from "@/lib/content";
+import { useLanguage } from "@/lib/i18n";
 import { ArrowDownRight, ArrowUpRight, BatteryCharging, CalendarClock, Check, ChevronRight, ClipboardCheck, Clock3, FileText, MapPin, Settings2, ShieldCheck, Wrench, MoveRight } from "lucide-react";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -16,6 +17,7 @@ const checkupBenefits = [{ title: "Elektrik kontrolü", icon: BatteryCharging },
 const shortenProjectText = (text: string, limit: number) => { const firstSentence = text.split(/[.!?]/)[0]?.trim() || text.trim(); return firstSentence.length <= limit ? firstSentence : `${firstSentence.slice(0, limit - 1).trimEnd()}…`; };
 
 export default function Home() {
+  const { lang } = useLanguage();
   const [knowledgeData, setKnowledgeData] = useState<KnowledgePostRow[] | null>(null);
   const [knowledgeError, setKnowledgeError] = useState(false);
   const [knowledgeLoading, setKnowledgeLoading] = useState(true);
@@ -28,8 +30,21 @@ export default function Home() {
     getPublishedProjects().then(setProjectsData).catch(() => setProjectsError(true)).finally(() => setProjectsLoading(false));
     getPublishedPartners().then(setPartnersData).catch(() => setPartnersData([]));
   }, []);
-  const technicalCards = knowledgeError ? technicalFallback : (knowledgeData ?? []).slice(0, 3);
-  const displayProjects = projectsError ? projectFallback : (projectsData ?? []).filter((project) => project.status === "published").slice(0, 3);
+  const technicalCardsRaw = knowledgeError ? technicalFallback : (knowledgeData ?? []).slice(0, 3);
+  const technicalCards = lang === "en" ? technicalCardsRaw.map((post) => "titleEn" in post ? {
+    ...post,
+    category: (post as KnowledgePostRow).categoryEn || post.category,
+    title: (post as KnowledgePostRow).titleEn || post.title,
+    excerpt: (post as KnowledgePostRow).excerptEn || post.excerpt,
+  } : post) : technicalCardsRaw;
+  const displayProjectsRaw = projectsError ? projectFallback : (projectsData ?? []).filter((project) => project.status === "published").slice(0, 3);
+  const displayProjects = lang === "en" ? displayProjectsRaw.map((project) => "titleEn" in project ? {
+    ...project,
+    label: (project as ProjectRow).labelEn || project.label,
+    title: (project as ProjectRow).titleEn || project.title,
+    detail: (project as ProjectRow).detailEn || project.detail,
+  } : project) : displayProjectsRaw;
+  const localizedPartners = partnersData ? partnersData.map((partner) => localizePartner(partner, lang)) : partnersData;
   return (
     <div className="home-page-compact">
       <section className="hero-section" id="giris">
@@ -125,13 +140,13 @@ export default function Home() {
         </section>
       </div>
 
-      {partnersData && partnersData.length > 0 && (
+      {localizedPartners && localizedPartners.length > 0 && (
         <section className="section partners-band">
           <div className="section-heading">
             <div><p className="eyebrow">Markalarımız</p><h2>Güvendiğimiz markalarla çalışıyoruz.</h2></div>
           </div>
           <div className="partners-band__grid">
-            {partnersData.map((partner) => {
+            {localizedPartners.map((partner) => {
               const card = (
                 <>
                   {partner.logo && <img className="partners-band__logo" src={partner.logo} alt={`${partner.name} logosu`} loading="lazy" decoding="async" />}
