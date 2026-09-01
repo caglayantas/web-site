@@ -4,6 +4,29 @@ import { useLocation } from "wouter";
 import { getListingsEnabled } from "@/lib/content";
 import { useLanguage, type TKey } from "@/lib/i18n";
 
+function FlagTR() {
+  return (
+    <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+      <rect width="30" height="20" fill="#e30a17" />
+      <circle cx="12" cy="10" r="5.2" fill="#fff" />
+      <circle cx="13.3" cy="10" r="4.2" fill="#e30a17" />
+      <path fill="#fff" d="m18.5 6.7 1 3.05h3.2l-2.6 1.9 1 3.05-2.6-1.9-2.6 1.9 1-3.05-2.6-1.9h3.2z" />
+    </svg>
+  );
+}
+
+function FlagGB() {
+  return (
+    <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+      <rect width="30" height="20" fill="#012169" />
+      <path stroke="#fff" strokeWidth="4" d="M0 0 30 20M30 0 0 20" />
+      <path stroke="#c8102e" strokeWidth="2" d="M0 0 30 20M30 0 0 20" />
+      <path stroke="#fff" strokeWidth="6.5" d="M15 0V20M0 10H30" />
+      <path stroke="#c8102e" strokeWidth="4" d="M15 0V20M0 10H30" />
+    </svg>
+  );
+}
+
 function WhatsAppIcon() {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
@@ -106,7 +129,7 @@ export default function SiteHeader() {
           ))}
           <div className="nav-contact-actions">
             <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
-              <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? "🇬🇧" : "🇹🇷"}</span>
+              <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span>
               {lang === "tr" ? "EN" : "TR"}
             </a>
             <a className="nav-contact" href={toPath("/iletisim")}>
@@ -144,7 +167,7 @@ export default function SiteHeader() {
               </a>
             ))}
             <a href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : (currentPath === "/" ? "/" : currentPath)} onClick={() => setIsOpen(false)} className="mobile-nav__lang">
-              <span aria-hidden="true">{lang === "tr" ? "🇬🇧" : "🇹🇷"}</span> {lang === "tr" ? "English" : "Türkçe"}
+              <span className="mobile-nav__lang-flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span> {lang === "tr" ? "English" : "Türkçe"}
             </a>
             <div className="mobile-nav__actions">
               <a className="mobile-nav__contact" href={toPath("/iletisim")} onClick={() => setIsOpen(false)}>

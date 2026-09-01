@@ -451,6 +451,23 @@ const serviceGroups = [
   ],
 ];
 
+// Canonical values (submitted to the database and matched against ?kategori= links)
+// always stay in Turkish. This map only controls the label shown on /en pages.
+const serviceGroupLabelsEn: Record<string, string> = {
+  "Kompozit çözümler": "Composite solutions",
+  "Marin elektrik": "Marine electrical",
+  "Marin elektroniği": "Marine electronics",
+  "Isıtma-soğutma": "Heating & cooling",
+  "Mekanik tesisat": "Mechanical systems",
+  "Motor, tahrik ve dümen": "Engine, propulsion & steering",
+  "Yelken ve arma donanım": "Sailing rig & rigging",
+  "Güverte ekipmanları": "Deck equipment",
+  "Üretim danışmanlığı": "Production consulting",
+  "Tekneye özel çözümler": "Boat-specific solutions",
+  "Teknik checkup": "Technical checkup",
+  "Survey / Ekspertiz": "Survey / Expertise",
+};
+
 /* =========================================================
    FALLBACK PROJECT DATA
 ========================================================= */
@@ -1888,7 +1905,7 @@ export function validateCorporateContact(
 ========================================================= */
 
 export function ContactNew() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   usePageMetadata(
     "/iletisim",
     "İletişim | Perla Marine Tekne Teknik Check-up ve Servis",
@@ -2314,7 +2331,7 @@ export function ContactNew() {
                     key={title}
                     value={title}
                   >
-                    {title}
+                    {lang === "en" ? (serviceGroupLabelsEn[title] ?? title) : title}
                   </option>
                 )
               )}
