@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { ArrowUpRight } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import { useLanguage } from "@/lib/i18n";
+import RegionsMap from "@/components/RegionsMap";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -126,6 +127,7 @@ export default function ServiceRegions() {
             ? "We serve the regions below through site visits planned around the marina where your boat is located. Once you share your request, we work with you to set the most suitable date based on its scope."
             : "Aşağıdaki bölgelerde, teknenizin bulunduğu marinaya göre planlanan saha ziyaretleriyle hizmet veriyoruz. Talebinizi ilettiğinizde, kapsamına göre en uygun tarihi birlikte belirliyoruz."}</p>
         </div>
+        <RegionsMap ariaLabel={lang === "en" ? "Map of marinas we serve" : "Hizmet verdiğimiz marinaların haritası"} />
         <div className="service-regions-grid">
           {regions.map((region) => (
             <article className="service-regions-grid__card" id={region.id} key={region.id}>

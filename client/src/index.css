@@ -659,6 +659,13 @@ textarea:focus-visible {
 .corporate-intro, .corporate-section, .contact-layout { width: min(100% - 48px, 1280px); margin: 0 auto; }
 .corporate-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .65fr); gap: clamp(36px, 9vw, 150px); padding: clamp(41px, 9vw, 75px) 0; border-bottom: 1px solid #e4ded4; }
 .service-regions-intro { max-width: 720px; margin: 0 0 40px; color: #546373; font-size: 16px; line-height: 1.75; }
+.regions-map { width: 100%; height: 460px; margin: 0 0 48px; border: 1px solid #e4ded4; background: var(--ivory); }
+.regions-map .leaflet-popup-content-wrapper { border-radius: 0; box-shadow: 0 10px 24px rgba(4,31,61,.16); }
+.regions-map .leaflet-popup-content { margin: 10px 14px; font: 13px/1.4 var(--sans); color: var(--navy); }
+.regions-map .leaflet-popup-tip { box-shadow: none; }
+.regions-map__marker-wrap { background: none; border: none; }
+.regions-map__marker { display: block; width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(4,31,61,.45); }
+@media (max-width: 680px) { .regions-map { height: 340px; } }
 .service-regions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
 .service-regions-grid__card { padding: 26px; border: 1px solid #e4ded4; background: var(--paper); }
 .service-regions-grid__card h2 { margin: 0 0 10px; color: var(--navy); font: 25px/1.2 var(--serif); }
