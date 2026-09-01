@@ -106,6 +106,7 @@ export default function SiteHeader() {
           ))}
           <div className="nav-contact-actions">
             <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
+              <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? "🇬🇧" : "🇹🇷"}</span>
               {lang === "tr" ? "EN" : "TR"}
             </a>
             <a className="nav-contact" href={toPath("/iletisim")}>
@@ -143,7 +144,7 @@ export default function SiteHeader() {
               </a>
             ))}
             <a href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : (currentPath === "/" ? "/" : currentPath)} onClick={() => setIsOpen(false)} className="mobile-nav__lang">
-              {lang === "tr" ? "English" : "Türkçe"}
+              <span aria-hidden="true">{lang === "tr" ? "🇬🇧" : "🇹🇷"}</span> {lang === "tr" ? "English" : "Türkçe"}
             </a>
             <div className="mobile-nav__actions">
               <a className="mobile-nav__contact" href={toPath("/iletisim")} onClick={() => setIsOpen(false)}>

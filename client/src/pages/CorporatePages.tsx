@@ -674,7 +674,7 @@ function usePageMetadata(
 
 export function AboutNew() {
   const c = useAboutContent();
-  const { toPath } = useLanguage();
+  const { lang, toPath } = useLanguage();
   usePageMetadata(
     "/hakkimizda",
     "Hakkımızda | Perla Marine Kurumsal Tekne Bakım ve Teknik Servis",
@@ -969,7 +969,7 @@ export function AboutNew() {
 
         <a
           className="button button--navy"
-          href="/perla-marine-kurumsal-sirket-profili.pdf"
+          href={lang === "en" ? "/perla-marine-corporate-profile.pdf" : "/perla-marine-kurumsal-sirket-profili.pdf"}
           target="_blank"
           rel="noopener noreferrer"
           download
