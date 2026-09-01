@@ -65,6 +65,12 @@ type Project = {
   before: string;
   after: string;
   gallery: string[];
+  labelEn?: string;
+  titleEn?: string;
+  detailEn?: string;
+  scopeEn?: string;
+  systemsEn?: string;
+  resultsEn?: string;
 };
 
 type KnowledgePost = {
@@ -76,6 +82,10 @@ type KnowledgePost = {
   body: string;
   coverImage: string | null;
   publishedAt: string | null;
+  categoryEn?: string;
+  titleEn?: string;
+  excerptEn?: string;
+  bodyEn?: string;
 };
 
 type FormState = {
@@ -1193,6 +1203,7 @@ function ProjectLightbox({
 ========================================================= */
 
 export function ProjectsNew() {
+  const { lang } = useLanguage();
   usePageMetadata(
     "/projeler",
     "Projeler | Perla Marine Saha Bakım ve Refit Çalışmaları",
@@ -1287,6 +1298,12 @@ export function ProjectsNew() {
                   Array.isArray(project.gallery_images)
                     ? project.gallery_images
                     : [],
+                labelEn: project.label_en ?? "",
+                titleEn: project.title_en ?? "",
+                detailEn: project.detail_en ?? "",
+                scopeEn: project.scope_en ?? "",
+                systemsEn: project.systems_en ?? "",
+                resultsEn: project.results_en ?? "",
               })
             );
 
@@ -1310,6 +1327,16 @@ export function ProjectsNew() {
       mounted = false;
     };
   }, []);
+
+  const displayProjects = lang === "en" ? projects.map((p) => ({
+    ...p,
+    label: p.labelEn || p.label,
+    title: p.titleEn || p.title,
+    detail: p.detailEn || p.detail,
+    scope: p.scopeEn || p.scope,
+    systems: p.systemsEn || p.systems,
+    results: p.resultsEn || p.results,
+  })) : projects;
 
   return (
     <PageFrame>
@@ -1343,7 +1370,7 @@ export function ProjectsNew() {
           )}
 
         <div className="project-detail-grid">
-          {projects.map(
+          {displayProjects.map(
             (project, index) => (
               <article
                 id={project.slug}
@@ -1475,7 +1502,7 @@ export function ProjectsNew() {
 
       {activeIndex !== null && (
         <ProjectLightbox
-          projects={projects}
+          projects={displayProjects}
           activeIndex={
             activeIndex
           }
@@ -1532,6 +1559,7 @@ function renderKnowledgeBody(
 }
 
 export function KnowledgeNew() {
+  const { lang, toPath } = useLanguage();
   usePageMetadata(
     "/teknik-bilgiler",
     "Teknik Bilgiler | Perla Marine Bakım ve Servis Rehberleri",
@@ -1617,6 +1645,10 @@ export function KnowledgeNew() {
                 publishedAt:
                   post.published_at ||
                   null,
+                categoryEn: post.category_en ?? "",
+                titleEn: post.title_en ?? "",
+                excerptEn: post.excerpt_en ?? "",
+                bodyEn: post.body_en ?? "",
               })
             );
 
@@ -1640,6 +1672,14 @@ export function KnowledgeNew() {
       mounted = false;
     };
   }, []);
+
+  const displayPosts = lang === "en" ? posts.map((p) => ({
+    ...p,
+    category: p.categoryEn || p.category,
+    title: p.titleEn || p.title,
+    excerpt: p.excerptEn || p.excerpt,
+    body: p.bodyEn || p.body,
+  })) : posts;
 
   return (
     <PageFrame>
@@ -1678,7 +1718,7 @@ export function KnowledgeNew() {
           )}
 
         <div className="knowledge-grid">
-          {posts.map((post) => (
+          {displayPosts.map((post) => (
             <article
               className="knowledge-card"
               id={post.slug}

@@ -20,11 +20,17 @@ type ProjectForm = {
   beforeImage: string;
   afterImage: string;
   galleryImages: string[];
+  labelEn: string;
+  titleEn: string;
+  detailEn: string;
+  scopeEn: string;
+  systemsEn: string;
+  resultsEn: string;
   status: "draft" | "published";
   sortOrder: number;
 };
 
-const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], status: "draft", sortOrder: 0 };
+const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
 const PROJECT_CATEGORY_OPTIONS = [
   "Kompozit çözümler",
   "Marin elektrik",
@@ -269,6 +275,13 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
       <label className="admin-project-form__full">Proje kapsamı<Textarea maxLength={800} value={value.scope} onChange={(event) => set("scope", event.target.value)} placeholder="Kontrol edilen ve uygulanan bakım adımlarını yazın." rows={3} /><small className="admin-form-hint">Kontrol edilen sistemleri ve uygulanan bakım adımlarını ayrıntılandırın.</small><CharacterCount value={value.scope} max={800} /></label>
       <label>Kullanılan sistemler<Textarea maxLength={800} value={value.systems} onChange={(event) => set("systems", event.target.value)} placeholder="Akü, BMS, pano, kablolama…" rows={3} /><small className="admin-form-hint">Virgülle ayırarak kullanılan sistemleri yazabilirsiniz.</small><CharacterCount value={value.systems} max={800} /></label>
       <label>Bakım sonucu<Textarea maxLength={800} value={value.results} onChange={(event) => set("results", event.target.value)} placeholder="Operasyon sonrasında elde edilen teknik durumu yazın." rows={3} /><small className="admin-form-hint">Bakım sonrasında elde edilen durumu ve gözlemlenen sonucu belirtin.</small><CharacterCount value={value.results} max={800} /></label>
+      <div className="admin-project-form__full admin-en-section"><p className="admin-field-label admin-en-section__title">🇬🇧 İngilizce içerik (opsiyonel — boş bırakılırsa /en sayfasında Türkçe metin görünür)</p></div>
+      <label>Kategori (EN)<Input value={value.labelEn} onChange={(event) => set("labelEn", event.target.value)} placeholder="Marine electrical" /></label>
+      <label className="admin-project-form__full">Proje başlığı (EN)<Input value={value.titleEn} onChange={(event) => set("titleEn", event.target.value)} /></label>
+      <label className="admin-project-form__full">Kısa açıklama (EN)<Textarea value={value.detailEn} onChange={(event) => set("detailEn", event.target.value)} rows={3} /></label>
+      <label className="admin-project-form__full">Proje kapsamı (EN)<Textarea value={value.scopeEn} onChange={(event) => set("scopeEn", event.target.value)} rows={3} /></label>
+      <label>Kullanılan sistemler (EN)<Textarea value={value.systemsEn} onChange={(event) => set("systemsEn", event.target.value)} rows={3} /></label>
+      <label>Bakım sonucu (EN)<Textarea value={value.resultsEn} onChange={(event) => set("resultsEn", event.target.value)} rows={3} /></label>
       <ImageUploadField field="beforeImage" label="Önce görseli" fieldError={errors.beforeImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.beforeImage = message; else delete nextErrors.beforeImage; return nextErrors; })} value={value.beforeImage} onChange={(url) => set("beforeImage", url)} />
       <ImageUploadField field="afterImage" label="Sonra görseli" fieldError={errors.afterImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.afterImage = message; else delete nextErrors.afterImage; return nextErrors; })} value={value.afterImage} onChange={(url) => set("afterImage", url)} />
       <ProjectGalleryField value={value.galleryImages} onChange={(urls) => set("galleryImages", urls)} />
@@ -290,7 +303,7 @@ export default function AdminProjects() {
   useEffect(() => { refreshProjects(); }, []);
   const [form, setForm] = useState<ProjectForm | null>(null);
   const [savedProject, setSavedProject] = useState<SavedProject | null>(null);
-  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, status: project.status, sortOrder: project.sortOrder }); };
+  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, labelEn: project.labelEn, titleEn: project.titleEn, detailEn: project.detailEn, scopeEn: project.scopeEn ?? "", systemsEn: project.systemsEn ?? "", resultsEn: project.resultsEn ?? "", status: project.status, sortOrder: project.sortOrder }); };
   const startNewProject = () => { setSavedProject(null); setForm(emptyForm); };
   const saved = (project: SavedProject) => { clearProjectDraft(); setForm(null); setSavedProject(project); refreshProjects(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) deleteProject(id).then(refreshProjects); };
