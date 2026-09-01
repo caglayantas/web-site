@@ -102,6 +102,22 @@ export type ServiceRow = {
   updatedAt?: string;
 };
 
+export type MarinaPoint = { name: string; lat?: number; lng?: number };
+
+export type RegionRow = {
+  id: number;
+  regionKey: string;
+  name: string;
+  nameEn: string;
+  intro: string;
+  introEn: string;
+  marinas: MarinaPoint[];
+  status: "draft" | "published";
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type PartnerRow = {
   id: number;
   name: string;
@@ -261,6 +277,33 @@ const serviceToRow = (p: Partial<ServiceRow>) => {
   return row;
 };
 
+const mapRegion = (row: any): RegionRow => ({
+  id: row.id,
+  regionKey: row.region_key,
+  name: row.name,
+  nameEn: row.name_en ?? "",
+  intro: row.intro,
+  introEn: row.intro_en ?? "",
+  marinas: Array.isArray(row.marinas) ? row.marinas : [],
+  status: row.status,
+  sortOrder: row.sort_order,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const regionToRow = (p: Partial<RegionRow>) => {
+  const row: Record<string, unknown> = {};
+  if (p.regionKey !== undefined) row.region_key = p.regionKey;
+  if (p.name !== undefined) row.name = p.name;
+  if (p.nameEn !== undefined) row.name_en = p.nameEn;
+  if (p.intro !== undefined) row.intro = p.intro;
+  if (p.introEn !== undefined) row.intro_en = p.introEn;
+  if (p.marinas !== undefined) row.marinas = p.marinas;
+  if (p.status !== undefined) row.status = p.status;
+  if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
+  return row;
+};
+
 const mapPartner = (row: any): PartnerRow => ({
   id: row.id,
   name: row.name,
@@ -389,6 +432,35 @@ export async function getPublishedServices(): Promise<ServiceRow[]> {
   const { data, error } = await supabase.from("services").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(mapService);
+}
+
+export async function getPublishedRegions(): Promise<RegionRow[]> {
+  const { data, error } = await supabase.from("regions").select("*").eq("status", "published").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapRegion);
+}
+
+export async function getAllRegions(): Promise<RegionRow[]> {
+  const { data, error } = await supabase.from("regions").select("*").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapRegion);
+}
+
+export async function createRegion(input: Partial<RegionRow>): Promise<RegionRow> {
+  const { data, error } = await supabase.from("regions").insert(regionToRow(input)).select("*").single();
+  if (error) throw error;
+  return mapRegion(data);
+}
+
+export async function updateRegion(id: number, changes: Partial<RegionRow>): Promise<RegionRow> {
+  const { data, error } = await supabase.from("regions").update(regionToRow(changes)).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapRegion(data);
+}
+
+export async function deleteRegion(id: number): Promise<void> {
+  const { error } = await supabase.from("regions").delete().eq("id", id);
+  if (error) throw error;
 }
 
 export async function getPublishedPartners(): Promise<PartnerRow[]> {
@@ -616,6 +688,15 @@ export function localizeFaq(row: FaqRow, lang: "tr" | "en"): FaqRow {
     ...row,
     question: pick(row.question, row.questionEn),
     answer: pick(row.answer, row.answerEn),
+  };
+}
+
+export function localizeRegion(row: RegionRow, lang: "tr" | "en"): RegionRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    name: pick(row.name, row.nameEn),
+    intro: pick(row.intro, row.introEn),
   };
 }
 

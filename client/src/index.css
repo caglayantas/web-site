@@ -668,7 +668,7 @@ textarea:focus-visible {
 .regions-map .leaflet-popup-content { margin: 10px 14px; font: 13px/1.4 var(--sans); color: var(--navy); }
 .regions-map .leaflet-popup-tip { box-shadow: none; }
 .regions-map__marker-wrap { background: none; border: none; }
-.regions-map__marker { display: block; width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(4,31,61,.45); }
+.regions-map__marker { display: block; width: 14px; height: 14px; background: var(--gold); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(4,31,61,.45); }
 @media (max-width: 680px) { .regions-map { height: 340px; } }
 .service-regions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
 .service-regions-grid__card { padding: 26px; border: 1px solid #e4ded4; background: var(--paper); }
@@ -935,6 +935,8 @@ textarea:focus-visible {
 @keyframes admin-spin { to { transform: rotate(360deg); } }
 .admin-field-label { display: block; margin-bottom: 7px; color: #374151; font-size: 12px; font-weight: 700; }
 .admin-en-section { margin-top: 18px; padding: 16px 16px 4px; border: 1px dashed #b9c4cf; background: #f6f8fa; }
+.admin-marina-editor { display: flex; flex-direction: column; gap: 8px; }
+.admin-marina-editor__row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center; }
 .admin-en-section__title { margin: 0 !important; color: #1d4ed8; font-size: 12.5px; font-weight: 800; }
 .rich-text-editor { overflow: hidden; border: 1px solid #d7dce3; background: #fff; }
 .rich-text-toolbar { display: flex; flex-wrap: wrap; gap: 3px; padding: 7px; border-bottom: 1px solid #e3e6eb; background: #f8f7f3; }
