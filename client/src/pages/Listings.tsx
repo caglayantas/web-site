@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { ArrowUpRight, Anchor, ArrowLeft, ArrowRight, Wrench, X } from "lucide-react";
 import { getPublishedBoatListings, getListingsEnabled, type BoatListingRow } from "@/lib/content";
 import PageHero from "@/components/PageHero";
+import { useLanguage } from "@/lib/i18n";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -44,6 +45,7 @@ function ListingLightbox({ listing, startIndex, onClose }: { listing: BoatListin
 }
 
 export default function Listings() {
+  const { toPath } = useLanguage();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [data, setData] = useState<BoatListingRow[] | null>(null);
   const [lightbox, setLightbox] = useState<{ listing: BoatListingRow; startIndex: number } | null>(null);
@@ -74,7 +76,7 @@ export default function Listings() {
           <Wrench size={30} aria-hidden="true" />
           <h1>Sayfa şu anda kullanıma kapalı</h1>
           <p>Bu sayfa şu anda teknik düzenlemelerden dolayı kullanıma kapalıdır. Bir süre sonra tekrar deneyiniz.</p>
-          <Link className="button button--gold" href="/">Ana sayfaya dön</Link>
+          <Link className="button button--gold" href={toPath("/")}>Ana sayfaya dön</Link>
         </div>
       </div>
     );
@@ -122,7 +124,7 @@ export default function Listings() {
                   <p className="listings-grid__description">{listing.description}</p>
                   <div className="listings-grid__footer">
                     <strong>{listing.price}</strong>
-                    <Link className="button button--gold" href="/iletisim">Bilgi alın <ArrowUpRight size={15} /></Link>
+                    <Link className="button button--gold" href={toPath("/iletisim")}>Bilgi alın <ArrowUpRight size={15} /></Link>
                   </div>
                 </div>
               </article>

@@ -1011,6 +1011,7 @@ export function AboutNew() {
 ========================================================= */
 
 export function ServicesNew() {
+  const { lang } = useLanguage();
   usePageMetadata(
     "/hizmetler",
     "Hizmetler | Perla Marine Tekne ve Yat Bakım-Onarım",
@@ -1025,20 +1026,18 @@ export function ServicesNew() {
         <div className="section-heading section-heading--split">
           <div>
             <p className="eyebrow">
-              Bakım ve servis kapsamı
+              {lang === "en" ? "Maintenance and service scope" : "Bakım ve servis kapsamı"}
             </p>
 
             <h2>
-              Teknenin ihtiyacı değişir.
-              <br />
-              <em>Servis kapsamı da.</em>
+              {lang === "en" ? <>The boat's need changes.<br /><em>So does the service scope.</em></> : <>Teknenin ihtiyacı değişir.<br /><em>Servis kapsamı da.</em></>}
             </h2>
           </div>
 
           <p>
-            Her hizmet grubunu ayrı bir operasyon olarak
-            ele alıyor, gerektiğinde sistemler arası
-            ilişkiyi birlikte değerlendiriyoruz.
+            {lang === "en"
+              ? "We treat each service category as a distinct operation, and assess the relationship between systems together when needed."
+              : "Her hizmet grubunu ayrı bir operasyon olarak ele alıyor, gerektiğinde sistemler arası ilişkiyi birlikte değerlendiriyoruz."}
           </p>
         </div>
 
@@ -1063,6 +1062,7 @@ function ProjectLightbox({
   onClose: () => void;
   onChange: (index: number) => void;
 }) {
+  const { lang } = useLanguage();
   const project = projects[activeIndex];
 
   const [imageIndex, setImageIndex] =
@@ -1117,17 +1117,17 @@ function ProjectLightbox({
   const image = images[imageIndex];
   const captionFor = (index: number) =>
     index === 0
-      ? "Önce · mevcut durum"
+      ? (lang === "en" ? "Before · current condition" : "Önce · mevcut durum")
       : index === 1
-      ? "Sonra · hedeflenen kapsam"
-      : `Ek fotoğraf ${index - 1}`;
+      ? (lang === "en" ? "After · targeted scope" : "Sonra · hedeflenen kapsam")
+      : (lang === "en" ? `Additional photo ${index - 1}` : `Ek fotoğraf ${index - 1}`);
 
   return (
     <div
       className="project-lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label={`${project.title} görsel galerisi`}
+      aria-label={`${project.title} ${lang === "en" ? "image gallery" : "görsel galerisi"}`}
       onClick={onClose}
     >
       <div
@@ -1142,7 +1142,7 @@ function ProjectLightbox({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Galeriyi kapat"
+            aria-label={lang === "en" ? "Close gallery" : "Galeriyi kapat"}
           >
             <X size={22} />
           </button>
@@ -1158,7 +1158,7 @@ function ProjectLightbox({
                   (current - 1 + images.length) % images.length
               )
             }
-            aria-label="Önceki görsel"
+            aria-label={lang === "en" ? "Previous image" : "Önceki görsel"}
           >
             <ArrowLeft size={22} />
           </button>
@@ -1177,7 +1177,7 @@ function ProjectLightbox({
                   (current + 1) % images.length
               )
             }
-            aria-label="Sonraki görsel"
+            aria-label={lang === "en" ? "Next image" : "Sonraki görsel"}
           >
             <ArrowRight size={22} />
           </button>
@@ -1209,7 +1209,7 @@ function ProjectLightbox({
                   onClick={() =>
                     onChange(index)
                   }
-                  aria-label={`${item.title} galerisini aç`}
+                  aria-label={lang === "en" ? `Open ${item.title} gallery` : `${item.title} galerisini aç`}
                 >
                   {index + 1}
                 </button>
@@ -1227,7 +1227,7 @@ function ProjectLightbox({
 ========================================================= */
 
 export function ProjectsNew() {
-  const { lang } = useLanguage();
+  const { lang, toPath } = useLanguage();
   usePageMetadata(
     "/projeler",
     "Projeler | Perla Marine Saha Bakım ve Refit Çalışmaları",
@@ -1370,27 +1370,24 @@ export function ProjectsNew() {
         <div className="section-heading section-heading--split">
           <div>
             <p className="eyebrow">
-              Saha çalışmaları
+              {lang === "en" ? "Field work" : "Saha çalışmaları"}
             </p>
 
             <h2>
-              Önce mevcut durumu,
-              <br />
-              <em>sonra hedefi görün.</em>
+              {lang === "en" ? <>See the current condition first,<br /><em>then the target.</em></> : <>Önce mevcut durumu,<br /><em>sonra hedefi görün.</em></>}
             </h2>
           </div>
 
           <p>
-            Bakım ve refit kapsamını sistem bazında
-            değerlendiriyor, mevcut durumdan sonraki
-            uygulanabilir adıma kadar süreci
-            görünür hale getiriyoruz.
+            {lang === "en"
+              ? "We assess maintenance and refit scope system by system, making the process visible from the current condition to the next actionable step."
+              : "Bakım ve refit kapsamını sistem bazında değerlendiriyor, mevcut durumdan sonraki uygulanabilir adıma kadar süreci görünür hale getiriyoruz."}
           </p>
         </div>
 
         {loading &&
           projects.length === 0 && (
-            <p>Projeler yükleniyor...</p>
+            <p>{lang === "en" ? "Loading projects..." : "Projeler yükleniyor..."}</p>
           )}
 
         <div className="project-detail-grid">
@@ -1409,8 +1406,8 @@ export function ProjectsNew() {
                     after={
                       project.after
                     }
-                    beforeAlt={`${project.title} önce · mevcut durum`}
-                    afterAlt={`${project.title} sonra · hedeflenen kapsam`}
+                    beforeAlt={`${project.title} ${lang === "en" ? "before · current condition" : "önce · mevcut durum"}`}
+                    afterAlt={`${project.title} ${lang === "en" ? "after · target scope" : "sonra · hedeflenen kapsam"}`}
                     label={project.title}
                   />
 
@@ -1422,9 +1419,9 @@ export function ProjectsNew() {
                         index
                       )
                     }
-                    aria-label={`${project.title} görsellerini büyüt`}
+                    aria-label={lang === "en" ? `Enlarge ${project.title} images` : `${project.title} görsellerini büyüt`}
                   >
-                    Görselleri büyüt
+                    {lang === "en" ? "Enlarge images" : "Görselleri büyüt"}
                     <ChevronRight
                       size={13}
                     />
@@ -1442,7 +1439,7 @@ export function ProjectsNew() {
                               index
                             )
                           }
-                          aria-label={`${project.title} için ${photoIndex + 1}. ek fotoğrafı büyüt`}
+                          aria-label={lang === "en" ? `Enlarge photo ${photoIndex + 1} for ${project.title}` : `${project.title} için ${photoIndex + 1}. ek fotoğrafı büyüt`}
                         >
                           <img src={url} alt="" loading="lazy" decoding="async" />
                         </button>
@@ -1455,10 +1452,10 @@ export function ProjectsNew() {
                             index
                           )
                         }
-                        aria-label={`${project.title} için tüm fotoğrafları görüntüle`}
+                        aria-label={lang === "en" ? `View all photos for ${project.title}` : `${project.title} için tüm fotoğrafları görüntüle`}
                       >
                         <ImageIcon size={13} />
-                        Tüm fotoğraflar
+                        {lang === "en" ? "All photos" : "Tüm fotoğraflar"}
                       </button>
                     </div>
                   )}
@@ -1480,7 +1477,7 @@ export function ProjectsNew() {
                   <div className="project-detail-card__facts">
                     <div>
                       <strong>
-                        Kapsam
+                        {lang === "en" ? "Scope" : "Kapsam"}
                       </strong>
 
                       <p>
@@ -1490,7 +1487,7 @@ export function ProjectsNew() {
 
                     <div>
                       <strong>
-                        Kullanılan sistemler
+                        {lang === "en" ? "Systems Used" : "Kullanılan sistemler"}
                       </strong>
 
                       <p>
@@ -1500,7 +1497,7 @@ export function ProjectsNew() {
 
                     <div>
                       <strong>
-                        Bakım sonucu
+                        {lang === "en" ? "Maintenance Result" : "Bakım sonucu"}
                       </strong>
 
                       <p>
@@ -1509,9 +1506,9 @@ export function ProjectsNew() {
                     </div>
                   </div>
 
-                  <a href={`/iletisim?kategori=${encodeURIComponent(project.label)}`}>
+                  <a href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(project.label)}`}>
                     <strong>
-                      Bu kapsamı konuşun
+                      {lang === "en" ? "Discuss this scope" : "Bu kapsamı konuşun"}
                       <ArrowUpRight
                         size={15}
                       />
@@ -1715,29 +1712,25 @@ export function KnowledgeNew() {
         <div className="section-heading section-heading--split">
           <div>
             <p className="eyebrow">
-              Bakım notları
+              {lang === "en" ? "Maintenance Notes" : "Bakım notları"}
             </p>
 
             <h2>
-              Teknik kararlar için
-              <br />
-              <em>
-                kısa ve net rehberler.
-              </em>
+              {lang === "en" ? <>Short, clear guides<br /><em>for technical decisions.</em></> : <>Teknik kararlar için<br /><em>kısa ve net rehberler.</em></>}
             </h2>
           </div>
 
           <p>
-            Teknik Bilgiler; bakım kararlarını
-            destekleyen teknik yazılardan oluşan sade
-            bir içerik arşividir.
+            {lang === "en"
+              ? "Technical Notes is a simple content archive made up of technical articles that support maintenance decisions."
+              : "Teknik Bilgiler; bakım kararlarını destekleyen teknik yazılardan oluşan sade bir içerik arşividir."}
           </p>
         </div>
 
         {loading &&
           posts.length === 0 && (
             <p>
-              Teknik bilgiler yükleniyor...
+              {lang === "en" ? "Loading technical notes..." : "Teknik bilgiler yükleniyor..."}
             </p>
           )}
 
@@ -1754,7 +1747,7 @@ export function KnowledgeNew() {
                   src={
                     post.coverImage
                   }
-                  alt={`${post.title} kapak görseli`}
+                  alt={`${post.title} ${lang === "en" ? "cover image" : "kapak görseli"}`}
                   loading="lazy"
                 />
               )}
@@ -1773,10 +1766,10 @@ export function KnowledgeNew() {
 
               <div className="knowledge-card__actions">
                 <a
-                  href={`/teknik-bilgiler/${post.slug}`}
+                  href={toPath(`/teknik-bilgiler/${post.slug}`)}
                   className="text-link text-link--dark"
                 >
-                  Yazıyı aç
+                  {lang === "en" ? "Read article" : "Yazıyı aç"}
                   <ArrowUpRight
                     size={15}
                   />
@@ -1787,7 +1780,7 @@ export function KnowledgeNew() {
                     {new Date(
                       post.publishedAt
                     ).toLocaleDateString(
-                      "tr-TR"
+                      lang === "en" ? "en-US" : "tr-TR"
                     )}
                   </small>
                 )}
@@ -1795,7 +1788,7 @@ export function KnowledgeNew() {
 
               <details className="knowledge-card__details">
                 <summary>
-                  Kısa önizleme
+                  {lang === "en" ? "Quick preview" : "Kısa önizleme"}
                 </summary>
 
                 <div
