@@ -542,7 +542,7 @@ textarea:focus-visible {
 .footer-brand__logo { display: block; width: min(245px, 100%); height: auto; }
 .footer-brand__logo + p { margin-top: 18px; }
 .footer-social-link--whatsapp svg { width: 25px; height: 25px; color: currentColor; }
-.nav-whatsapp svg, .mobile-nav__social svg { width: 27px; height: 27px; color: currentColor; }
+.nav-whatsapp svg, .mobile-nav__social svg { width: 32px; height: 32px; color: currentColor; }
 @media (max-width: 680px) {
   .footer-brand__logo { width: min(220px, 100%); }
 }
