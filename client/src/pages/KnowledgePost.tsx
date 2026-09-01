@@ -88,7 +88,7 @@ export default function KnowledgePost() {
     schema.dataset.pageSchema = "knowledge";
     schema.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: article.title, description: meta.description, image: imageUrl, datePublished: data.publishedAt, dateModified: data.updatedAt, mainEntityOfPage: canonicalUrl, author: { "@type": "Organization", name: "Perla Marine" }, publisher: { "@type": "Organization", name: "Perla Marine", url: SITE_URL } });
     document.head.appendChild(schema);
-    return () => { schema.remove(); document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    return () => { schema.remove(); document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [data, lang]);
 
   if (data === undefined) return <div className="corporate-page"><div className="corporate-intro"><p>{lang === "en" ? "Loading technical note…" : "Teknik bilgi yükleniyor…"}</p></div></div>;

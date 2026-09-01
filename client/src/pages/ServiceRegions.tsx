@@ -108,7 +108,7 @@ export default function ServiceRegions() {
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${SITE_URL}${toPath("/hizmet-bolgelerimiz")}`);
-    return () => { document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [lang]);
 
   return (

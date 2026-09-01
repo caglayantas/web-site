@@ -45,7 +45,7 @@ function ListingLightbox({ listing, startIndex, onClose }: { listing: BoatListin
 }
 
 export default function Listings() {
-  const { toPath } = useLanguage();
+  const { lang, toPath } = useLanguage();
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [data, setData] = useState<BoatListingRow[] | null>(null);
   const [lightbox, setLightbox] = useState<{ listing: BoatListingRow; startIndex: number } | null>(null);
@@ -65,7 +65,7 @@ export default function Listings() {
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}/ilanlar`);
-    return () => { document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [enabled]);
 
   if (enabled === null) return <div className="corporate-page"><div className="corporate-intro"><p>Yükleniyor…</p></div></div>;

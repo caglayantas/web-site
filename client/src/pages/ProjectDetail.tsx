@@ -35,7 +35,7 @@ export default function ProjectDetail() {
     schema.dataset.pageSchema = "project";
     schema.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "CreativeWork", name: project.title, description: project.detail, image: [data.beforeImage, data.afterImage], url: canonicalUrl, author: { "@type": "Organization", name: "Perla Marine" }, publisher: { "@type": "Organization", name: "Perla Marine", url: SITE_URL } });
     document.head.appendChild(schema);
-    return () => { schema.remove(); document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    return () => { schema.remove(); document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [data, lang]);
   if (data === undefined) return <div className="corporate-page"><div className="corporate-intro"><p>{lang === "en" ? "Loading project…" : "Proje yükleniyor…"}</p></div></div>;
   if (!data) return <NotFound />;

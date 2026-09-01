@@ -128,15 +128,15 @@ export default function SiteHeader() {
             </a>
           ))}
           <div className="nav-contact-actions">
-            <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
-              <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span>
-              {lang === "tr" ? "EN" : "TR"}
-            </a>
             <a className="nav-contact" href={toPath("/iletisim")}>
               {t("nav.contact")} <span aria-hidden="true">↗</span>
             </a>
             <a className="nav-whatsapp" href="https://wa.me/905454353201" target="_blank" rel="noreferrer" aria-label="WhatsApp" title="WhatsApp">
               <WhatsAppIcon />
+            </a>
+            <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
+              <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span>
+              {lang === "tr" ? "EN" : "TR"}
             </a>
           </div>
         </nav>

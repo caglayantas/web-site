@@ -29,7 +29,7 @@ export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
-    return () => { document.title = "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [compact, lang]);
   const [items, setItems] = useState<FaqItem[] | null>(null);
   const [loading, setLoading] = useState(true);

@@ -65,7 +65,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
   }
 
   if (services.length === 0) {
-    return <p className="home-content-empty">Henüz yayınlanmış hizmet bulunmuyor.</p>;
+    return <p className="home-content-empty">{lang === "en" ? "No published services yet." : "Henüz yayınlanmış hizmet bulunmuyor."}</p>;
   }
 
   return (
@@ -75,7 +75,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
           const Icon = resolveIcon(item.icon);
           return (
             <article className="service-card service-card--interactive" id={item.slug} key={item.slug} onClick={() => openService(item.slug)} onKeyDown={(event) => handleCardKeyDown(event, item.slug)} role="button" tabIndex={0} aria-haspopup="dialog" aria-expanded={activeServiceId === item.slug}>
-              <div className="service-card__media">{item.image && <img className="service-card__image" src={item.image} alt={`${item.title} bakım ve uygulama hizmeti`} width={960} height={640} loading="lazy" decoding="async" />}<span className="service-card__view">Detayları incele <ArrowUpRight size={14} aria-hidden="true" /></span></div>
+              <div className="service-card__media">{item.image && <img className="service-card__image" src={item.image} alt={`${item.title} ${lang === "en" ? "maintenance and application service" : "bakım ve uygulama hizmeti"}`} width={960} height={640} loading="lazy" decoding="async" />}<span className="service-card__view">{lang === "en" ? "View details" : "Detayları incele"} <ArrowUpRight size={14} aria-hidden="true" /></span></div>
               <div className="service-card__body"><div className="service-card__topline"><span className="service-card__signal"><Icon size={20} strokeWidth={1.55} aria-hidden="true" /></span><span className="service-card__rule" aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.description}</p><ul className="service-card__subtopics">{item.subtopics.map((subtopic) => <li key={subtopic}>{subtopic}</li>)}</ul></div>
             </article>
           );
@@ -87,7 +87,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
           <div className="service-modal__scroll">
             {activeService && <>
               <DialogHeader><p className="eyebrow">{activeService.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeService.intro}</DialogDescription></DialogHeader>
-              <div className="service-modal__columns"><div><p className="service-modal__label">Bakım kapsamı</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>Perla Marine yaklaşımı</strong><br />{activeService.note}</p></div></div>
+              <div className="service-modal__columns"><div><p className="service-modal__label">{lang === "en" ? "Maintenance scope" : "Bakım kapsamı"}</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>{lang === "en" ? "The Perla Marine approach" : "Perla Marine yaklaşımı"}</strong><br />{activeService.note}</p></div></div>
               <a className="button button--navy" href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(SERVICE_CONTACT_CATEGORY[activeService.slug] ?? activeService.title)}`}>{activeService.cta} <ArrowUpRight size={17} /></a>
             </>}
           </div>

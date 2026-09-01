@@ -135,6 +135,20 @@ export default function Home() {
   const t = lang === "en" ? contentEn : contentTr;
   const technicalFallback = lang === "en" ? technicalFallbackEn : technicalFallbackTr;
   const projectFallback = lang === "en" ? projectFallbackEn : projectFallbackTr;
+  useEffect(() => {
+    const title = lang === "en"
+      ? "Perla Marine | Boat & Yacht Maintenance and Repair"
+      : "Perla Marine | Tekne ve Yat Bakım-Onarım";
+    const description = lang === "en"
+      ? "Perla Marine provides engineering-grade maintenance, repair, refit, and technical service solutions for boats and yachts."
+      : "Perla Marine; tekne ve yat sahiplerine mühendislik disipliniyle bakım, onarım, refit ve teknik servis çözümleri sunar.";
+    document.title = title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}${toPath("/")}`);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${SITE_URL}${toPath("/")}`);
+  }, [lang]);
   const [knowledgeData, setKnowledgeData] = useState<KnowledgePostRow[] | null>(null);
   const [knowledgeError, setKnowledgeError] = useState(false);
   const [knowledgeLoading, setKnowledgeLoading] = useState(true);

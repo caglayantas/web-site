@@ -628,23 +628,28 @@ function PageFrame({
 function usePageMetadata(
   path: string,
   title: string,
-  description: string
+  description: string,
+  titleEn?: string,
+  descriptionEn?: string
 ) {
+  const { lang, toPath } = useLanguage();
   useEffect(() => {
-    document.title = title;
+    const activeTitle = lang === "en" && titleEn ? titleEn : title;
+    const activeDescription = lang === "en" && descriptionEn ? descriptionEn : description;
+    document.title = activeTitle;
 
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
-        description
+        activeDescription
       );
 
     document
       .querySelector('link[rel="canonical"]')
       ?.setAttribute(
         "href",
-        `${SITE_URL}${path}`
+        `${SITE_URL}${toPath(path)}`
       );
 
     document
@@ -653,7 +658,7 @@ function usePageMetadata(
       )
       ?.setAttribute(
         "content",
-        title
+        activeTitle
       );
 
     document
@@ -662,7 +667,7 @@ function usePageMetadata(
       )
       ?.setAttribute(
         "content",
-        description
+        activeDescription
       );
 
     document
@@ -671,17 +676,20 @@ function usePageMetadata(
       )
       ?.setAttribute(
         "content",
-        `${SITE_URL}${path}`
+        `${SITE_URL}${toPath(path)}`
       );
 
     return () => {
       document.title =
-        "Perla Marine | Tekne ve Yat Bakım-Onarım";
+        lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım";
     };
   }, [
     path,
     title,
     description,
+    titleEn,
+    descriptionEn,
+    lang,
   ]);
 }
 
@@ -695,7 +703,9 @@ export function AboutNew() {
   usePageMetadata(
     "/hakkimizda",
     "Hakkımızda | Perla Marine Kurumsal Tekne Bakım ve Teknik Servis",
-    "Perla Marine’in kurumsal kimliğini, denizcilik bakım-onarım vizyonunu, teknik servis misyonunu ve iş yapma standardını keşfedin."
+    "Perla Marine’in kurumsal kimliğini, denizcilik bakım-onarım vizyonunu, teknik servis misyonunu ve iş yapma standardını keşfedin.",
+    "About Us | Perla Marine Corporate Boat Maintenance & Technical Service",
+    "Discover Perla Marine's corporate identity, marine maintenance vision, technical service mission, and working standard."
   );
 
   return (
@@ -1032,7 +1042,9 @@ export function ServicesNew() {
   usePageMetadata(
     "/hizmetler",
     "Hizmetler | Perla Marine Tekne ve Yat Bakım-Onarım",
-    "Perla Marine’in kompozit, marin elektrik, elektronik, mekanik tesisat, motor-tahrik-dümen ve özel tekne çözümlerini inceleyin."
+    "Perla Marine’in kompozit, marin elektrik, elektronik, mekanik tesisat, motor-tahrik-dümen ve özel tekne çözümlerini inceleyin.",
+    "Services | Perla Marine Boat & Yacht Maintenance and Repair",
+    "Explore Perla Marine's composite, marine electrical, electronics, mechanical, propulsion-steering, and boat-specific solutions."
   );
 
   return (
@@ -1248,7 +1260,9 @@ export function ProjectsNew() {
   usePageMetadata(
     "/projeler",
     "Projeler | Perla Marine Saha Bakım ve Refit Çalışmaları",
-    "Perla Marine’in tekne ve yat bakım, refit, elektrik, mekanik ve tahrik sistemleri saha çalışmalarını inceleyin."
+    "Perla Marine’in tekne ve yat bakım, refit, elektrik, mekanik ve tahrik sistemleri saha çalışmalarını inceleyin.",
+    "Projects | Perla Marine Field Maintenance & Refit Work",
+    "Explore Perla Marine's field work on boat and yacht maintenance, refit, electrical, mechanical, and propulsion systems."
   );
 
   const [activeIndex, setActiveIndex] =
@@ -1601,7 +1615,9 @@ export function KnowledgeNew() {
   usePageMetadata(
     "/teknik-bilgiler",
     "Teknik Bilgiler | Perla Marine Bakım ve Servis Rehberleri",
-    "Tekne sahipleri ve üretici ekipleri için marin elektrik, motor-tahrik ve mekanik tesisat bakım rehberlerini okuyun."
+    "Tekne sahipleri ve üretici ekipleri için marin elektrik, motor-tahrik ve mekanik tesisat bakım rehberlerini okuyun.",
+    "Technical Notes | Perla Marine Maintenance & Service Guides",
+    "Read maintenance guides on marine electrical, propulsion, and mechanical systems for boat owners and manufacturer teams."
   );
 
   const [posts, setPosts] =
@@ -1909,7 +1925,9 @@ export function ContactNew() {
   usePageMetadata(
     "/iletisim",
     "İletişim | Perla Marine Tekne Teknik Check-up ve Servis",
-    "Teknenizin bakım, onarım, elektrik, mekanik veya tahrik ihtiyacını Perla Marine’e aktarın; uygulanabilir sonraki adımı birlikte planlayalım."
+    "Teknenizin bakım, onarım, elektrik, mekanik veya tahrik ihtiyacını Perla Marine’e aktarın; uygulanabilir sonraki adımı birlikte planlayalım.",
+    "Contact | Perla Marine Boat Technical Checkup and Service",
+    "Tell Perla Marine about your boat's maintenance, repair, electrical, mechanical, or propulsion needs; let's plan the next step together."
   );
 
   const [values, setValues] =
