@@ -136,7 +136,6 @@ export default function SiteHeader() {
             </a>
             <a className="nav-lang-switch" href={lang === "tr" ? `/en${currentPath === "/" ? "" : currentPath}` : currentPath} aria-label={lang === "tr" ? "Switch to English" : "Türkçe'ye geç"}>
               <span className="nav-lang-switch__flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span>
-              {lang === "tr" ? "EN" : "TR"}
             </a>
           </div>
         </nav>
