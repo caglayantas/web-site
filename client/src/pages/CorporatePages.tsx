@@ -504,8 +504,8 @@ const fallbackProjects: Project[] = [
       "İçten takma motor, şaft, kaplin, pervane ve dümen hattı.",
     results:
       "Tahrik hattındaki kontrol noktaları servis planına alınarak sonraki bakım adımları netleştirildi.",
-    before: "/manus-storage/perla-service-propulsion_1dad9846.jpg",
-    after: "/manus-storage/perla-service-mechanical_1537487f.jpg",
+    before: "/manus-storage/perla-service-propulsion_1dad9846.webp",
+    after: "/manus-storage/perla-service-mechanical_1537487f.webp",
     gallery: [],
   },
 
@@ -522,7 +522,7 @@ const fallbackProjects: Project[] = [
       "Yakıt, sintine, deniz suyu, pompa ve vana hatları.",
     results:
       "Sızdırmazlık ve erişim öncelikleri görünür hale getirilerek planlı bakım akışına dönüştürüldü.",
-    before: "/manus-storage/perla-service-mechanical_1537487f.jpg",
+    before: "/manus-storage/perla-service-mechanical_1537487f.webp",
     after: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
     gallery: [],
   },

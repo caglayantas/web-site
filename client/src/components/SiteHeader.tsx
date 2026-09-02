@@ -116,7 +116,7 @@ export default function SiteHeader() {
         <a className="brand-lockup" href={toPath("/")} aria-label="Perla Marine">
           <img
             className="brand-lockup__logo"
-            src="/manus-storage/perla-marine-logo-real-transparent_d043978f.png"
+            src="/manus-storage/perla-marine-logo-real-transparent_d043978f.webp"
             alt="Perla Marine"
           />
         </a>

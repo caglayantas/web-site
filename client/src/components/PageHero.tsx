@@ -13,7 +13,7 @@ type PageHeroProps = {
 const heroImages: Record<PageHeroProps["variant"], string> = {
   about: "/manus-storage/perla-about-drydock-inspection-1600_2eb4cbac.webp",
   services: "/manus-storage/perla-hero-medium-yacht-service-1600_e565edfd.webp",
-  blog: "/manus-storage/perla-hybrid-propulsion_709c0218.jpg",
+  blog: "/manus-storage/perla-hybrid-propulsion_709c0218.webp",
   contact: "/manus-storage/perla-marine-checkup-inspection-report-1600_ee2d0922.webp",
 };
 

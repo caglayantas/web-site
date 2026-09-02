@@ -8,5 +8,5 @@ export default defineConfig({
   resolve: { alias: { "@": path.resolve(import.meta.dirname, "client", "src") } },
   root: path.resolve(import.meta.dirname, "client"),
   publicDir: path.resolve(import.meta.dirname, "client", "public"),
-  build: { outDir: path.resolve(import.meta.dirname, "dist/public"), emptyOutDir: true, rollupOptions: { output: { manualChunks(id: string) { return id.includes("node_modules") ? "vendor" : undefined; } } } },
+  build: { outDir: path.resolve(import.meta.dirname, "dist/public"), emptyOutDir: true, rollupOptions: { output: { manualChunks(id: string) { if (id.includes("node_modules")) { if (id.includes("leaflet")) return undefined; return "vendor"; } return undefined; } } } },
 });

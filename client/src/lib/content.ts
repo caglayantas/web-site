@@ -627,7 +627,7 @@ export async function deletePartner(id: number): Promise<void> {
 export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners" | "listings", file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {contentType: file.type });
+  const { error } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type, cacheControl: "31536000" });
   if (error) throw error;
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
