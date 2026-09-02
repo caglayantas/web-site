@@ -3,6 +3,7 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist/public",
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/((?!manus-storage/).*)", "destination": "/index.html" }
   ],
   "headers": [
