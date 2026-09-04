@@ -449,6 +449,12 @@ export async function getPublishedServices(): Promise<ServiceRow[]> {
   return (data ?? []).map(mapService);
 }
 
+export async function getPublishedServiceBySlug(slug: string): Promise<ServiceRow | null> {
+  const { data, error } = await supabase.from("services").select("*").eq("slug", slug).eq("status", "published").maybeSingle();
+  if (error) throw error;
+  return data ? mapService(data) : null;
+}
+
 const mapClientReference = (row: any): ClientReferenceRow => ({
   id: row.id,
   companyName: row.company_name,

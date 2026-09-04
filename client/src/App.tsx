@@ -85,6 +85,10 @@ const ProjectDetail = lazy(() =>
   import("@/pages/ProjectDetail")
 );
 
+const ServiceDetail = lazy(() =>
+  import("@/pages/ServiceDetail")
+);
+
 // ============================================================
 // Admin redirect
 // ============================================================
@@ -141,6 +145,7 @@ function Router() {
       <Route path="/referanslarimiz" component={References} />
 
       <Route path="/hizmetler" component={ServicesNew} />
+      <Route path="/hizmetler/:slug" component={ServiceDetail} />
 
       <Route path="/projeler/:slug" component={ProjectDetail} />
 
@@ -202,6 +207,7 @@ function Router() {
       <Route path="/en/hizmet-bolgelerimiz" component={ServiceRegions} />
       <Route path="/en/referanslarimiz" component={References} />
       <Route path="/en/hizmetler" component={ServicesNew} />
+      <Route path="/en/hizmetler/:slug" component={ServiceDetail} />
       <Route path="/en/projeler/:slug" component={ProjectDetail} />
       <Route path="/en/projeler" component={ProjectsNew} />
       <Route path="/en/teknik-bilgiler/:slug" component={KnowledgePost} />

@@ -3,7 +3,7 @@
  * anlaşılır ve taranabilir kartlar halinde sunar. İçerik /yonetim/hizmetler panelinden
  * yönetilen Supabase "services" tablosundan gelir.
  */
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getPublishedServices, localizeService, type ServiceRow } from "@/lib/content";
 import { useLanguage } from "@/lib/i18n";
@@ -52,9 +52,6 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
   const activeService = activeServiceId ? items.find((item) => item.slug === activeServiceId) ?? services?.find((item) => item.slug === activeServiceId) : undefined;
 
   const openService = (slug: string) => setActiveServiceId(slug);
-  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>, slug: string) => {
-    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openService(slug); }
-  };
 
   if (services === null) {
     return (
@@ -74,10 +71,10 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
         {items.map((item) => {
           const Icon = resolveIcon(item.icon);
           return (
-            <article className="service-card service-card--interactive" id={item.slug} key={item.slug} onClick={() => openService(item.slug)} onKeyDown={(event) => handleCardKeyDown(event, item.slug)} role="button" tabIndex={0} aria-haspopup="dialog" aria-expanded={activeServiceId === item.slug}>
+            <a className="service-card service-card--interactive" href={toPath(`/hizmetler/${item.slug}`)} id={item.slug} key={item.slug} onClick={(event) => { event.preventDefault(); openService(item.slug); }} aria-haspopup="dialog" aria-expanded={activeServiceId === item.slug}>
               <div className="service-card__media">{item.image && <img className="service-card__image" src={item.image} alt={`${item.title} ${lang === "en" ? "maintenance and application service" : "bakım ve uygulama hizmeti"}`} width={960} height={640} loading="lazy" decoding="async" />}<span className="service-card__view">{lang === "en" ? "View details" : "Detayları incele"} <ArrowUpRight size={14} aria-hidden="true" /></span></div>
               <div className="service-card__body"><div className="service-card__topline"><span className="service-card__signal"><Icon size={20} strokeWidth={1.55} aria-hidden="true" /></span><span className="service-card__rule" aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.description}</p><ul className="service-card__subtopics">{item.subtopics.map((subtopic) => <li key={subtopic}>{subtopic}</li>)}</ul></div>
-            </article>
+            </a>
           );
         })}
       </div>
@@ -89,6 +86,7 @@ export default function ServiceGrid({ expanded = false }: ServiceGridProps) {
               <DialogHeader><p className="eyebrow">{activeService.eyebrow}</p><DialogTitle>{activeService.title}</DialogTitle><DialogDescription className="service-modal__intro">{activeService.intro}</DialogDescription></DialogHeader>
               <div className="service-modal__columns"><div><p className="service-modal__label">{lang === "en" ? "Maintenance scope" : "Bakım kapsamı"}</p><ul className="check-list check-list--dark">{activeService.operations.map((operation) => <li key={operation}><Check size={16} aria-hidden="true" /><span>{operation}</span></li>)}</ul></div><div className="service-modal__note"><Wrench size={20} aria-hidden="true" /><p><strong>{lang === "en" ? "The Perla Marine approach" : "Perla Marine yaklaşımı"}</strong><br />{activeService.note}</p></div></div>
               <a className="button button--navy" href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(SERVICE_CONTACT_CATEGORY[activeService.slug] ?? activeService.title)}`}>{activeService.cta} <ArrowUpRight size={17} /></a>
+              <a className="text-link text-link--dark" href={toPath(`/hizmetler/${activeService.slug}`)} style={{ marginTop: 12 }}>{lang === "en" ? "Open full page" : "Detaylı sayfayı aç"} <ArrowUpRight size={14} /></a>
             </>}
           </div>
         </DialogContent>

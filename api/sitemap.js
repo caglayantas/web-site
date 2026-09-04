@@ -39,9 +39,10 @@ function bilingualEntry({ trPath, enPathValue, priority, changefreq, lastmod }) 
 }
 
 export default async function handler(req, res) {
-  const [projects, posts] = await Promise.all([
+  const [projects, posts, services] = await Promise.all([
     fetchTable("projects", "slug,updated_at", "updated_at.desc"),
     fetchTable("knowledge_posts", "slug,featured,published_at,updated_at", "published_at.desc"),
+    fetchTable("services", "slug,updated_at", "sort_order.asc"),
   ]);
 
   const entries = [
@@ -51,6 +52,15 @@ export default async function handler(req, res) {
         enPathValue: enPath(route),
         priority: route === "/" ? "1.0" : route === "/teknik-bilgiler" ? "0.9" : "0.7",
         changefreq: route === "/" ? "weekly" : "monthly",
+      })
+    ),
+    ...services.flatMap((s) =>
+      bilingualEntry({
+        trPath: `/hizmetler/${s.slug}`,
+        enPathValue: `/en/hizmetler/${s.slug}`,
+        priority: "0.85",
+        changefreq: "monthly",
+        lastmod: formatDate(s.updated_at),
       })
     ),
     ...projects.flatMap((p) =>
