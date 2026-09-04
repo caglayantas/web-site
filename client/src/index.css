@@ -1836,6 +1836,8 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 @keyframes knowledge-section-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .knowledge-post__section > .knowledge-post__body { animation: none; } }
 .knowledge-post__footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 24px; border-top: 1px solid #d9d1c3; }
+.knowledge-post__related-service { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 40px; padding: 18px 22px; background: var(--paper); border-left: 2px solid var(--gold); }
+.knowledge-post__related-service p { margin: 0; color: var(--navy); font-size: 14.5px; font-weight: 600; }
 @media (max-width: 680px) { .knowledge-post-page { padding: 46px 16px 78px; } .knowledge-post__header { margin-top: 30px; } .knowledge-post__header h1 { font-size: 38px; } .knowledge-post__toolbar { flex-wrap: wrap; } .knowledge-post__body { font-size: 15px; } .knowledge-post__body--sm { font-size: 14px; } .knowledge-post__body--md { font-size: 15px; } .knowledge-post__body--lg { font-size: 17px; } .knowledge-post__body--xl { font-size: 19px; } .knowledge-post__body h2 { font-size: 22px; margin-top: 34px; } .knowledge-post__body h3 { font-size: 18px; } .knowledge-post > .knowledge-post__body p:first-of-type::first-letter { font-size: 38px; } .knowledge-post__section-toggle { gap: 12px; padding: 18px 2px; } .knowledge-post__section-title { font-size: 17px; } .knowledge-post__section > .knowledge-post__body { padding-left: 24px; } .knowledge-post__footer { align-items: flex-start; flex-direction: column; } }
 
 /* Technical Information cards: darken the photo overlay on hover/focus for readability. */
@@ -1856,6 +1858,11 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .project-post__footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 22px; border-top: 1px solid #d9d1c3; }
 .service-post__image { width: 100%; max-height: 420px; object-fit: cover; margin: 8px 0 36px; }
 .service-post__intro { max-width: 760px; margin: 30px 0; color: var(--navy); font-size: 16px; line-height: 1.75; }
+.service-post__related-articles { margin-top: 44px; }
+.service-post__related-articles h2 { margin: 0 0 14px; color: var(--navy); font: 20px/1.3 var(--serif); }
+.service-post__related-list { display: flex; flex-direction: column; gap: 2px; }
+.service-post__related-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--paper); color: var(--navy); text-decoration: none; font-size: 14px; font-weight: 600; transition: background 160ms var(--ease-out); }
+.service-post__related-item:hover { background: #f1e9d8; }
 @media (max-width: 680px) { .project-post-page { padding: 46px 16px 78px; } .project-post__header { margin-top: 30px; } .project-post__header h1 { font-size: 48px; } .project-post__facts { grid-template-columns: 1fr; } .project-post__footer { align-items: flex-start; flex-direction: column; } }
 
 .about-principles { padding: 88px clamp(20px, 5vw, 76px); background: #f6f1e8; }

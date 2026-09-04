@@ -1,17 +1,41 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, ArrowUpRight, Check, Wrench } from "lucide-react";
-import { getPublishedServiceBySlug, localizeService, type ServiceRow } from "@/lib/content";
+import { ArrowLeft, ArrowUpRight, Check, FileText, Wrench } from "lucide-react";
+import { getPublishedServiceBySlug, getPublishedKnowledgePosts, localizeService, localizeKnowledge, type ServiceRow, type KnowledgePostRow } from "@/lib/content";
 import { useLanguage } from "@/lib/i18n";
 import NotFound from "@/pages/NotFound";
 
 const SITE_URL = "https://www.perlamarine.com";
+
+// Maps a service slug back to the technical-note category that covers it, so a
+// service page can surface the informational articles a visitor might want to
+// read before booking. Kept in sync with the equivalent map in KnowledgePost.tsx.
+const SERVICE_SLUG_TO_CATEGORY: Record<string, string> = {
+  "kompozit-cozumler": "Kompozit çözümler",
+  "marin-elektrik": "Marin elektrik",
+  "marin-elektronigi": "Marin elektroniği",
+  "isitma-sogutma": "Isıtma-soğutma",
+  "mekanik-tesisat": "Mekanik tesisat",
+  "motor-tahrik-dumen": "Motor, tahrik ve dümen",
+  "yelken-arma": "Yelken ve arma donanım",
+  "guverte-ekipmanlari": "Güverte ekipmanları",
+  "uretim-danismanligi": "Üretim danışmanlığı",
+  "tekneye-ozel-cozumler": "Tekneye özel çözümler",
+};
 
 export default function ServiceDetail() {
   const [location] = useLocation();
   const { lang, toPath, stripLang } = useLanguage();
   const slug = stripLang(location).split("/hizmetler/")[1] ?? "";
   const [data, setData] = useState<ServiceRow | null | undefined>(undefined);
+  const [relatedPosts, setRelatedPosts] = useState<KnowledgePostRow[]>([]);
+
+  useEffect(() => {
+    getPublishedKnowledgePosts().then((posts) => {
+      const category = SERVICE_SLUG_TO_CATEGORY[slug];
+      setRelatedPosts(category ? posts.filter((post) => post.category === category).slice(0, 3) : []);
+    }).catch(() => setRelatedPosts([]));
+  }, [slug]);
 
   useEffect(() => {
     if (!slug) return;
@@ -56,8 +80,23 @@ export default function ServiceDetail() {
     });
     document.head.appendChild(schema);
 
+    const breadcrumbSchema = document.createElement("script");
+    breadcrumbSchema.type = "application/ld+json";
+    breadcrumbSchema.dataset.pageSchema = "service-breadcrumb";
+    breadcrumbSchema.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: lang === "en" ? "Home" : "Ana Sayfa", item: `${SITE_URL}${toPath("/")}` },
+        { "@type": "ListItem", position: 2, name: lang === "en" ? "Services" : "Hizmetler", item: `${SITE_URL}${toPath("/hizmetler")}` },
+        { "@type": "ListItem", position: 3, name: service.title, item: canonicalUrl },
+      ],
+    });
+    document.head.appendChild(breadcrumbSchema);
+
     return () => {
       schema.remove();
+      breadcrumbSchema.remove();
       document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım";
     };
   }, [data, lang]);
@@ -114,6 +153,23 @@ export default function ServiceDetail() {
             </section>
           )}
         </div>
+
+        {relatedPosts.length > 0 && (
+          <section className="service-post__related-articles">
+            <h2>{lang === "en" ? "Related technical notes" : "İlgili teknik bilgiler"}</h2>
+            <div className="service-post__related-list">
+              {relatedPosts.map((post) => {
+                const localized = localizeKnowledge(post, lang);
+                return (
+                  <Link key={post.slug} href={toPath(`/teknik-bilgiler/${post.slug}`)} className="service-post__related-item">
+                    <FileText size={16} aria-hidden="true" />
+                    <span>{localized.title}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         <footer className="project-post__footer">
           <Link href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(service.title)}`} className="button button--gold">{t.cta} <ArrowUpRight size={16} /></Link>

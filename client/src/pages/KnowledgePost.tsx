@@ -11,6 +11,22 @@ const SITE_URL = "https://www.perlamarine.com";
 const FONT_SIZES = ["sm", "md", "lg", "xl"] as const;
 type FontSize = (typeof FONT_SIZES)[number];
 
+// Maps a technical note's category to the matching service page slug, so readers
+// (and search engines) can move directly from an informational article to the
+// relevant commercial service page.
+const CATEGORY_TO_SERVICE_SLUG: Record<string, string> = {
+  "Kompozit çözümler": "kompozit-cozumler",
+  "Marin elektrik": "marin-elektrik",
+  "Marin elektroniği": "marin-elektronigi",
+  "Isıtma-soğutma": "isitma-sogutma",
+  "Mekanik tesisat": "mekanik-tesisat",
+  "Motor, tahrik ve dümen": "motor-tahrik-dumen",
+  "Yelken ve arma donanım": "yelken-arma",
+  "Güverte ekipmanları": "guverte-ekipmanlari",
+  "Üretim danışmanlığı": "uretim-danismanligi",
+  "Tekneye özel çözümler": "tekneye-ozel-cozumler",
+};
+
 function estimateReadingMinutes(body: string) {
   const words = body.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 180));
@@ -88,7 +104,16 @@ export default function KnowledgePost() {
     schema.dataset.pageSchema = "knowledge";
     schema.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: article.title, description: meta.description, image: imageUrl, datePublished: data.publishedAt, dateModified: data.updatedAt, mainEntityOfPage: canonicalUrl, author: { "@type": "Organization", name: "Perla Marine" }, publisher: { "@type": "Organization", name: "Perla Marine", url: SITE_URL } });
     document.head.appendChild(schema);
-    return () => { schema.remove(); document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
+    const breadcrumbSchema = document.createElement("script");
+    breadcrumbSchema.type = "application/ld+json";
+    breadcrumbSchema.dataset.pageSchema = "knowledge-breadcrumb";
+    breadcrumbSchema.textContent = JSON.stringify({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: lang === "en" ? "Home" : "Ana Sayfa", item: `${SITE_URL}${toPath("/")}` },
+      { "@type": "ListItem", position: 2, name: lang === "en" ? "Technical Notes" : "Teknik Bilgiler", item: `${SITE_URL}${toPath("/teknik-bilgiler")}` },
+      { "@type": "ListItem", position: 3, name: article.title, item: canonicalUrl },
+    ] });
+    document.head.appendChild(breadcrumbSchema);
+    return () => { schema.remove(); breadcrumbSchema.remove(); document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [data, lang]);
 
   if (data === undefined) return <div className="corporate-page"><div className="corporate-intro"><p>{lang === "en" ? "Loading technical note…" : "Teknik bilgi yükleniyor…"}</p></div></div>;
@@ -155,6 +180,19 @@ export default function KnowledgePost() {
             })}
           </div>
         ) : null}
+
+        {(() => {
+          const relatedServiceSlug = CATEGORY_TO_SERVICE_SLUG[data.category];
+          if (!relatedServiceSlug) return null;
+          return (
+            <div className="knowledge-post__related-service">
+              <p>{lang === "en" ? "Looking for hands-on support with this?" : "Bu konuda saha desteğine mi ihtiyacınız var?"}</p>
+              <Link href={toPath(`/hizmetler/${relatedServiceSlug}`)} className="text-link text-link--dark">
+                {lang === "en" ? "See the related service" : "İlgili hizmeti inceleyin"} <ArrowUpRight size={14} />
+              </Link>
+            </div>
+          );
+        })()}
 
         <footer className="knowledge-post__footer">
           <Link href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(article.category)}`} className="button button--gold">{t.cta} <ArrowUpRight size={16} /></Link>
