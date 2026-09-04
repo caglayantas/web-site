@@ -102,6 +102,19 @@ export type ServiceRow = {
   updatedAt?: string;
 };
 
+export type ClientReferenceRow = {
+  id: number;
+  companyName: string;
+  logo: string | null;
+  workSummary: string;
+  workSummaryEn: string;
+  website: string;
+  status: "draft" | "published";
+  sortOrder: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type MarinaPoint = { name: string; lat?: number; lng?: number };
 
 export type RegionRow = {
@@ -434,6 +447,60 @@ export async function getPublishedServices(): Promise<ServiceRow[]> {
   return (data ?? []).map(mapService);
 }
 
+const mapClientReference = (row: any): ClientReferenceRow => ({
+  id: row.id,
+  companyName: row.company_name,
+  logo: row.logo,
+  workSummary: row.work_summary,
+  workSummaryEn: row.work_summary_en ?? "",
+  website: row.website ?? "",
+  status: row.status,
+  sortOrder: row.sort_order,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+});
+
+const clientReferenceToRow = (p: Partial<ClientReferenceRow>) => {
+  const row: Record<string, unknown> = {};
+  if (p.companyName !== undefined) row.company_name = p.companyName;
+  if (p.logo !== undefined) row.logo = p.logo;
+  if (p.workSummary !== undefined) row.work_summary = p.workSummary;
+  if (p.workSummaryEn !== undefined) row.work_summary_en = p.workSummaryEn;
+  if (p.website !== undefined) row.website = p.website;
+  if (p.status !== undefined) row.status = p.status;
+  if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
+  return row;
+};
+
+export async function getPublishedClientReferences(): Promise<ClientReferenceRow[]> {
+  const { data, error } = await supabase.from("client_references").select("*").eq("status", "published").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapClientReference);
+}
+
+export async function getAllClientReferences(): Promise<ClientReferenceRow[]> {
+  const { data, error } = await supabase.from("client_references").select("*").order("sort_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapClientReference);
+}
+
+export async function createClientReference(input: Partial<ClientReferenceRow>): Promise<ClientReferenceRow> {
+  const { data, error } = await supabase.from("client_references").insert(clientReferenceToRow(input)).select("*").single();
+  if (error) throw error;
+  return mapClientReference(data);
+}
+
+export async function updateClientReference(id: number, changes: Partial<ClientReferenceRow>): Promise<ClientReferenceRow> {
+  const { data, error } = await supabase.from("client_references").update(clientReferenceToRow(changes)).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapClientReference(data);
+}
+
+export async function deleteClientReference(id: number): Promise<void> {
+  const { error } = await supabase.from("client_references").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function getPublishedRegions(): Promise<RegionRow[]> {
   const { data, error } = await supabase.from("regions").select("*").eq("status", "published").order("sort_order", { ascending: true });
   if (error) throw error;
@@ -624,7 +691,7 @@ export async function deletePartner(id: number): Promise<void> {
 
 // ---- Image uploads (Supabase Storage, replacing Manus Forge storage) ----
 
-export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners" | "listings", file: File): Promise<string> {
+export async function uploadImage(bucket: "projects" | "knowledge" | "site" | "services" | "partners" | "listings" | "references", file: File): Promise<string> {
   const ext = file.name.split(".").pop() || "bin";
   const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type, cacheControl: "31536000" });
@@ -688,6 +755,14 @@ export function localizeFaq(row: FaqRow, lang: "tr" | "en"): FaqRow {
     ...row,
     question: pick(row.question, row.questionEn),
     answer: pick(row.answer, row.answerEn),
+  };
+}
+
+export function localizeClientReference(row: ClientReferenceRow, lang: "tr" | "en"): ClientReferenceRow {
+  if (lang === "tr") return row;
+  return {
+    ...row,
+    workSummary: pick(row.workSummary, row.workSummaryEn),
   };
 }
 

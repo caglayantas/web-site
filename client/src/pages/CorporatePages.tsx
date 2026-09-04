@@ -326,6 +326,7 @@ const aboutContentTr = {
   referencesHeadline: "Yeni iş birlikleri için açık.",
   referencesBody: "İşletmeciler, üretici firmalar ve tekne sahipleriyle yürütülen çalışmalar; kapsam ve izin bilgileri netleştirildikçe burada yer alacaktır.",
   referencesCta: "İş birliğini konuşun",
+  referencesViewAll: "Tüm referanslarımızı görün",
   profileEyebrow: "Kurumsal doküman",
   profileTitle: <>Şirket profilimizi ve hizmet kapsamımızı <em>tek dosyada inceleyin.</em></>,
   profileBody: "Perla Marine’in çalışma alanlarını, hizmet başlıklarını, iş yapma standardını ve iletişim bilgilerini içeren kurumsal PDF profilini indirebilirsiniz.",
@@ -380,6 +381,7 @@ const aboutContentEn: typeof aboutContentTr = {
   referencesHeadline: "Open for new partnerships.",
   referencesBody: "Work carried out with operators, manufacturers, and boat owners will appear here as scope and permission details are confirmed.",
   referencesCta: "Discuss a partnership",
+  referencesViewAll: "View all our references",
   profileEyebrow: "Corporate Document",
   profileTitle: <>Review our company profile and service scope <em>in a single file.</em></>,
   profileBody: "You can download our corporate PDF profile, which covers Perla Marine's areas of work, service categories, working standard, and contact information.",
@@ -972,6 +974,15 @@ export function AboutNew() {
           >
             {c.referencesCta}
             <ArrowUpRight size={16} />
+          </a>
+
+          <a
+            className="text-link text-link--dark"
+            href={toPath("/referanslarimiz")}
+            style={{ marginTop: 14 }}
+          >
+            {c.referencesViewAll}
+            <ArrowUpRight size={14} />
           </a>
         </div>
       </section>

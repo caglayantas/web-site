@@ -7,7 +7,7 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL?.trim() || "https://zroktbqji
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY?.trim() || "sb_publishable_7gwgIzWZ3n1w04RRCM7q9g_P-oFGkSO";
 const SITE_URL = (process.env.PUBLIC_SITE_URL?.trim() || "https://www.perlamarine.com").replace(/\/+$/, "");
 
-const staticRoutes = ["/", "/hakkimizda", "/hizmetler", "/hizmet-bolgelerimiz", "/projeler", "/teknik-bilgiler", "/iletisim", "/sss", "/kvkk", "/gizlilik", "/cerez", "/site-haritasi"];
+const staticRoutes = ["/", "/hakkimizda", "/hizmetler", "/hizmet-bolgelerimiz", "/projeler", "/referanslarimiz", "/teknik-bilgiler", "/iletisim", "/sss", "/kvkk", "/gizlilik", "/cerez", "/site-haritasi"];
 
 const xmlEscape = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 const formatDate = (value) => (value ? new Date(value).toISOString().slice(0, 10) : undefined);

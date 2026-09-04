@@ -25,6 +25,7 @@ export default function SiteFooter() {
           <a href={toPath("/hakkimizda")}>{t("footer.about")}</a>
           <a href={toPath("/hizmetler")}>{t("footer.services")}</a>
           <a href={toPath("/hizmet-bolgelerimiz")}>{t("footer.regions")}</a>
+          <a href={toPath("/referanslarimiz")}>{t("footer.references")}</a>
           <a href={toPath("/teknik-bilgiler")}>{t("footer.knowledge")}</a>
           <a href={toPath("/sss")}>{t("footer.faq")}</a>
           <a href={toPath("/site-haritasi")}>{t("footer.sitemap")}</a>

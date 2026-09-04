@@ -68,8 +68,10 @@ const AdminServices = lazy(() => import("@/pages/AdminServices"));
 const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
 const AdminListings = lazy(() => import("@/pages/AdminListings"));
 const AdminRegions = lazy(() => import("@/pages/AdminRegions"));
+const AdminReferences = lazy(() => import("@/pages/AdminReferences"));
 const Listings = lazy(() => import("@/pages/Listings"));
 const ServiceRegions = lazy(() => import("@/pages/ServiceRegions"));
+const References = lazy(() => import("@/pages/References"));
 
 const ProjectDraftPreview = lazy(() =>
   import("@/pages/ProjectDraftPreview")
@@ -136,6 +138,7 @@ function Router() {
       <Route path="/hakkimizda" component={AboutNew} />
       <Route path="/ilanlar" component={Listings} />
       <Route path="/hizmet-bolgelerimiz" component={ServiceRegions} />
+      <Route path="/referanslarimiz" component={References} />
 
       <Route path="/hizmetler" component={ServicesNew} />
 
@@ -197,6 +200,7 @@ function Router() {
       <Route path="/en/hakkimizda" component={AboutNew} />
       <Route path="/en/ilanlar" component={Listings} />
       <Route path="/en/hizmet-bolgelerimiz" component={ServiceRegions} />
+      <Route path="/en/referanslarimiz" component={References} />
       <Route path="/en/hizmetler" component={ServicesNew} />
       <Route path="/en/projeler/:slug" component={ProjectDetail} />
       <Route path="/en/projeler" component={ProjectsNew} />
@@ -256,6 +260,11 @@ function Router() {
       <Route
         path="/yonetim/bolgeler"
         component={AdminRegions}
+      />
+
+      <Route
+        path="/yonetim/referanslar"
+        component={AdminReferences}
       />
 
       {/* ======================================================

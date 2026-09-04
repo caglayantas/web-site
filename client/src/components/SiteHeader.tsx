@@ -41,6 +41,7 @@ const navItems: { key: TKey; path: string }[] = [
   { key: "nav.services", path: "/hizmetler" },
   { key: "nav.regions", path: "/hizmet-bolgelerimiz" },
   { key: "nav.projects", path: "/projeler" },
+  { key: "nav.references", path: "/referanslarimiz" },
   { key: "nav.knowledge", path: "/teknik-bilgiler" },
 ];
 

@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Anchor, BookOpen, ExternalLink, HelpCircle, Handshake, LayoutDashboard, LogOut, MapPin, PanelLeft, Wrench, Sparkles } from "lucide-react";
+import { Anchor, Award, BookOpen, ExternalLink, HelpCircle, Handshake, LayoutDashboard, LogOut, MapPin, PanelLeft, Wrench, Sparkles } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -35,6 +35,7 @@ const menuItems = [
   { icon: Handshake, label: "Markalarımız", path: "/yonetim/is-ortaklari" },
   { icon: Anchor, label: "Tekne İlanları", path: "/yonetim/ilanlar" },
   { icon: MapPin, label: "Hizmet Bölgelerimiz", path: "/yonetim/bolgeler" },
+  { icon: Award, label: "Referanslarımız", path: "/yonetim/referanslar" },
   { icon: ExternalLink, label: "Siteyi görüntüle", path: "/" },
 ];
 
