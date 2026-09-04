@@ -109,6 +109,8 @@ export type ClientReferenceRow = {
   workSummary: string;
   workSummaryEn: string;
   website: string;
+  showCompanyName: boolean;
+  showWorkSummary: boolean;
   status: "draft" | "published";
   sortOrder: number;
   createdAt?: string;
@@ -454,6 +456,8 @@ const mapClientReference = (row: any): ClientReferenceRow => ({
   workSummary: row.work_summary,
   workSummaryEn: row.work_summary_en ?? "",
   website: row.website ?? "",
+  showCompanyName: row.show_company_name ?? true,
+  showWorkSummary: row.show_work_summary ?? true,
   status: row.status,
   sortOrder: row.sort_order,
   createdAt: row.created_at,
@@ -467,6 +471,8 @@ const clientReferenceToRow = (p: Partial<ClientReferenceRow>) => {
   if (p.workSummary !== undefined) row.work_summary = p.workSummary;
   if (p.workSummaryEn !== undefined) row.work_summary_en = p.workSummaryEn;
   if (p.website !== undefined) row.website = p.website;
+  if (p.showCompanyName !== undefined) row.show_company_name = p.showCompanyName;
+  if (p.showWorkSummary !== undefined) row.show_work_summary = p.showWorkSummary;
   if (p.status !== undefined) row.status = p.status;
   if (p.sortOrder !== undefined) row.sort_order = p.sortOrder;
   return row;

@@ -65,8 +65,8 @@ export default function References() {
                 <div className="references-grid__logo">
                   {reference.logo ? <img src={reference.logo} alt={reference.companyName} loading="lazy" decoding="async" /> : <Award size={26} aria-hidden="true" />}
                 </div>
-                <h3>{reference.companyName}</h3>
-                <p>{reference.workSummary}</p>
+                {reference.showCompanyName && <h3>{reference.companyName}</h3>}
+                {reference.showWorkSummary && reference.workSummary && <p>{reference.workSummary}</p>}
                 {reference.website && (
                   <a className="text-link text-link--dark" href={reference.website} target="_blank" rel="noopener noreferrer">
                     {lang === "en" ? "Visit website" : "Web sitesini ziyaret et"} <ArrowUpRight size={14} />

@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 
 type ReferenceForm = {
   id?: number; companyName: string; logo: string; workSummary: string; workSummaryEn: string; website: string;
+  showCompanyName: boolean; showWorkSummary: boolean;
   status: "draft" | "published"; sortOrder: number;
 };
 
 const emptyForm: ReferenceForm = {
-  companyName: "", logo: "", workSummary: "", workSummaryEn: "", website: "", status: "draft", sortOrder: 0,
+  companyName: "", logo: "", workSummary: "", workSummaryEn: "", website: "", showCompanyName: true, showWorkSummary: true, status: "draft", sortOrder: 0,
 };
 
 function LogoField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
@@ -84,10 +85,18 @@ function ReferenceFormPanel({ value, onChange, onCancel, onSaved }: { value: Ref
         <button type="button" className="admin-icon-button" onClick={onCancel} aria-label="Formu kapat"><X size={18} /></button>
       </div>
       <div className="admin-project-form__grid">
-        <label>Firma adı<Input required value={value.companyName} onChange={(event) => set("companyName", event.target.value)} placeholder="Örn. Setur Marinaları" /></label>
+        <label>Firma adı<Input value={value.companyName} onChange={(event) => set("companyName", event.target.value)} placeholder="Örn. Setur Marinaları" /></label>
         <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
+        <label className="admin-project-form__full admin-checkbox-field">
+          <input type="checkbox" checked={value.showCompanyName} onChange={(event) => set("showCompanyName", event.target.checked)} />
+          Firma adını sitede logonun altında da göster (kapalıysa yalnızca SEO/görsel alt metni için kullanılır — logo bazen firma adını zaten içerdiğinden tekrar yazmaya gerek olmayabilir)
+        </label>
         <LogoField value={value.logo} onChange={(url) => set("logo", url)} />
-        <label className="admin-project-form__full">Yapılan iş / kapsam<Textarea required value={value.workSummary} onChange={(event) => set("workSummary", event.target.value)} rows={3} placeholder="Örn. Filo genelinde marin elektrik bakımı ve lityum sistemi entegrasyonu" /></label>
+        <label className="admin-project-form__full">Yapılan iş / kapsam (opsiyonel)<Textarea value={value.workSummary} onChange={(event) => set("workSummary", event.target.value)} rows={3} placeholder="Örn. Filo genelinde marin elektrik bakımı ve lityum sistemi entegrasyonu" /></label>
+        <label className="admin-project-form__full admin-checkbox-field">
+          <input type="checkbox" checked={value.showWorkSummary} onChange={(event) => set("showWorkSummary", event.target.checked)} />
+          Bu açıklamayı sitede göster (kapalıysa yalnızca panelde kayıtlı kalır)
+        </label>
         <label className="admin-project-form__full">Firma web sitesi (opsiyonel)<Input type="url" value={value.website} onChange={(event) => set("website", event.target.value)} placeholder="https://" /></label>
 
         <div className="admin-project-form__full admin-en-section">
@@ -114,7 +123,8 @@ export default function AdminReferences() {
   const [form, setForm] = useState<ReferenceForm | null>(null);
   const editReference = (reference: ClientReferenceRow) => setForm({
     id: reference.id, companyName: reference.companyName, logo: reference.logo ?? "", workSummary: reference.workSummary,
-    workSummaryEn: reference.workSummaryEn, website: reference.website, status: reference.status, sortOrder: reference.sortOrder,
+    workSummaryEn: reference.workSummaryEn, website: reference.website, showCompanyName: reference.showCompanyName, showWorkSummary: reference.showWorkSummary,
+    status: reference.status, sortOrder: reference.sortOrder,
   });
   const saved = () => { setForm(null); refresh(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu referansı kaldırmak istediğinize emin misiniz?")) deleteClientReference(id).then(refresh); };
