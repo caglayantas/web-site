@@ -141,7 +141,7 @@ export default function Home() {
       : "Perla Marine | Tekne ve Yat Bakım-Onarım";
     const description = lang === "en"
       ? "Perla Marine provides engineering-grade maintenance, repair, refit, and technical service solutions for boats and yachts."
-      : "Perla Marine; tekne ve yat sahiplerine mühendislik disipliniyle bakım, onarım, refit ve teknik servis çözümleri sunar.";
+      : "Perla Marine; İzmir, Bodrum, Marmaris ve Ege-Akdeniz kıyılarında tekne ve yat sahiplerine mühendislik disipliniyle bakım, onarım, refit ve teknik servis çözümleri sunar.";
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}${toPath("/")}`);
