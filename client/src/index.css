@@ -36,7 +36,7 @@ img { display: block; max-width: 100%; }
 .site-header__inner { width: min(100% - 40px, 1360px); min-height: 82px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; position: relative; }
 .brand-lockup { display: inline-flex; align-items: center; width: 215px; height: 78px; overflow: hidden; }
 .brand-lockup__logo { width: 210px; height: 74px; object-fit: contain; object-position: left center; }
-.desktop-nav { display: flex; align-items: center; gap: clamp(18px, 2.2vw, 34px); font-size: 12px; letter-spacing: 0.1em; font-weight: 800; text-transform: uppercase; }
+.desktop-nav { display: flex; align-items: center; gap: clamp(12px, 1.6vw, 26px); font-size: 10.5px; letter-spacing: 0.08em; font-weight: 800; text-transform: uppercase; }
 .desktop-nav > a:not(.nav-contact) { position: relative; padding: 10px 0; color: #344963; transition: color 160ms var(--ease-out); }
 .desktop-nav > a:not(.nav-contact)::after { content: ""; position: absolute; left: 0; bottom: 4px; height: 1px; width: 0; background: var(--gold); transition: width 200ms var(--ease-out); }
 .desktop-nav > a:hover, .desktop-nav > a.is-active { color: var(--navy); }
