@@ -24,6 +24,7 @@ import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "@/lib/i18n";
+import { trackPageview } from "@/lib/analytics";
 
 // ============================================================
 // Lazy loaded pages
@@ -106,6 +107,12 @@ function LegacyBlogRedirect() {
 // ============================================================
 
 function Router() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    trackPageview(location);
+  }, [location]);
+
   return (
     <Switch>
 

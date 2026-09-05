@@ -161,6 +161,11 @@ export default function ContactNew() {
       emptyForm
     );
 
+  // A second, lightweight spam signal alongside the honeypot field: real
+  // visitors take at least a couple of seconds to read the form and fill it
+  // in, while simple bots submit almost instantly after the page loads.
+  const formMountedAtRef = useRef(Date.now());
+
   // Category and region options are fetched live from the same services/regions
   // tables the rest of the site uses, so a newly added service or region always
   // shows up here automatically instead of drifting out of sync with a
@@ -285,6 +290,15 @@ export default function ContactNew() {
     ).trim();
 
     if (honeypot) {
+      setSubmitted(true);
+      return;
+    }
+
+    /*
+     * Suspiciously fast submission (likely a bot): pretend success without
+     * actually inserting the row, same as the honeypot above.
+     */
+    if (Date.now() - formMountedAtRef.current < 2500) {
       setSubmitted(true);
       return;
     }

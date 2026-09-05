@@ -18,11 +18,11 @@ export default function ServiceRegions() {
 
   useEffect(() => {
     const title = lang === "en"
-      ? "Coverage Areas — İzmir, Bodrum, Antalya, Marmara Boat Maintenance | Perla Marine"
-      : "İzmir Tekne Bakım, Bodrum Tekne Tamir ve Hizmet Bölgelerimiz | Perla Marine";
+      ? "Coverage Areas — İzmir, Bodrum, Antalya | Perla Marine"
+      : "İzmir Tekne Bakım, Bodrum Tekne Tamir | Perla Marine";
     const description = lang === "en"
-      ? "Perla Marine provides boat maintenance, repair, and technical service at marinas along the İzmir, Bodrum, Marmaris, Çeşme, Kuşadası, Antalya, and Marmara coasts."
-      : "İzmir tekne bakım, Bodrum tekne tamir, Marmaris ve Kuşadası'nda tekne onarımı. Perla Marine; Ege, Akdeniz ve Marmara kıyılarındaki marinalarda tekne bakım, onarım ve teknik servis hizmeti verir.";
+      ? "Perla Marine provides boat maintenance and repair at marinas along the İzmir, Bodrum, Marmaris, Kuşadası, Antalya, and Marmara coasts."
+      : "İzmir tekne bakım, Bodrum tekne tamir, Marmaris ve Kuşadası'nda tekne onarımı. Ege, Akdeniz ve Marmara kıyılarında bakım ve teknik servis hizmeti veriyoruz.";
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}${toPath("/hizmet-bolgelerimiz")}`);

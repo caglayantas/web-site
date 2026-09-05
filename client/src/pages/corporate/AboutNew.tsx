@@ -149,9 +149,9 @@ export default function AboutNew() {
   const { lang, toPath } = useLanguage();
   usePageMetadata(
     "/hakkimizda",
-    "Hakkımızda | Perla Marine Kurumsal Tekne Bakım ve Teknik Servis",
+    "Hakkımızda | Perla Marine Tekne Bakım ve Servis",
     "Perla Marine’in kurumsal kimliğini, denizcilik bakım-onarım vizyonunu, teknik servis misyonunu ve iş yapma standardını keşfedin.",
-    "About Us | Perla Marine Corporate Boat Maintenance & Technical Service",
+    "About Us | Perla Marine Boat Maintenance & Service",
     "Discover Perla Marine's corporate identity, marine maintenance vision, technical service mission, and working standard."
   );
 
