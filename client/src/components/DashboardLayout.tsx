@@ -41,6 +41,11 @@ const menuItems = [
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
+// Defense-in-depth: even though the database itself only grants write access to
+// this specific account (see the is_admin() policies), the panel UI also checks
+// the signed-in email directly so a stray or compromised account never even sees
+// the dashboard shell.
+const ADMIN_EMAIL = "caglayan.tas@perlamarine.com";
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
 
@@ -96,17 +101,26 @@ export default function DashboardLayout({
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
-  const { loading, user } = useAuth();
+  const { loading, user, logout } = useAuth();
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
 
+  // If a non-admin account is ever signed in (e.g. someone else's Supabase
+  // session in the same browser), sign it out immediately rather than showing
+  // any part of the dashboard.
+  useEffect(() => {
+    if (user && user.email !== ADMIN_EMAIL) {
+      logout();
+    }
+  }, [user, logout]);
+
   if (loading) {
     return <DashboardLayoutSkeleton />
   }
 
-  if (!user) {
+  if (!user || user.email !== ADMIN_EMAIL) {
     return <AdminLoginForm />;
   }
 

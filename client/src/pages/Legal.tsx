@@ -233,6 +233,8 @@ export function Sitemap() {
         <Link href={toPath("/hakkimizda")}>{lang === "en" ? "About Us" : "Hakkımızda"}</Link>
         <Link href={toPath("/hizmetler")}>{lang === "en" ? "Services" : "Hizmetler"}</Link>
         <Link href={toPath("/hizmet-bolgelerimiz")}>{lang === "en" ? "Coverage Areas" : "Hizmet Bölgelerimiz"}</Link>
+        <Link href={toPath("/projeler")}>{lang === "en" ? "Projects" : "Projeler"}</Link>
+        <Link href={toPath("/referanslarimiz")}>{lang === "en" ? "References" : "Referanslarımız"}</Link>
         <Link href={toPath("/teknik-bilgiler")}>{lang === "en" ? "Technical Notes" : "Teknik Bilgiler"}</Link>
         <Link href={toPath("/sss")}>{lang === "en" ? "FAQ" : "SSS"}</Link>
         <Link href={toPath("/iletisim")}>{lang === "en" ? "Contact Us" : "Bize Ulaşın"}</Link>

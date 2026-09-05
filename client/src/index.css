@@ -257,6 +257,8 @@ h1, h2, h3 { color: inherit; }
 .footer-label { margin: 0 0 10px; color: var(--gold-light); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 .footer-nav a { display: flex; align-items: center; gap: 5px; width: fit-content; color: rgba(255,255,255,.78); font-size: 12px; transition: color 160ms var(--ease-out); }
 .footer-nav a:hover { color: var(--gold-light); }
+.footer-nav__cookie-link { display: flex; align-items: center; gap: 5px; width: fit-content; color: rgba(255,255,255,.78); font-size: 12px; font-family: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; transition: color 160ms var(--ease-out); }
+.footer-nav__cookie-link:hover { color: var(--gold-light); }
 .footer-note { max-width: 235px; color: rgba(255,255,255,.47); font-size: 11px; line-height: 1.55; }
 .site-footer__bottom { display: flex; justify-content: space-between; gap: 20px; padding: 18px 0 21px; border-top: 1px solid rgba(255,255,255,.13); color: rgba(255,255,255,.44); font-size: 10px; letter-spacing: .06em; }
 .site-footer__bottom p { margin: 0; }

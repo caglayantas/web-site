@@ -1,17 +1,17 @@
-import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
+import { getPublishedFaqs, localizeFaq, type FaqRow } from "@/lib/content";
 
-type FaqItem = { question: string; answer: string; question_en: string | null; answer_en: string | null };
+type FaqItem = { question: string; answer: string };
 
-const fallbackQuestions: FaqItem[] = [
-  { question: "Bakım veya onarım talebi nasıl değerlendirilir?", answer: "Önce teknenin mevcut durumu, kullanım profili, konumu ve teknik ihtiyacı anlaşılır. Ardından gerekli inceleme ve uygulanabilir sonraki adım birlikte netleştirilir.", question_en: "How is a maintenance or repair request assessed?", answer_en: "We first understand the boat's current condition, usage profile, location, and technical need. We then clarify the required inspection and the next actionable step together." },
-  { question: "Teknenin bulunduğu marinada hizmet alabilir miyim?", answer: "Çalışma uygunluğu; teknenin bulunduğu bölge, işin kapsamı, erişim koşulları ve ekip planına göre değerlendirilir. İletişim formunda marina veya konum bilgisini paylaşabilirsiniz.", question_en: "Can you provide service at my boat's marina?", answer_en: "Service availability is assessed based on the boat's region, the scope of work, access conditions, and our team's schedule. You can share your marina or location in the contact form." },
-  { question: "Hangi tekne bakım ve onarım hizmetlerinde destek veriyorsunuz?", answer: "Kompozit, marin elektrik ve elektronik, iklimlendirme, mekanik tesisat, motor-tahrik-dümen, yelken arma, güverte ekipmanları ve tekneye özel çözümler üzerinde çalışıyoruz.", question_en: "Which boat maintenance and repair services do you support?", answer_en: "We work on composite, marine electrical and electronics, climate control, mechanical systems, propulsion-steering, sailing rig, deck equipment, and boat-specific solutions." },
-  { question: "Lityum akü ve BMS sistemlerinde hangi kontroller önemlidir?", answer: "Sistem tasarımı, bağlantı düzeni, şarj kaynakları, koruma bileşenleri, kablo kesitleri, ısı yönetimi ve servis erişimi birlikte değerlendirilmelidir.", question_en: "What checks matter for lithium battery and BMS systems?", answer_en: "System design, wiring layout, charge sources, protection components, cable sizing, thermal management, and service access should all be assessed together." },
-  { question: "Bakım süresi neye göre belirlenir?", answer: "Süre; arızanın kaynağına, sistemin erişilebilirliğine, gerekli parçalara, teknenin durumuna ve aynı anda yürütülecek operasyonlara göre değişir.", question_en: "What determines the maintenance duration?", answer_en: "Duration depends on the source of the issue, system accessibility, required parts, the boat's condition, and any operations carried out at the same time." },
-  { question: "Tekne üreticilerine hangi alanlarda danışmanlık veriyorsunuz?", answer: "Model ve kalıp imalatı, servis edilebilirlik, sistem erişimi, kompozit uygulamalar ve teknik koordinasyon gibi başlıklarda proje bazlı danışmanlık sunuyoruz.", question_en: "What consulting do you offer to boat manufacturers?", answer_en: "We offer project-based consulting on model and mold production, serviceability, system access, composite applications, and technical coordination." },
+const fallbackQuestions: FaqRow[] = [
+  { id: -1, question: "Bakım veya onarım talebi nasıl değerlendirilir?", answer: "Önce teknenin mevcut durumu, kullanım profili, konumu ve teknik ihtiyacı anlaşılır. Ardından gerekli inceleme ve uygulanabilir sonraki adım birlikte netleştirilir.", questionEn: "How is a maintenance or repair request assessed?", answerEn: "We first understand the boat's current condition, usage profile, location, and technical need. We then clarify the required inspection and the next actionable step together.", status: "published", sortOrder: 0 },
+  { id: -2, question: "Teknenin bulunduğu marinada hizmet alabilir miyim?", answer: "Çalışma uygunluğu; teknenin bulunduğu bölge, işin kapsamı, erişim koşulları ve ekip planına göre değerlendirilir. İletişim formunda marina veya konum bilgisini paylaşabilirsiniz.", questionEn: "Can you provide service at my boat's marina?", answerEn: "Service availability is assessed based on the boat's region, the scope of work, access conditions, and our team's schedule. You can share your marina or location in the contact form.", status: "published", sortOrder: 1 },
+  { id: -3, question: "Hangi tekne bakım ve onarım hizmetlerinde destek veriyorsunuz?", answer: "Kompozit, marin elektrik ve elektronik, iklimlendirme, mekanik tesisat, motor-tahrik-dümen, yelken arma, güverte ekipmanları ve tekneye özel çözümler üzerinde çalışıyoruz.", questionEn: "Which boat maintenance and repair services do you support?", answerEn: "We work on composite, marine electrical and electronics, climate control, mechanical systems, propulsion-steering, sailing rig, deck equipment, and boat-specific solutions.", status: "published", sortOrder: 2 },
+  { id: -4, question: "Lityum akü ve BMS sistemlerinde hangi kontroller önemlidir?", answer: "Sistem tasarımı, bağlantı düzeni, şarj kaynakları, koruma bileşenleri, kablo kesitleri, ısı yönetimi ve servis erişimi birlikte değerlendirilmelidir.", questionEn: "What checks matter for lithium battery and BMS systems?", answerEn: "System design, wiring layout, charge sources, protection components, cable sizing, thermal management, and service access should all be assessed together.", status: "published", sortOrder: 3 },
+  { id: -5, question: "Bakım süresi neye göre belirlenir?", answer: "Süre; arızanın kaynağına, sistemin erişilebilirliğine, gerekli parçalara, teknenin durumuna ve aynı anda yürütülecek operasyonlara göre değişir.", questionEn: "What determines the maintenance duration?", answerEn: "Duration depends on the source of the issue, system accessibility, required parts, the boat's condition, and any operations carried out at the same time.", status: "published", sortOrder: 4 },
+  { id: -6, question: "Tekne üreticilerine hangi alanlarda danışmanlık veriyorsunuz?", answer: "Model ve kalıp imalatı, servis edilebilirlik, sistem erişimi, kompozit uygulamalar ve teknik koordinasyon gibi başlıklarda proje bazlı danışmanlık sunuyoruz.", questionEn: "What consulting do you offer to boat manufacturers?", answerEn: "We offer project-based consulting on model and mold production, serviceability, system access, composite applications, and technical coordination.", status: "published", sortOrder: 5 },
 ];
 
 export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
@@ -31,24 +31,26 @@ export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
     return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [compact, lang]);
-  const [items, setItems] = useState<FaqItem[] | null>(null);
+  const [items, setItems] = useState<FaqRow[] | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     let mounted = true;
-    supabase.from("faq").select("question,answer,question_en,answer_en").eq("status", "published").order("sort_order", { ascending: true })
-      .then(({ data, error }) => {
+    getPublishedFaqs()
+      .then((data) => {
         if (!mounted) return;
-        if (error) console.error("[FAQ] Supabase error:", error);
-        setItems(data && data.length ? data : null);
-        setLoading(false);
+        setItems(data.length ? data : null);
+      })
+      .catch((error) => {
+        console.error("[FAQ] fetch error:", error);
+        if (mounted) setItems(null);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
   }, []);
   const source = items?.length ? items : fallbackQuestions;
-  const localized = source.map((item) => ({
-    question: lang === "en" && item.question_en?.trim() ? item.question_en : item.question,
-    answer: lang === "en" && item.answer_en?.trim() ? item.answer_en : item.answer,
-  }));
+  const localized: FaqItem[] = source.map((item) => localizeFaq(item, lang));
   const visibleQuestions = compact ? localized.slice(0, 5) : localized;
   const schemaQuestions = visibleQuestions.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } }));
   const t = {

@@ -1,5 +1,6 @@
 import { ArrowUpRight, Instagram } from "lucide-react";
 import { useLanguage } from "@/lib/i18n";
+import { OPEN_COOKIE_PREFERENCES_EVENT } from "@/components/CookieConsent";
 
 function WhatsAppIcon() {
   return (
@@ -29,6 +30,7 @@ export default function SiteFooter() {
           <a href={toPath("/teknik-bilgiler")}>{t("footer.knowledge")}</a>
           <a href={toPath("/sss")}>{t("footer.faq")}</a>
           <a href={toPath("/site-haritasi")}>{t("footer.sitemap")}</a>
+          <button type="button" className="footer-nav__cookie-link" onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_PREFERENCES_EVENT))}>{t("footer.cookiePrefs")}</button>
         </div>
 
         <div className="footer-nav">

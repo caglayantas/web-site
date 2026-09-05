@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
+import { getPublishedProjects, getPublishedKnowledgePosts, getPublishedServices, getPublishedRegions } from "@/lib/content";
 import { useLanguage } from "@/lib/i18n";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ServiceGrid from "@/components/ServiceGrid";
@@ -402,73 +403,29 @@ function useAboutContent() {
    SERVICE DATA
 ========================================================= */
 
-const serviceGroups = [
-  [
-    "Kompozit çözümler",
-    "Model, kalıp, üretim, yapısal tamir ve yüzey yenileme.",
-  ],
-  [
-    "Marin elektrik",
-    "Akü, şarj, lityum-BMS, dağıtım panoları ve enerji altyapısı.",
-  ],
-  [
-    "Marin elektroniği",
-    "Navigasyon, radar, kamera, uydu ve uzaktan izleme sistemleri.",
-  ],
-  [
-    "Isıtma-soğutma",
-    "Klima, Webasto, fan, havalandırma ve iklimlendirme bakımı.",
-  ],
-  [
-    "Mekanik tesisat",
-    "Yakıt, siyah su, gri su, sintine ve tatlı su sistemleri.",
-  ],
-  [
-    "Motor, tahrik ve dümen",
-    "Motor, şaft, kaplin, pervane ve dümen sistemleri.",
-  ],
-  [
-    "Yelken ve arma donanım",
-    "Vinç, makara, direk, arma, tel, halat ve yelken donanımlarının montajı ve bakımı.",
-  ],
-  [
-    "Güverte ekipmanları",
-    "Irgat, demirleme, krom aksesuar, vardavela ve güverte donanımı bakımı.",
-  ],
-  [
-    "Üretim danışmanlığı",
-    "Üretim planlama, servis erişimi, teknik dokümantasyon ve saha koordinasyonu.",
-  ],
-  [
-    "Tekneye özel çözümler",
-    "Teknenin kullanım amacı ve mevcut altyapısına göre keşif, refit ve sistem koordinasyonu.",
-  ],
-  [
-    "Teknik checkup",
-    "Sezon öncesi/sonrası genel durum kontrolü ve bakım önceliklerinin belirlenmesi.",
-  ],
-  [
-    "Survey / Ekspertiz",
-    "Alım-satım öncesi bağımsız teknik durum tespiti ve raporlama.",
-  ],
+// Shown briefly while the live service list loads, and as a safety net if the
+// fetch fails. Mirrors the current published services; kept in Turkish since
+// the stored/submitted value is always the Turkish title regardless of language.
+const FALLBACK_SERVICE_OPTIONS: { value: string; label: string }[] = [
+  { value: "Kompozit çözümler", label: "Kompozit çözümler" },
+  { value: "Marin elektrik", label: "Marin elektrik" },
+  { value: "Marin elektroniği", label: "Marin elektroniği" },
+  { value: "Isıtma-soğutma", label: "Isıtma-soğutma" },
+  { value: "Mekanik tesisat", label: "Mekanik tesisat" },
+  { value: "Motor, tahrik ve dümen", label: "Motor, tahrik ve dümen" },
+  { value: "Yelken ve arma donanım", label: "Yelken ve arma donanım" },
+  { value: "Güverte ekipmanları", label: "Güverte ekipmanları" },
+  { value: "Üretim danışmanlığı", label: "Üretim danışmanlığı" },
+  { value: "Tekneye özel çözümler", label: "Tekneye özel çözümler" },
+  { value: "Yat transferi", label: "Yat transferi" },
 ];
 
-// Canonical values (submitted to the database and matched against ?kategori= links)
-// always stay in Turkish. This map only controls the label shown on /en pages.
-const serviceGroupLabelsEn: Record<string, string> = {
-  "Kompozit çözümler": "Composite solutions",
-  "Marin elektrik": "Marine electrical",
-  "Marin elektroniği": "Marine electronics",
-  "Isıtma-soğutma": "Heating & cooling",
-  "Mekanik tesisat": "Mechanical systems",
-  "Motor, tahrik ve dümen": "Engine, propulsion & steering",
-  "Yelken ve arma donanım": "Sailing rig & rigging",
-  "Güverte ekipmanları": "Deck equipment",
-  "Üretim danışmanlığı": "Production consulting",
-  "Tekneye özel çözümler": "Boat-specific solutions",
-  "Teknik checkup": "Technical checkup",
-  "Survey / Ekspertiz": "Survey / Expertise",
-};
+// Lead-generation categories that aren't published service pages of their own,
+// always appended after the live services list.
+const EXTRA_SERVICE_OPTIONS: { tr: string; en: string }[] = [
+  { tr: "Teknik checkup", en: "Technical checkup" },
+  { tr: "Survey / Ekspertiz", en: "Survey / Expertise" },
+];
 
 /* =========================================================
    FALLBACK PROJECT DATA
@@ -1292,86 +1249,29 @@ export function ProjectsNew() {
 
     async function loadProjects() {
       try {
-        /*
-         * Supabase projects tablosundan yayınlanmış
-         * projeleri alıyoruz.
-         *
-         * Beklenen kolonlar:
-         * id
-         * slug
-         * label
-         * title
-         * detail
-         * scope
-         * systems
-         * results
-         * before_image
-         * after_image
-         * published
-         */
-
-        const { data, error } =
-          await supabase
-            .from("projects")
-            .select("*")
-            .eq("status", "published")
-            .order("sort_order", {
-              ascending: true,
-            });
-
-        if (
-          error ||
-          !data ||
-          data.length === 0
-        ) {
-          if (error) {
-            console.error(
-              "[Projects] Supabase error:",
-              error
-            );
-          }
-
-          return;
-        }
+        const data = await getPublishedProjects();
+        if (!data.length) return;
 
         if (mounted) {
-          const mapped =
-            data.map(
-              (project: any) => ({
-                id: project.id,
-                slug:
-                  project.slug ??
-                  `project-${project.id}`,
-                label:
-                  project.label ?? "",
-                title:
-                  project.title ?? "",
-                detail:
-                  project.detail ?? "",
-                scope:
-                  project.scope ?? "",
-                systems:
-                  project.systems ?? "",
-                results:
-                  project.results ?? "",
-                before:
-                  project.before_image ??
-                  "",
-                after:
-                  project.after_image ??
-                  "",
-                gallery:
-                  Array.isArray(project.gallery_images)
-                    ? project.gallery_images
-                    : [],
-                labelEn: project.label_en ?? "",
-                titleEn: project.title_en ?? "",
-                detailEn: project.detail_en ?? "",
-                scopeEn: project.scope_en ?? "",
-                systemsEn: project.systems_en ?? "",
-                resultsEn: project.results_en ?? "",
-              })
-            );
+          const mapped: Project[] = data.map((project) => ({
+            id: project.id,
+            slug: project.slug ?? `project-${project.id}`,
+            label: project.label ?? "",
+            title: project.title ?? "",
+            detail: project.detail ?? "",
+            scope: project.scope ?? "",
+            systems: project.systems ?? "",
+            results: project.results ?? "",
+            before: project.beforeImage ?? "",
+            after: project.afterImage ?? "",
+            gallery: Array.isArray(project.galleryImages) ? project.galleryImages : [],
+            labelEn: project.labelEn ?? "",
+            titleEn: project.titleEn ?? "",
+            detailEn: project.detailEn ?? "",
+            scopeEn: project.scopeEn ?? "",
+            systemsEn: project.systemsEn ?? "",
+            resultsEn: project.resultsEn ?? "",
+          }));
 
           setProjects(mapped);
         }
@@ -1644,78 +1544,24 @@ export function KnowledgeNew() {
 
     async function loadPosts() {
       try {
-        /*
-         * Supabase knowledge tablosundan
-         * yayınlanmış yazıları alıyoruz.
-         *
-         * Beklenen kolonlar:
-         * id
-         * slug
-         * category
-         * title
-         * excerpt
-         * body
-         * cover_image
-         * published_at
-         * published
-         */
-
-        const { data, error } =
-          await supabase
-            .from("knowledge_posts")
-            .select("*")
-            .eq("status", "published")
-            .order("sort_order", {
-              ascending: true,
-            });
-
-        if (
-          error ||
-          !data ||
-          data.length === 0
-        ) {
-          if (error) {
-            console.error(
-              "[Knowledge] Supabase error:",
-              error
-            );
-          }
-
-          return;
-        }
+        const data = await getPublishedKnowledgePosts();
+        if (!data.length) return;
 
         if (mounted) {
-          const mapped =
-            data.map(
-              (post: any) => ({
-                id: post.id,
-                slug:
-                  post.slug ||
-                  makeSlug(
-                    post.title
-                  ),
-                category:
-                  post.category ||
-                  "Teknik bilgi",
-                title:
-                  post.title || "",
-                excerpt:
-                  post.excerpt ||
-                  "",
-                body:
-                  post.body || "",
-                coverImage:
-                  post.cover_image ||
-                  null,
-                publishedAt:
-                  post.published_at ||
-                  null,
-                categoryEn: post.category_en ?? "",
-                titleEn: post.title_en ?? "",
-                excerptEn: post.excerpt_en ?? "",
-                bodyEn: post.body_en ?? "",
-              })
-            );
+          const mapped: KnowledgePost[] = data.map((post) => ({
+            id: post.id,
+            slug: post.slug || makeSlug(post.title),
+            category: post.category || "Teknik bilgi",
+            title: post.title || "",
+            excerpt: post.excerpt || "",
+            body: post.body || "",
+            coverImage: post.coverImage || null,
+            publishedAt: post.publishedAt || null,
+            categoryEn: post.categoryEn ?? "",
+            titleEn: post.titleEn ?? "",
+            excerptEn: post.excerptEn ?? "",
+            bodyEn: post.bodyEn ?? "",
+          }));
 
           setPosts(mapped);
         }
@@ -1872,13 +1718,15 @@ const emptyForm: FormState = {
   message: "",
 };
 
-const REGION_OPTIONS = [
-  "İzmir",
-  "Muğla (Bodrum, Marmaris, Fethiye, Göcek, Datça)",
-  "Aydın (Kuşadası, Didim)",
-  "Antalya (Kemer, Kaş, Finike, Alanya)",
-  "Marmara (İstanbul, Yalova, Bursa, Balıkesir)",
-  "Diğer",
+// Shown briefly while the live region list loads, and as a safety net if the
+// fetch fails. Kept in sync with the actual "regions" table naming.
+const FALLBACK_REGION_OPTIONS: { value: string; label: string }[] = [
+  { value: "İzmir", label: "İzmir" },
+  { value: "Muğla (Bodrum, Marmaris, Fethiye, Göcek, Datça)", label: "Muğla (Bodrum, Marmaris, Fethiye, Göcek, Datça)" },
+  { value: "Aydın (Kuşadası, Didim)", label: "Aydın (Kuşadası, Didim)" },
+  { value: "Antalya (Kemer, Kaş, Finike, Alanya)", label: "Antalya (Kemer, Kaş, Finike, Alanya)" },
+  { value: "Marmara Bölgesi (İstanbul, Yalova, Bursa, Balıkesir)", label: "Marmara Bölgesi (İstanbul, Yalova, Bursa, Balıkesir)" },
+  { value: "Diğer Bölgeler / Türkiye Geneli", label: "Diğer Bölgeler / Türkiye Geneli" },
 ];
 
 export function validateCorporateContact(
@@ -1946,11 +1794,34 @@ export function ContactNew() {
       emptyForm
     );
 
+  // Category and region options are fetched live from the same services/regions
+  // tables the rest of the site uses, so a newly added service or region always
+  // shows up here automatically instead of drifting out of sync with a
+  // hand-maintained list.
+  const [serviceOptions, setServiceOptions] = useState<{ value: string; label: string }[]>(FALLBACK_SERVICE_OPTIONS);
+  const [regionOptions, setRegionOptions] = useState<{ value: string; label: string }[]>(FALLBACK_REGION_OPTIONS);
+
+  useEffect(() => {
+    getPublishedServices()
+      .then((rows) => {
+        const options = rows.map((row) => ({ value: row.title, label: lang === "en" ? (row.titleEn || row.title) : row.title }));
+        setServiceOptions([...options, ...EXTRA_SERVICE_OPTIONS.map((o) => ({ value: o.tr, label: lang === "en" ? o.en : o.tr }))]);
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  useEffect(() => {
+    getPublishedRegions()
+      .then((rows) => {
+        setRegionOptions(rows.map((row) => ({ value: row.name, label: lang === "en" ? (row.nameEn || row.name) : row.name })));
+      })
+      .catch(() => {});
+  }, [lang]);
+
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("kategori");
     if (!requested) return;
-    const match = serviceGroups.find(([title]) => title.toLowerCase() === requested.toLowerCase());
-    if (match) setValues((current) => ({ ...current, service: match[0] }));
+    setValues((current) => ({ ...current, service: requested }));
   }, []);
 
   const [consent, setConsent] =
@@ -2354,13 +2225,13 @@ export function ContactNew() {
                 {t("contact.categoryPlaceholder")}
               </option>
 
-              {serviceGroups.map(
-                ([title]) => (
+              {serviceOptions.map(
+                (option) => (
                   <option
-                    key={title}
-                    value={title}
+                    key={option.value}
+                    value={option.value}
                   >
-                    {lang === "en" ? (serviceGroupLabelsEn[title] ?? title) : title}
+                    {option.label}
                   </option>
                 )
               )}
@@ -2399,13 +2270,13 @@ export function ContactNew() {
                 {t("contact.regionPlaceholder")}
               </option>
 
-              {REGION_OPTIONS.map(
-                (label) => (
+              {regionOptions.map(
+                (option) => (
                   <option
-                    key={label}
-                    value={label}
+                    key={option.value}
+                    value={option.value}
                   >
-                    {label}
+                    {option.label}
                   </option>
                 )
               )}
