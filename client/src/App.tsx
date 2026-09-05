@@ -29,35 +29,11 @@ import { LanguageProvider } from "@/lib/i18n";
 // Lazy loaded pages
 // ============================================================
 
-const AboutNew = lazy(() =>
-  import("@/pages/CorporatePages").then((module) => ({
-    default: module.AboutNew,
-  }))
-);
-
-const ContactNew = lazy(() =>
-  import("@/pages/CorporatePages").then((module) => ({
-    default: module.ContactNew,
-  }))
-);
-
-const KnowledgeNew = lazy(() =>
-  import("@/pages/CorporatePages").then((module) => ({
-    default: module.KnowledgeNew,
-  }))
-);
-
-const ProjectsNew = lazy(() =>
-  import("@/pages/CorporatePages").then((module) => ({
-    default: module.ProjectsNew,
-  }))
-);
-
-const ServicesNew = lazy(() =>
-  import("@/pages/CorporatePages").then((module) => ({
-    default: module.ServicesNew,
-  }))
-);
+const AboutNew = lazy(() => import("@/pages/corporate/AboutNew"));
+const ContactNew = lazy(() => import("@/pages/corporate/ContactNew"));
+const KnowledgeNew = lazy(() => import("@/pages/corporate/KnowledgeNew"));
+const ProjectsNew = lazy(() => import("@/pages/corporate/ProjectsNew"));
+const ServicesNew = lazy(() => import("@/pages/corporate/ServicesNew"));
 
 const AdminProjects = lazy(() => import("@/pages/AdminProjects"));
 
