@@ -892,3 +892,20 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     publishedCounts: { services, projects, knowledgePosts, faq, references, regions },
   };
 }
+
+/**
+ * Fetches every row of every content table as plain JSON, for the admin's
+ * one-click "Yedek indir" button. This is a manual safety net, not a
+ * substitute for Supabase's own backup settings.
+ */
+export async function exportFullBackup(): Promise<Record<string, unknown>> {
+  const tables = ["boat_listings", "client_references", "contact_messages", "faq", "knowledge_posts", "partners", "projects", "regions", "services", "site_settings"];
+  const results = await Promise.all(
+    tables.map(async (table) => {
+      const { data, error } = await supabase.from(table).select("*");
+      if (error) throw error;
+      return [table, data ?? []] as const;
+    })
+  );
+  return { exportedAt: new Date().toISOString(), ...Object.fromEntries(results) };
+}

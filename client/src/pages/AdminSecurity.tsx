@@ -2,7 +2,8 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { enrollTotp, verifyTotpEnrollment, listTotpFactors, unenrollTotp } from "@/lib/auth";
-import { ShieldCheck, ShieldOff, KeyRound } from "lucide-react";
+import { exportFullBackup } from "@/lib/content";
+import { ShieldCheck, ShieldOff, KeyRound, Download } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type EnrollmentState = { factorId: string; qrCode: string; secret: string } | null;
@@ -70,6 +71,31 @@ export default function AdminSecurity() {
     }
   };
 
+  const [isDownloadingBackup, setIsDownloadingBackup] = useState(false);
+  const [backupError, setBackupError] = useState("");
+
+  const downloadBackup = async () => {
+    setIsDownloadingBackup(true);
+    setBackupError("");
+    try {
+      const backup = await exportFullBackup();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const dateStamp = new Date().toISOString().slice(0, 10);
+      link.href = url;
+      link.download = `perla-marine-yedek-${dateStamp}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setBackupError(err instanceof Error ? err.message : "Yedek indirilemedi, tekrar deneyin.");
+    } finally {
+      setIsDownloadingBackup(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="admin-projects-page">
@@ -132,6 +158,18 @@ export default function AdminSecurity() {
             </div>
           </section>
         )}
+
+        <section className="admin-project-row" style={{ alignItems: "flex-start", marginTop: 20 }}>
+          <div className="admin-knowledge-row__icon"><Download size={28} /></div>
+          <div className="admin-project-row__copy">
+            <h3>Veri yedeği indir</h3>
+            <p>Tüm hizmetler, projeler, teknik yazılar, SSS, referanslar ve iletişim mesajlarının o anki tam kopyasını tek bir dosya olarak indirin. Bilgisayarınızda güvenli bir yerde (örn. Google Drive) saklamanızı öneririz.</p>
+            {backupError && <p className="admin-form-error" role="alert">{backupError}</p>}
+          </div>
+          <div className="admin-project-row__actions">
+            <Button onClick={downloadBackup} disabled={isDownloadingBackup}><Download size={15} /> {isDownloadingBackup ? "Hazırlanıyor…" : "Yedek indir"}</Button>
+          </div>
+        </section>
       </div>
     </DashboardLayout>
   );
