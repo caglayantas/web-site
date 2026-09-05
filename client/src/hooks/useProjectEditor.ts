@@ -12,6 +12,7 @@ export type ProjectForm = {
   beforeImage: string;
   afterImage: string;
   galleryImages: string[];
+  photoFit: "cover" | "contain";
   labelEn: string;
   titleEn: string;
   detailEn: string;
@@ -22,7 +23,7 @@ export type ProjectForm = {
   sortOrder: number;
 };
 
-export const emptyForm: ProjectForm = { slug: "", label: "", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
+export const emptyForm: ProjectForm = { slug: "", label: "", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], photoFit: "cover", labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
 export const PROJECT_DRAFT_KEY = "perla-marine-project-draft-v2";
 export type FormErrors = Partial<Record<keyof ProjectForm | "form", string>>;
 export type SavedProject = Omit<ProjectForm, "scope" | "systems" | "results"> & { id: number; scope: string | null; systems: string | null; results: string | null; createdAt?: Date; updatedAt?: Date };

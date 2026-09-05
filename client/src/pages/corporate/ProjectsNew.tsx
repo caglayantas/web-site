@@ -36,6 +36,7 @@ type Project = {
   before: string;
   after: string;
   gallery: string[];
+  photoFit: "cover" | "contain";
   labelEn?: string;
   titleEn?: string;
   detailEn?: string;
@@ -62,6 +63,7 @@ const fallbackProjects: Project[] = [
     before: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
     after: "/manus-storage/perla-service-marine-electronics_a9f3a57f_2b833740.webp",
     gallery: [],
+    photoFit: "cover",
   },
 
   {
@@ -80,6 +82,7 @@ const fallbackProjects: Project[] = [
     before: "/manus-storage/perla-service-propulsion_1dad9846.webp",
     after: "/manus-storage/perla-service-mechanical_1537487f.webp",
     gallery: [],
+    photoFit: "cover",
   },
 
   {
@@ -98,6 +101,7 @@ const fallbackProjects: Project[] = [
     before: "/manus-storage/perla-service-mechanical_1537487f.webp",
     after: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
     gallery: [],
+    photoFit: "cover",
   },
 ];
 
@@ -324,6 +328,7 @@ export default function ProjectsNew() {
             before: project.beforeImage ?? "",
             after: project.afterImage ?? "",
             gallery: Array.isArray(project.galleryImages) ? project.galleryImages : [],
+            photoFit: project.photoFit,
             labelEn: project.labelEn ?? "",
             titleEn: project.titleEn ?? "",
             detailEn: project.detailEn ?? "",
@@ -410,6 +415,7 @@ export default function ProjectsNew() {
                     beforeAlt={`${project.title} ${lang === "en" ? "before · current condition" : "önce · mevcut durum"}`}
                     afterAlt={`${project.title} ${lang === "en" ? "after · target scope" : "sonra · hedeflenen kapsam"}`}
                     label={project.title}
+                    fit={project.photoFit}
                   />
 
                   <button

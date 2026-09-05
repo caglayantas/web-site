@@ -20,6 +20,7 @@ type ProjectForm = {
   beforeImage: string;
   afterImage: string;
   galleryImages: string[];
+  photoFit: "cover" | "contain";
   labelEn: string;
   titleEn: string;
   detailEn: string;
@@ -30,7 +31,7 @@ type ProjectForm = {
   sortOrder: number;
 };
 
-const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
+const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], photoFit: "cover", labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
 const PROJECT_CATEGORY_OPTIONS = [
   "Kompozit çözümler",
   "Marin elektrik",
@@ -215,7 +216,7 @@ function SavedProjectSummary({ project, onClose }: { project: SavedProject; onCl
 
 function ProjectLivePreview({ value }: { value: ProjectForm }) {
   const hasImages = Boolean(value.beforeImage && value.afterImage);
-  return <aside className="admin-live-preview" aria-label="Public proje canlı önizlemesi"><div className="admin-live-preview__heading"><div><p className="eyebrow">Canlı önizleme</p><h3>Sitede böyle görünecek</h3></div><span>Public kart</span></div><article className="admin-live-preview__card"><div className="admin-live-preview__media">{hasImages ? <BeforeAfterSlider before={value.beforeImage} after={value.afterImage} beforeAlt="Önce görseli önizleme" afterAlt="Sonra görseli önizleme" label={value.title || "Proje"} /> : <div className="admin-live-preview__empty"><ImagePlus size={22} /><span>İki görsel yüklendiğinde karşılaştırma burada görünür.</span></div>}</div><div className="admin-live-preview__copy"><span className="admin-live-preview__label">{value.label || "Kategori"}</span><h4>{value.title || "Proje başlığı"}</h4><p>{value.detail || "Kısa açıklama burada görünecek."}</p><div className="admin-live-preview__facts"><div><strong>Kapsam</strong><span>{value.scope || "Henüz girilmedi"}</span></div><div><strong>Sistemler</strong><span>{value.systems || "Henüz girilmedi"}</span></div><div><strong>Sonuç</strong><span>{value.results || "Henüz girilmedi"}</span></div></div></div></article></aside>;
+  return <aside className="admin-live-preview" aria-label="Public proje canlı önizlemesi"><div className="admin-live-preview__heading"><div><p className="eyebrow">Canlı önizleme</p><h3>Sitede böyle görünecek</h3></div><span>Public kart</span></div><article className="admin-live-preview__card"><div className="admin-live-preview__media">{hasImages ? <BeforeAfterSlider before={value.beforeImage} after={value.afterImage} beforeAlt="Önce görseli önizleme" afterAlt="Sonra görseli önizleme" label={value.title || "Proje"} fit={value.photoFit} /> : <div className="admin-live-preview__empty"><ImagePlus size={22} /><span>İki görsel yüklendiğinde karşılaştırma burada görünür.</span></div>}</div><div className="admin-live-preview__copy"><span className="admin-live-preview__label">{value.label || "Kategori"}</span><h4>{value.title || "Proje başlığı"}</h4><p>{value.detail || "Kısa açıklama burada görünecek."}</p><div className="admin-live-preview__facts"><div><strong>Kapsam</strong><span>{value.scope || "Henüz girilmedi"}</span></div><div><strong>Sistemler</strong><span>{value.systems || "Henüz girilmedi"}</span></div><div><strong>Sonuç</strong><span>{value.results || "Henüz girilmedi"}</span></div></div></div></article></aside>;
 }
 
 function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: ProjectForm; onChange: (value: ProjectForm) => void; onCancel: () => void; onSaved: (project: SavedProject) => void }) {
@@ -284,6 +285,14 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
       <label>Bakım sonucu (EN)<Textarea value={value.resultsEn} onChange={(event) => set("resultsEn", event.target.value)} rows={3} /></label>
       <ImageUploadField field="beforeImage" label="Önce görseli" fieldError={errors.beforeImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.beforeImage = message; else delete nextErrors.beforeImage; return nextErrors; })} value={value.beforeImage} onChange={(url) => set("beforeImage", url)} />
       <ImageUploadField field="afterImage" label="Sonra görseli" fieldError={errors.afterImage} onError={(message) => setErrors((current) => { const nextErrors = { ...current }; if (message) nextErrors.afterImage = message; else delete nextErrors.afterImage; return nextErrors; })} value={value.afterImage} onChange={(url) => set("afterImage", url)} />
+      <label className="admin-project-form__full">
+        Fotoğraf yerleşimi
+        <select value={value.photoFit} onChange={(event) => set("photoFit", event.target.value as ProjectForm["photoFit"])}>
+          <option value="cover">Yatay fotoğraflar (kare/dikdörtgen kadraja kırpılır — varsayılan)</option>
+          <option value="contain">Dikey fotoğraflar (9:16 gibi — kırpmadan tam sığdırılır, boşluklar bulanık dolgu ile kapatılır)</option>
+        </select>
+        <small className="admin-form-hint">Önce/sonra ve galeri fotoğraflarınız telefonla dikey çekildiyse "Dikey fotoğraflar"ı seçin, aksi halde fotoğrafın büyük kısmı kırpılır.</small>
+      </label>
       <ProjectGalleryField value={value.galleryImages} onChange={(urls) => set("galleryImages", urls)} />
       <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ProjectForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select><small className="admin-form-hint">Taslak kayıtlar public sayfalarda gösterilmez.</small></label>
       <label className={field("sortOrder")}>Sıra<Input id="sortOrder-field" type="number" min={0} {...fieldProps("sortOrder")} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} />{hint("sortOrder", "Küçük sayı listede daha üstte görünür.")}</label>
@@ -303,7 +312,7 @@ export default function AdminProjects() {
   useEffect(() => { refreshProjects(); }, []);
   const [form, setForm] = useState<ProjectForm | null>(null);
   const [savedProject, setSavedProject] = useState<SavedProject | null>(null);
-  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, labelEn: project.labelEn, titleEn: project.titleEn, detailEn: project.detailEn, scopeEn: project.scopeEn ?? "", systemsEn: project.systemsEn ?? "", resultsEn: project.resultsEn ?? "", status: project.status, sortOrder: project.sortOrder }); };
+  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, photoFit: project.photoFit, labelEn: project.labelEn, titleEn: project.titleEn, detailEn: project.detailEn, scopeEn: project.scopeEn ?? "", systemsEn: project.systemsEn ?? "", resultsEn: project.resultsEn ?? "", status: project.status, sortOrder: project.sortOrder }); };
   const startNewProject = () => { setSavedProject(null); setForm(emptyForm); };
   const saved = (project: SavedProject) => { clearProjectDraft(); setForm(null); setSavedProject(project); refreshProjects(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) deleteProject(id).then(refreshProjects); };

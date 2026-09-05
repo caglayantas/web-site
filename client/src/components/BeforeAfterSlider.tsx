@@ -7,9 +7,18 @@ type BeforeAfterSliderProps = {
   beforeAlt: string;
   afterAlt: string;
   label: string;
+  /**
+   * "cover" (default) crops each photo to fill the frame — the original,
+   * safe behaviour for ordinary landscape photos.
+   * "contain" shows the full photo with a softened backdrop of itself
+   * filling the rest of the frame — use this only for projects that include
+   * portrait (9:16-style) photos, since forcing those into "cover" crops
+   * away most of the image.
+   */
+  fit?: "cover" | "contain";
 };
 
-export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, label }: BeforeAfterSliderProps) {
+export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, label, fit = "cover" }: BeforeAfterSliderProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
   const [dragging, setDragging] = useState(false);
@@ -71,20 +80,26 @@ export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, 
   const afterLabelOpacity = Math.max(0.22, Math.min(1, (100 - position) / 50));
   const beforeLabelActive = position >= 50;
   const afterLabelActive = position <= 50;
+  const isContain = fit === "contain";
 
   return (
     <div
       ref={sliderRef}
-      className={`before-after-slider${dragging ? " is-dragging" : ""}`}
+      className={`before-after-slider${dragging ? " is-dragging" : ""}${isContain ? " before-after-slider--contain" : ""}`}
       onPointerDownCapture={handleSurfacePointerDown}
       onPointerMove={moveDrag}
       onPointerUp={stopDrag}
       onPointerCancel={stopDrag}
     >
-      <img className="before-after-slider__blur-bg" src={after} alt="" aria-hidden="true" />
-      <img className="before-after-slider__image before-after-slider__image--after" src={after} alt={afterAlt} />
+      <div className="before-after-slider__layer before-after-slider__layer--after">
+        {isContain && <img className="before-after-slider__blur-bg" src={after} alt="" aria-hidden="true" />}
+        <img className="before-after-slider__image before-after-slider__image--after" src={after} alt={afterAlt} />
+      </div>
       <div className="before-after-slider__before" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
-        <img className="before-after-slider__image" src={before} alt={beforeAlt} />
+        <div className="before-after-slider__layer">
+          {isContain && <img className="before-after-slider__blur-bg" src={before} alt="" aria-hidden="true" />}
+          <img className="before-after-slider__image" src={before} alt={beforeAlt} />
+        </div>
       </div>
       <div className="before-after-slider__divider" style={{ left: `${position}%` }} aria-hidden="true" />
       <span className={`before-after-slider__label before-after-slider__label--before${beforeLabelActive ? " is-active" : " is-muted"}`} style={{ opacity: beforeLabelOpacity }}>ÖNCE</span>

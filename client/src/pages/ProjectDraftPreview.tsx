@@ -34,7 +34,7 @@ export default function ProjectDraftPreview() {
     </div>
     <section className="draft-preview-hero">
       <div className="draft-preview-hero__copy"><p className="eyebrow">{value.label} · {value.status === "published" ? "Yayında" : "Yayınlanmadan önce kontrol"}</p><h1>{value.title}</h1><p>{value.detail}</p><div className="draft-preview-hero__meta"><span><Check size={15} /> Önce/sonra karşılaştırması hazır</span><span><Check size={15} /> Teknik kapsam alanları görünür</span></div></div>
-      <div className="draft-preview-hero__media"><BeforeAfterSlider before={value.beforeImage} after={value.afterImage} beforeAlt={`${value.title} önce görseli`} afterAlt={`${value.title} sonra görseli`} label={value.title} /></div>
+      <div className="draft-preview-hero__media"><BeforeAfterSlider before={value.beforeImage} after={value.afterImage} beforeAlt={`${value.title} önce görseli`} afterAlt={`${value.title} sonra görseli`} label={value.title} fit={value.photoFit} /></div>
     </section>
     <section className="draft-preview-content" aria-label="Proje teknik detayları">
       <div className="draft-preview-content__heading"><p className="eyebrow">Saha çalışması</p><h2>Bakım kapsamı ve uygulama sonucu</h2><p>Bu sayfa, projenin public görünümünü yayınlamadan önce kontrol etmek için oluşturulmuştur. Taslak kayıt public projeler listesinde gösterilmez.</p></div>

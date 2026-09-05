@@ -253,7 +253,7 @@ export default function Home() {
             <a className="text-link text-link--dark" href={toPath("/projeler")}>{t.beforeAfterLink} <ArrowUpRight size={16} /></a>
           </div>
           <div className="home-before-after-grid">
-            {projectsLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`comparison-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <article className="home-before-after-card" key={`${project.slug}-comparison`}><BeforeAfterSlider before={project.beforeImage} after={project.afterImage} beforeAlt={`${project.title} ${t.beforeAfterBeforeAlt}`} afterAlt={`${project.title} ${t.beforeAfterAfterAlt}`} label={project.title} /></article>) : <p className="home-content-empty">{t.beforeAfterEmpty}</p>}
+            {projectsLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`comparison-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <article className="home-before-after-card" key={`${project.slug}-comparison`}><BeforeAfterSlider before={project.beforeImage} after={project.afterImage} beforeAlt={`${project.title} ${t.beforeAfterBeforeAlt}`} afterAlt={`${project.title} ${t.beforeAfterAfterAlt}`} label={project.title} fit={"photoFit" in project ? (project as ProjectRow).photoFit : "cover"} /></article>) : <p className="home-content-empty">{t.beforeAfterEmpty}</p>}
           </div>
         </section>
 

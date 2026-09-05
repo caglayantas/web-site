@@ -12,6 +12,7 @@ export type ProjectRow = {
   beforeImage: string;
   afterImage: string;
   galleryImages: string[];
+  photoFit: "cover" | "contain";
   labelEn: string;
   titleEn: string;
   detailEn: string;
@@ -160,6 +161,7 @@ const mapProject = (row: any): ProjectRow => ({
   beforeImage: row.before_image,
   afterImage: row.after_image,
   galleryImages: Array.isArray(row.gallery_images) ? row.gallery_images : [],
+  photoFit: row.photo_fit === "contain" ? "contain" : "cover",
   labelEn: row.label_en ?? "",
   titleEn: row.title_en ?? "",
   detailEn: row.detail_en ?? "",
@@ -360,6 +362,7 @@ const projectToRow = (p: Partial<ProjectRow>) => {
   if (p.beforeImage !== undefined) row.before_image = p.beforeImage;
   if (p.afterImage !== undefined) row.after_image = p.afterImage;
   if (p.galleryImages !== undefined) row.gallery_images = p.galleryImages;
+  if (p.photoFit !== undefined) row.photo_fit = p.photoFit;
   if (p.labelEn !== undefined) row.label_en = p.labelEn;
   if (p.titleEn !== undefined) row.title_en = p.titleEn;
   if (p.detailEn !== undefined) row.detail_en = p.detailEn;
