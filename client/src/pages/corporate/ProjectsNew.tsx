@@ -37,6 +37,7 @@ type Project = {
   after: string;
   gallery: string[];
   photoFit: "cover" | "contain";
+  videoUrl: string;
   labelEn?: string;
   titleEn?: string;
   detailEn?: string;
@@ -64,6 +65,7 @@ const fallbackProjects: Project[] = [
     after: "/manus-storage/perla-service-marine-electronics_a9f3a57f_2b833740.webp",
     gallery: [],
     photoFit: "cover",
+    videoUrl: "",
   },
 
   {
@@ -83,6 +85,7 @@ const fallbackProjects: Project[] = [
     after: "/manus-storage/perla-service-mechanical_1537487f.webp",
     gallery: [],
     photoFit: "cover",
+    videoUrl: "",
   },
 
   {
@@ -102,6 +105,7 @@ const fallbackProjects: Project[] = [
     after: "/manus-storage/perla-service-electrical_bfa1b249_34b9f24d.webp",
     gallery: [],
     photoFit: "cover",
+    videoUrl: "",
   },
 ];
 
@@ -329,6 +333,7 @@ export default function ProjectsNew() {
             after: project.afterImage ?? "",
             gallery: Array.isArray(project.galleryImages) ? project.galleryImages : [],
             photoFit: project.photoFit,
+            videoUrl: project.videoUrl,
             labelEn: project.labelEn ?? "",
             titleEn: project.titleEn ?? "",
             detailEn: project.detailEn ?? "",

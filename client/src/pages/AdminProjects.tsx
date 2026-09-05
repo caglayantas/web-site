@@ -21,6 +21,7 @@ type ProjectForm = {
   afterImage: string;
   galleryImages: string[];
   photoFit: "cover" | "contain";
+  videoUrl: string;
   labelEn: string;
   titleEn: string;
   detailEn: string;
@@ -31,7 +32,7 @@ type ProjectForm = {
   sortOrder: number;
 };
 
-const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], photoFit: "cover", labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
+const emptyForm: ProjectForm = { slug: "", label: "Marin elektrik", title: "", detail: "", scope: "", systems: "", results: "", beforeImage: "", afterImage: "", galleryImages: [], photoFit: "cover", videoUrl: "", labelEn: "", titleEn: "", detailEn: "", scopeEn: "", systemsEn: "", resultsEn: "", status: "draft", sortOrder: 0 };
 const PROJECT_CATEGORY_OPTIONS = [
   "Kompozit çözümler",
   "Marin elektrik",
@@ -294,6 +295,11 @@ function ProjectFormPanel({ value, onChange, onCancel, onSaved }: { value: Proje
         <small className="admin-form-hint">Önce/sonra ve galeri fotoğraflarınız telefonla dikey çekildiyse "Dikey fotoğraflar"ı seçin, aksi halde fotoğrafın büyük kısmı kırpılır.</small>
       </label>
       <ProjectGalleryField value={value.galleryImages} onChange={(urls) => set("galleryImages", urls)} />
+      <label className="admin-project-form__full">
+        Proje videosu (opsiyonel)
+        <Input type="url" value={value.videoUrl} onChange={(event) => set("videoUrl", event.target.value)} placeholder="https://www.youtube.com/watch?v=... veya https://www.instagram.com/reel/..." />
+        <small className="admin-form-hint">YouTube veya Instagram Reel/gönderi linki yapıştırın. Boş bırakılırsa proje sayfasında video gösterilmez.</small>
+      </label>
       <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ProjectForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select><small className="admin-form-hint">Taslak kayıtlar public sayfalarda gösterilmez.</small></label>
       <label className={field("sortOrder")}>Sıra<Input id="sortOrder-field" type="number" min={0} {...fieldProps("sortOrder")} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} />{hint("sortOrder", "Küçük sayı listede daha üstte görünür.")}</label>
     </div>
@@ -312,7 +318,7 @@ export default function AdminProjects() {
   useEffect(() => { refreshProjects(); }, []);
   const [form, setForm] = useState<ProjectForm | null>(null);
   const [savedProject, setSavedProject] = useState<SavedProject | null>(null);
-  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, photoFit: project.photoFit, labelEn: project.labelEn, titleEn: project.titleEn, detailEn: project.detailEn, scopeEn: project.scopeEn ?? "", systemsEn: project.systemsEn ?? "", resultsEn: project.resultsEn ?? "", status: project.status, sortOrder: project.sortOrder }); };
+  const editProject = (project: SavedProject) => { setSavedProject(null); setForm({ id: project.id, slug: project.slug, label: project.label, title: project.title, detail: project.detail, scope: project.scope ?? "", systems: project.systems ?? "", results: project.results ?? "", beforeImage: project.beforeImage, afterImage: project.afterImage, galleryImages: project.galleryImages, photoFit: project.photoFit, videoUrl: project.videoUrl, labelEn: project.labelEn, titleEn: project.titleEn, detailEn: project.detailEn, scopeEn: project.scopeEn ?? "", systemsEn: project.systemsEn ?? "", resultsEn: project.resultsEn ?? "", status: project.status, sortOrder: project.sortOrder }); };
   const startNewProject = () => { setSavedProject(null); setForm(emptyForm); };
   const saved = (project: SavedProject) => { clearProjectDraft(); setForm(null); setSavedProject(project); refreshProjects(); };
   const handleRemove = (id: number) => { if (window.confirm("Bu projeyi kaldırmak istediğinize emin misiniz?")) deleteProject(id).then(refreshProjects); };

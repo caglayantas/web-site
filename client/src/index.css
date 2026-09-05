@@ -1860,6 +1860,10 @@ a.partners-band__card:hover .partners-band__copy h3 { color: var(--gold); }
 .project-post__gallery-item { position: relative; overflow: hidden; aspect-ratio: 1; }
 .project-post__gallery-blur { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px) brightness(.75) saturate(1.1); transform: scale(1.15); }
 .project-post__gallery-photo { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; }
+.project-post__video { margin-top: 24px; }
+.project-post__video iframe { width: 100%; border: 0; display: block; background: #000; }
+.project-post__video--youtube iframe { aspect-ratio: 16 / 9; }
+.project-post__video--instagram iframe { aspect-ratio: 9 / 16; max-width: 400px; margin: 0 auto; }
 .project-post__facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; margin-top: 42px; }
 .project-post__facts section { padding: 22px; border-top: 2px solid var(--gold); background: #fffdf8; }
 .project-post__facts h2 { margin: 0 0 12px; color: var(--navy); font: 29px/1.05 var(--serif); }
