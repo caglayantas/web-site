@@ -81,6 +81,7 @@ export default function BeforeAfterSlider({ before, after, beforeAlt, afterAlt, 
       onPointerUp={stopDrag}
       onPointerCancel={stopDrag}
     >
+      <img className="before-after-slider__blur-bg" src={after} alt="" aria-hidden="true" />
       <img className="before-after-slider__image before-after-slider__image--after" src={after} alt={afterAlt} />
       <div className="before-after-slider__before" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}>
         <img className="before-after-slider__image" src={before} alt={beforeAlt} />
