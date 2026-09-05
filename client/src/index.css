@@ -982,6 +982,7 @@ textarea:focus-visible {
 .admin-project-form__grid select { min-height: 40px; padding: 0 10px; border: 1px solid #d7dce3; background: white; color: var(--navy); }
 .admin-project-form__actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 16px; border-top: 1px solid #ece5d8; }
 .admin-form-error { padding: 12px 14px; color: #9f2c2c; background: #fff0f0; font-size: 13px; }
+.admin-form-success { padding: 12px 14px; margin-bottom: 16px; color: #1d6a3f; background: #eefaf1; font-size: 13px; }
 .admin-empty { padding: 48px 24px; border: 1px dashed #d3cdc3; color: #646d7a; text-align: center; }
 @media (max-width: 760px) { .admin-projects-page { padding: 28px 16px 54px; } .admin-page-header h1 { font-size: 42px; } .admin-page-header, .admin-project-form__header { align-items: flex-start; flex-direction: column; } .admin-project-row { grid-template-columns: 1fr; gap: 14px; } .admin-project-row__actions { flex-direction: row; } .admin-project-form__grid { grid-template-columns: 1fr; } .admin-project-form__full { grid-column: auto; } .project-detail-card__facts { grid-template-columns: 1fr; } }
 .project-comparison--slider { display: grid; gap: 10px; align-content: start; }

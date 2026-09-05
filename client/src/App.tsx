@@ -46,6 +46,7 @@ const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
 const AdminListings = lazy(() => import("@/pages/AdminListings"));
 const AdminRegions = lazy(() => import("@/pages/AdminRegions"));
 const AdminReferences = lazy(() => import("@/pages/AdminReferences"));
+const AdminSecurity = lazy(() => import("@/pages/AdminSecurity"));
 const Listings = lazy(() => import("@/pages/Listings"));
 const ServiceRegions = lazy(() => import("@/pages/ServiceRegions"));
 const References = lazy(() => import("@/pages/References"));
@@ -254,6 +255,11 @@ function Router() {
       <Route
         path="/yonetim/referanslar"
         component={AdminReferences}
+      />
+
+      <Route
+        path="/yonetim/guvenlik"
+        component={AdminSecurity}
       />
 
       {/* ======================================================

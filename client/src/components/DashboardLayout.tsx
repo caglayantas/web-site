@@ -1,4 +1,4 @@
-import { useAuth, signInWithPassword } from "@/lib/auth";
+import { useAuth, signInWithPassword, verifyTotpLogin } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Anchor, Award, BookOpen, ExternalLink, HelpCircle, Handshake, LayoutDashboard, LogOut, MapPin, PanelLeft, Wrench, Sparkles } from "lucide-react";
+import { Anchor, Award, BookOpen, ExternalLink, HelpCircle, Handshake, LayoutDashboard, LogOut, MapPin, PanelLeft, ShieldCheck, Wrench, Sparkles } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -36,6 +36,7 @@ const menuItems = [
   { icon: Anchor, label: "Tekne İlanları", path: "/yonetim/ilanlar" },
   { icon: MapPin, label: "Hizmet Bölgelerimiz", path: "/yonetim/bolgeler" },
   { icon: Award, label: "Referanslarımız", path: "/yonetim/referanslar" },
+  { icon: ShieldCheck, label: "Güvenlik", path: "/yonetim/guvenlik" },
   { icon: ExternalLink, label: "Siteyi görüntüle", path: "/" },
 ];
 
@@ -92,6 +93,57 @@ function AdminLoginForm() {
   );
 }
 
+function MfaChallengeForm({ factorId, onVerified }: { factorId: string; onVerified: () => void }) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      await verifyTotpLogin(factorId, code.trim());
+      onVerified();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Kod doğrulanamadı.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <form onSubmit={submit} className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
+        <div className="flex flex-col items-center gap-6">
+          <h1 className="text-2xl font-semibold tracking-tight text-center">
+            İki adımlı doğrulama
+          </h1>
+          <p className="text-sm text-muted-foreground text-center max-w-sm">
+            Kimlik doğrulama uygulamanızda (Google Authenticator, Authy vb.) görünen 6 haneli kodu girin.
+          </p>
+        </div>
+        <Input
+          type="text"
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          required
+          maxLength={6}
+          placeholder="123456"
+          className="text-center text-lg tracking-[0.4em]"
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          autoFocus
+        />
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
+        <Button type="submit" size="lg" className="w-full shadow-lg hover:shadow-xl transition-all" disabled={submitting || code.length !== 6}>
+          {submitting ? "Doğrulanıyor…" : "Doğrula"}
+        </Button>
+      </form>
+    </div>
+  );
+}
+
 export default function DashboardLayout({
   children,
 }: {
@@ -101,7 +153,7 @@ export default function DashboardLayout({
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
-  const { loading, user, logout } = useAuth();
+  const { loading, user, logout, mfaFactorId, mfaRequired, refreshMfaStatus } = useAuth();
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
@@ -122,6 +174,10 @@ export default function DashboardLayout({
 
   if (!user || user.email !== ADMIN_EMAIL) {
     return <AdminLoginForm />;
+  }
+
+  if (mfaRequired && mfaFactorId) {
+    return <MfaChallengeForm factorId={mfaFactorId} onVerified={refreshMfaStatus} />;
   }
 
   return (
