@@ -46,6 +46,7 @@ const AdminPartners = lazy(() => import("@/pages/AdminPartners"));
 const AdminListings = lazy(() => import("@/pages/AdminListings"));
 const AdminRegions = lazy(() => import("@/pages/AdminRegions"));
 const AdminReferences = lazy(() => import("@/pages/AdminReferences"));
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const AdminSecurity = lazy(() => import("@/pages/AdminSecurity"));
 const Listings = lazy(() => import("@/pages/Listings"));
 const ServiceRegions = lazy(() => import("@/pages/ServiceRegions"));
@@ -75,7 +76,7 @@ function AdminRedirect() {
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    navigate("/yonetim/projeler", { replace: true });
+    navigate("/yonetim/genel-bakis", { replace: true });
   }, [navigate]);
 
   return (
@@ -260,6 +261,11 @@ function Router() {
       <Route
         path="/yonetim/guvenlik"
         component={AdminSecurity}
+      />
+
+      <Route
+        path="/yonetim/genel-bakis"
+        component={AdminDashboard}
       />
 
       {/* ======================================================

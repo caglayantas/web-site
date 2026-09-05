@@ -801,3 +801,94 @@ export function localizePartner(row: PartnerRow, lang: "tr" | "en"): PartnerRow 
     description: pick(row.description, row.descriptionEn),
   };
 }
+
+export type ContactMessageRow = {
+  id: number;
+  name: string;
+  email: string;
+  service: string;
+  region: string;
+  message: string;
+  status: string;
+  createdAt: string;
+};
+
+export async function getRecentContactMessages(limit = 6): Promise<ContactMessageRow[]> {
+  const { data, error } = await supabase.from("contact_messages").select("id,name,email,service,region,message,status,created_at").order("created_at", { ascending: false }).limit(limit);
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id,
+    name: row.name ?? "",
+    email: row.email ?? "",
+    service: row.service ?? "",
+    region: row.region ?? "",
+    message: row.message ?? "",
+    status: row.status ?? "new",
+    createdAt: row.created_at,
+  }));
+}
+
+export type DashboardStats = {
+  totalMessages: number;
+  messagesThisMonth: number;
+  messagesLastMonth: number;
+  topService: { name: string; count: number } | null;
+  topRegion: { name: string; count: number } | null;
+  publishedCounts: { services: number; projects: number; knowledgePosts: number; faq: number; references: number; regions: number };
+};
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const { data: messages, error: messagesError } = await supabase.from("contact_messages").select("service,region,created_at");
+  if (messagesError) throw messagesError;
+
+  const now = new Date();
+  const thisMonthKey = `${now.getFullYear()}-${now.getMonth()}`;
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthKey = `${lastMonthDate.getFullYear()}-${lastMonthDate.getMonth()}`;
+
+  let messagesThisMonth = 0;
+  let messagesLastMonth = 0;
+  const serviceCounts = new Map<string, number>();
+  const regionCounts = new Map<string, number>();
+
+  for (const row of messages ?? []) {
+    const created = new Date(row.created_at);
+    const key = `${created.getFullYear()}-${created.getMonth()}`;
+    if (key === thisMonthKey) messagesThisMonth += 1;
+    if (key === lastMonthKey) messagesLastMonth += 1;
+    if (row.service) serviceCounts.set(row.service, (serviceCounts.get(row.service) ?? 0) + 1);
+    if (row.region) regionCounts.set(row.region, (regionCounts.get(row.region) ?? 0) + 1);
+  }
+
+  const topOf = (counts: Map<string, number>) => {
+    let top: { name: string; count: number } | null = null;
+    counts.forEach((count, name) => {
+      if (!top || count > top.count) top = { name, count };
+    });
+    return top;
+  };
+
+  const countPublished = async (table: string) => {
+    const { count, error } = await supabase.from(table).select("id", { count: "exact", head: true }).eq("status", "published");
+    if (error) throw error;
+    return count ?? 0;
+  };
+
+  const [services, projects, knowledgePosts, faq, references, regions] = await Promise.all([
+    countPublished("services"),
+    countPublished("projects"),
+    countPublished("knowledge_posts"),
+    countPublished("faq"),
+    countPublished("client_references"),
+    countPublished("regions"),
+  ]);
+
+  return {
+    totalMessages: messages?.length ?? 0,
+    messagesThisMonth,
+    messagesLastMonth,
+    topService: topOf(serviceCounts),
+    topRegion: topOf(regionCounts),
+    publishedCounts: { services, projects, knowledgePosts, faq, references, regions },
+  };
+}

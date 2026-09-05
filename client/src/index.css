@@ -881,6 +881,18 @@ textarea:focus-visible {
 .admin-projects-page { min-height: 100vh; max-width: 1180px; margin: 0 auto; padding: 42px 28px 72px; background: #f8f6f1; color: var(--navy); }
 .admin-page-header, .admin-project-list__header, .admin-project-form__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
 .admin-page-header { padding-bottom: 30px; border-bottom: 1px solid #ded8ce; }
+.admin-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 28px 0; }
+.admin-dashboard-card { display: flex; flex-direction: column; gap: 6px; padding: 20px; background: var(--paper); border: 1px solid #e4ded4; }
+.admin-dashboard-card__icon { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin-bottom: 4px; color: var(--gold); background: #f6f1e6; }
+.admin-dashboard-card__label { color: #687786; font-size: 12.5px; }
+.admin-dashboard-card__value { color: var(--navy); font: 28px/1.15 var(--serif); }
+.admin-dashboard-card__value--text { font-size: 18px; }
+.admin-dashboard-card__trend { display: inline-flex; align-items: center; gap: 4px; width: fit-content; font-size: 12px; font-weight: 600; color: #687786; }
+.admin-dashboard-card__trend--up { color: #1d6a3f; }
+.admin-dashboard-card__trend--down { color: #9f2c2c; }
+.admin-dashboard-content-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; padding: 20px; }
+.admin-dashboard-content-summary > div { display: flex; align-items: center; gap: 8px; color: var(--navy); font-size: 13.5px; font-weight: 600; }
+.admin-dashboard-content-summary svg { color: var(--gold); flex-shrink: 0; }
 .admin-page-header h1 { margin: 6px 0 8px; font: 54px/1 var(--serif); }
 .admin-page-header p:not(.eyebrow) { max-width: 600px; margin: 0; color: #596271; }
 .admin-project-list { margin-top: 34px; }

@@ -28,6 +28,7 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
+  { icon: LayoutDashboard, label: "Genel Bakış", path: "/yonetim/genel-bakis" },
   { icon: Sparkles, label: "Hizmetlerimiz", path: "/yonetim/hizmetler" },
   { icon: Wrench, label: "Projeler", path: "/yonetim/projeler" },
   { icon: BookOpen, label: "Teknik bilgiler", path: "/yonetim/teknik-bilgiler" },
