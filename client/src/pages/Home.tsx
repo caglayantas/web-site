@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import Reveal from "@/components/Reveal";
 import ServiceGrid from "@/components/ServiceGrid";
 import ServiceFAQ from "@/components/ServiceFAQ";
 import { getPublishedKnowledgePosts, getPublishedProjects, getPublishedPartners, localizePartner, type KnowledgePostRow, type ProjectRow, type PartnerRow } from "@/lib/content";
@@ -236,10 +237,12 @@ export default function Home() {
 
       <div className="home-project-block" aria-label={lang === "en" ? "Projects and working process" : "Projeler ve çalışma süreci"}>
         <section id="projeler" className="home-projects-section">
+          <Reveal>
           <div className="section-heading section-heading--split home-projects-heading">
             <div><p className="eyebrow">{t.projectsEyebrow}</p><h2>{t.projectsTitle}</h2></div>
             <div className="home-projects-heading__actions"><a className="text-link text-link--dark" href={toPath("/projeler")}>{t.projectsLink} <ArrowUpRight size={16} /></a></div>
           </div>
+          </Reveal>
           <div className="home-project-carousel-shell">
             <div className="home-project-carousel" tabIndex={0} aria-label={lang === "en" ? "Latest three project cards" : "Son üç proje kartı"}>
               <div className="home-project-carousel__track">{projectsLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--project" key={`project-skeleton-${index}`} aria-hidden="true" />) : displayProjects.length > 0 ? displayProjects.map((project) => <a className="home-project-card" key={project.slug} href={toPath(`/projeler/${project.slug}`)}><img className="home-project-card__cover" src={project.afterImage} alt={`${project.title} ${t.projectAlt}`} width={800} height={450} loading="lazy" decoding="async" /><div className="home-project-card__overlay"><span>{project.label}</span><h3>{shortenProjectText(project.title, 62)}</h3><p>{shortenProjectText(project.detail, 165)}</p><strong>{t.projectCta} <ChevronRight size={15} /></strong></div></a>) : <p className="home-content-empty">{t.projectsEmpty}</p>}</div>
@@ -290,10 +293,12 @@ export default function Home() {
       )}
 
       <section id="teknik-bilgiler" className="section journal-section">
+        <Reveal>
         <div className="section-heading section-heading--split">
           <div><p className="eyebrow">{t.knowledgeEyebrow}</p><h2>{t.knowledgeTitle}</h2></div>
           <a className="text-link text-link--dark" href={toPath("/teknik-bilgiler")}>{t.knowledgeLink} <ArrowUpRight size={16} /></a>
         </div>
+        </Reveal>
         <div className="journal-grid">{knowledgeLoading ? [0, 1, 2].map((index) => <div className="home-content-skeleton home-content-skeleton--journal" key={`journal-skeleton-${index}`} aria-hidden="true" />) : technicalCards.length > 0 ? technicalCards.map((card) => <a key={card.slug} href={toPath(`/teknik-bilgiler/${card.slug}`)} className="journal-card">{card.coverImage && <img className="journal-card__cover" src={card.coverImage} alt="" width={800} height={450} loading="lazy" decoding="async" />}<div className="journal-card__body"><span>{card.category}</span><h3>{card.title}</h3><p>{card.excerpt}</p><FileText size={19} /></div></a>) : <p className="home-content-empty">{t.knowledgeEmpty}</p>}</div>
       </section>
 

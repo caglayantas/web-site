@@ -6,6 +6,7 @@ import { getKnowledgeMeta, renderKnowledgeSections } from "@/lib/markdown";
 import { getKnowledgeCoverImage } from "@/lib/knowledge";
 import { useLanguage } from "@/lib/i18n";
 import NotFound from "@/pages/NotFound";
+import ShareButtons from "@/components/ShareButtons";
 
 const SITE_URL = "https://www.perlamarine.com";
 const FONT_SIZES = ["sm", "md", "lg", "xl"] as const;
@@ -133,6 +134,9 @@ export default function KnowledgePost() {
     fontLabel: lang === "en" ? "Text size" : "Yazı boyutu",
     cta: lang === "en" ? "Discuss this scope" : "Bu kapsamı konuşun",
     permalink: lang === "en" ? "Copy permanent link" : "Kalıcı bağlantıyı kopyala",
+    shareWhatsapp: lang === "en" ? "Share on WhatsApp" : "WhatsApp'ta paylaş",
+    shareCopy: lang === "en" ? "Copy link" : "Linki kopyala",
+    shareCopied: lang === "en" ? "Copied!" : "Kopyalandı!",
     coverAlt: lang === "en" ? "cover image" : "kapak görseli",
   };
 
@@ -193,6 +197,14 @@ export default function KnowledgePost() {
             </div>
           );
         })()}
+
+        <ShareButtons
+          url={`${SITE_URL}${toPath(`/teknik-bilgiler/${article.slug}`)}`}
+          title={article.title}
+          whatsappLabel={t.shareWhatsapp}
+          copyLabel={t.shareCopy}
+          copiedLabel={t.shareCopied}
+        />
 
         <footer className="knowledge-post__footer">
           <Link href={`${toPath("/iletisim")}?kategori=${encodeURIComponent(article.category)}`} className="button button--gold">{t.cta} <ArrowUpRight size={16} /></Link>

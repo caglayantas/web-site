@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { getListingsEnabled } from "@/lib/content";
+import SiteSearch from "@/components/SiteSearch";
 import { useLanguage, type TKey } from "@/lib/i18n";
 
 function FlagTR() {
@@ -129,6 +130,7 @@ export default function SiteHeader() {
             </a>
           ))}
           <div className="nav-contact-actions">
+            <SiteSearch />
             <a className="nav-contact" href={toPath("/iletisim")}>
               {t("nav.contact")} <span aria-hidden="true">↗</span>
             </a>
@@ -170,6 +172,7 @@ export default function SiteHeader() {
               <span className="mobile-nav__lang-flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span> {lang === "tr" ? "English" : "Türkçe"}
             </a>
             <div className="mobile-nav__actions">
+              <SiteSearch />
               <a className="mobile-nav__contact" href={toPath("/iletisim")} onClick={() => setIsOpen(false)}>
                 {t("nav.contact")} <span aria-hidden="true">↗</span>
               </a>
