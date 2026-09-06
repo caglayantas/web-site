@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminReorderButtons } from "@/components/AdminReorderButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -86,7 +87,6 @@ function ReferenceFormPanel({ value, onChange, onCancel, onSaved }: { value: Ref
       </div>
       <div className="admin-project-form__grid">
         <label>Firma adı<Input value={value.companyName} onChange={(event) => set("companyName", event.target.value)} placeholder="Örn. Setur Marinaları" /></label>
-        <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
         <label className="admin-project-form__full admin-checkbox-field">
           <input type="checkbox" checked={value.showCompanyName} onChange={(event) => set("showCompanyName", event.target.checked)} />
           Firma adını sitede logonun altında da göster (kapalıysa yalnızca SEO/görsel alt metni için kullanılır — logo bazen firma adını zaten içerdiğinden tekrar yazmaya gerek olmayabilir)
@@ -148,8 +148,8 @@ export default function AdminReferences() {
                 </div>
                 <h3>{reference.companyName}</h3>
                 <p>{reference.workSummary}</p>
-                <small>sıra {reference.sortOrder}</small>
               </div>
+              <AdminReorderButtons table="client_references" items={list ?? []} item={reference} onReordered={refresh} />
               <div className="admin-project-row__actions">
                 <Button variant="outline" size="sm" onClick={() => editReference(reference)}><Pencil size={15} /> Düzenle</Button>
                 <Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => handleRemove(reference.id)}><Trash2 size={15} /> Sil</Button>

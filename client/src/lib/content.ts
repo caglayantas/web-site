@@ -1,5 +1,37 @@
 import { supabase } from "@/lib/supabase";
 
+/**
+ * Returns a sort_order value lower than every existing row in the table, so a
+ * brand-new item always appears first in admin lists and public listings
+ * (which all order by sort_order ascending) without the admin having to pick
+ * a number themselves.
+ */
+async function getNextTopSortOrder(table: string): Promise<number> {
+  const { data, error } = await supabase.from(table).select("sort_order").order("sort_order", { ascending: true }).limit(1);
+  if (error) throw error;
+  const currentMin = data?.[0]?.sort_order ?? 0;
+  return currentMin - 1;
+}
+
+/**
+ * Swaps an item's sort_order with its immediate neighbour (the item directly
+ * above or below it in the currently-sorted list), used by the up/down
+ * reorder buttons in admin list views. `items` must already be sorted by
+ * sortOrder ascending (the same order the list is displayed in).
+ */
+export async function moveSortOrder(table: string, items: { id: number; sortOrder: number }[], itemId: number, direction: "up" | "down"): Promise<void> {
+  const index = items.findIndex((item) => item.id === itemId);
+  if (index === -1) return;
+  const neighborIndex = direction === "up" ? index - 1 : index + 1;
+  if (neighborIndex < 0 || neighborIndex >= items.length) return;
+  const current = items[index];
+  const neighbor = items[neighborIndex];
+  const { error: currentError } = await supabase.from(table).update({ sort_order: neighbor.sortOrder }).eq("id", current.id);
+  if (currentError) throw currentError;
+  const { error: neighborError } = await supabase.from(table).update({ sort_order: current.sortOrder }).eq("id", neighbor.id);
+  if (neighborError) throw neighborError;
+}
+
 export type ProjectRow = {
   id: number;
   slug: string;
@@ -503,7 +535,8 @@ export async function getAllClientReferences(): Promise<ClientReferenceRow[]> {
 }
 
 export async function createClientReference(input: Partial<ClientReferenceRow>): Promise<ClientReferenceRow> {
-  const { data, error } = await supabase.from("client_references").insert(clientReferenceToRow(input)).select("*").single();
+  const sortOrder = await getNextTopSortOrder("client_references");
+  const { data, error } = await supabase.from("client_references").insert(clientReferenceToRow({ ...input, sortOrder })).select("*").single();
   if (error) throw error;
   return mapClientReference(data);
 }
@@ -532,7 +565,8 @@ export async function getAllRegions(): Promise<RegionRow[]> {
 }
 
 export async function createRegion(input: Partial<RegionRow>): Promise<RegionRow> {
-  const { data, error } = await supabase.from("regions").insert(regionToRow(input)).select("*").single();
+  const sortOrder = await getNextTopSortOrder("regions");
+  const { data, error } = await supabase.from("regions").insert(regionToRow({ ...input, sortOrder })).select("*").single();
   if (error) throw error;
   return mapRegion(data);
 }
@@ -569,7 +603,8 @@ export async function getProjectPreviewBySlug(slug: string): Promise<ProjectRow 
 }
 
 export async function createProject(input: Partial<ProjectRow>): Promise<ProjectRow> {
-  const { data, error } = await supabase.from("projects").insert(projectToRow(input)).select("*").single();
+  const sortOrder = await getNextTopSortOrder("projects");
+  const { data, error } = await supabase.from("projects").insert(projectToRow({ ...input, sortOrder })).select("*").single();
   if (error) throw error;
   return mapProject(data);
 }
@@ -592,7 +627,8 @@ export async function getAllKnowledgePosts(): Promise<KnowledgePostRow[]> {
 }
 
 export async function createKnowledgePost(input: Partial<KnowledgePostRow>): Promise<KnowledgePostRow> {
-  const { data, error } = await supabase.from("knowledge_posts").insert(knowledgeToRow(input)).select("*").single();
+  const sortOrder = await getNextTopSortOrder("knowledge_posts");
+  const { data, error } = await supabase.from("knowledge_posts").insert(knowledgeToRow({ ...input, sortOrder })).select("*").single();
   if (error) throw error;
   return mapKnowledge(data);
 }
@@ -615,7 +651,8 @@ export async function getAllFaqs(): Promise<FaqRow[]> {
 }
 
 export async function createFaq(input: Partial<FaqRow>): Promise<FaqRow> {
-  const { data, error } = await supabase.from("faq").insert({ question: input.question, answer: input.answer, question_en: input.questionEn ?? "", answer_en: input.answerEn ?? "", status: input.status ?? "published", sort_order: input.sortOrder ?? 0 }).select("*").single();
+  const sortOrder = await getNextTopSortOrder("faq");
+  const { data, error } = await supabase.from("faq").insert({ question: input.question, answer: input.answer, question_en: input.questionEn ?? "", answer_en: input.answerEn ?? "", status: input.status ?? "published", sort_order: sortOrder }).select("*").single();
   if (error) throw error;
   return mapFaq(data);
 }
@@ -668,7 +705,8 @@ export async function getAllServices(): Promise<ServiceRow[]> {
 }
 
 export async function createService(input: Partial<ServiceRow>): Promise<ServiceRow> {
-  const { data, error } = await supabase.from("services").insert(serviceToRow(input)).select("*").single();
+  const sortOrder = await getNextTopSortOrder("services");
+  const { data, error } = await supabase.from("services").insert(serviceToRow({ ...input, sortOrder })).select("*").single();
   if (error) throw error;
   return mapService(data);
 }

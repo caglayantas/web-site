@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminReorderButtons } from "@/components/AdminReorderButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -91,7 +92,6 @@ function RegionFormPanel({ value, onChange, onCancel, onSaved }: { value: Region
       </div>
       <div className="admin-project-form__grid">
         <label>URL anahtarı<Input required value={value.regionKey} onChange={(event) => set("regionKey", slugify(event.target.value))} placeholder="izmir" /></label>
-        <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
         <label className="admin-project-form__full">Bölge adı<Input required value={value.name} onChange={(event) => set("name", event.target.value)} placeholder="İzmir" /></label>
         <label className="admin-project-form__full">Açıklama<Textarea required value={value.intro} onChange={(event) => set("intro", event.target.value)} rows={3} /></label>
         <label className="admin-project-form__full">Marinalar<MarinaListEditor marinas={value.marinas} onChange={(marinas) => set("marinas", marinas)} /></label>
@@ -145,8 +145,8 @@ export default function AdminRegions() {
                 </div>
                 <h3>{region.name}</h3>
                 <p>{region.marinas.length} marina{region.marinas.filter((m) => m.lat !== undefined).length > 0 ? ` · ${region.marinas.filter((m) => m.lat !== undefined).length} haritada pinli` : ""}</p>
-                <small>sıra {region.sortOrder}</small>
               </div>
+              <AdminReorderButtons table="regions" items={list ?? []} item={region} onReordered={refresh} />
               <div className="admin-project-row__actions">
                 <Button variant="outline" size="sm" onClick={() => editRegion(region)}><Pencil size={15} /> Düzenle</Button>
                 <Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => handleRemove(region.id)}><Trash2 size={15} /> Sil</Button>

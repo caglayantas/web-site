@@ -945,6 +945,10 @@ textarea:focus-visible {
 .admin-status--published { color: #167344; background: #e7f4eb; }
 .admin-status--draft { color: #8a5b00; background: #fff3d8; }
 .admin-project-row__actions { display: flex; flex-direction: column; gap: 8px; }
+.admin-reorder-buttons { display: flex; flex-direction: column; gap: 2px; }
+.admin-reorder-buttons__btn { display: flex; align-items: center; justify-content: center; width: 30px; height: 22px; padding: 0; color: var(--navy); background: var(--paper); border: 1px solid #e4ded4; cursor: pointer; transition: background 140ms var(--ease-out); }
+.admin-reorder-buttons__btn:hover:not(:disabled) { background: #f1e9d8; }
+.admin-reorder-buttons__btn:disabled { color: #c7c0b3; cursor: not-allowed; }
 .admin-delete-button { color: #a83a3a; }
 .admin-project-form { margin-top: 28px; padding: 26px; border: 1px solid #d7c8aa; background: #fffdf8; box-shadow: 0 16px 36px rgba(4,31,61,.08); }
 .admin-project-form__header { align-items: center; padding-bottom: 20px; border-bottom: 1px solid #ece5d8; }

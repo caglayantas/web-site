@@ -1,4 +1,5 @@
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminReorderButtons } from "@/components/AdminReorderButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -217,7 +218,6 @@ function ServiceFormPanel({ value, onChange, onCancel, onSaved }: { value: Servi
         <label className="admin-project-form__full">"Perla Marine yaklaşımı" notu (EN)<Textarea value={value.noteEn} onChange={(event) => set("noteEn", event.target.value)} rows={3} /></label>
 
         <label>Durum<select value={value.status} onChange={(event) => set("status", event.target.value as ServiceForm["status"])}><option value="draft">Taslak</option><option value="published">Yayında</option></select></label>
-        <label>Sıra<Input type="number" min={0} value={value.sortOrder} onChange={(event) => set("sortOrder", Number(event.target.value))} /></label>
       </div>
       {saveError && <p className="admin-form-error" role="alert">İçerik kaydedilemedi. Gerekli alanları kontrol edip tekrar deneyin.</p>}
       <div className="admin-project-form__actions">
@@ -265,8 +265,9 @@ export default function AdminServices() {
                 </div>
                 <h3>{service.title}</h3>
                 <p>{service.description}</p>
-                <small>/{service.slug} · sıra {service.sortOrder}</small>
+                <small>/{service.slug}</small>
               </div>
+              <AdminReorderButtons table="services" items={list ?? []} item={service} onReordered={refresh} />
               <div className="admin-project-row__actions">
                 <Button variant="outline" size="sm" onClick={() => editService(service)}><Pencil size={15} /> Düzenle</Button>
                 <Button variant="ghost" size="sm" className="admin-delete-button" onClick={() => handleRemove(service.id)}><Trash2 size={15} /> Sil</Button>
