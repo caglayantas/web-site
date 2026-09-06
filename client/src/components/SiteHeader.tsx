@@ -172,7 +172,7 @@ export default function SiteHeader() {
               <span className="mobile-nav__lang-flag" aria-hidden="true">{lang === "tr" ? <FlagGB /> : <FlagTR />}</span> {lang === "tr" ? "English" : "Türkçe"}
             </a>
             <div className="mobile-nav__actions">
-              <SiteSearch />
+              <SiteSearch variant="inline" />
               <a className="mobile-nav__contact" href={toPath("/iletisim")} onClick={() => setIsOpen(false)}>
                 {t("nav.contact")} <span aria-hidden="true">↗</span>
               </a>

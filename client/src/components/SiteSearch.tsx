@@ -5,9 +5,9 @@ import { Search, X, Wrench, FileText, Image as ImageIcon } from "lucide-react";
 
 type SearchItem = { type: "service" | "knowledge" | "project"; title: string; summary: string; path: string };
 
-export default function SiteSearch() {
+export default function SiteSearch({ variant = "icon" }: { variant?: "icon" | "inline" }) {
   const { lang, toPath } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(variant === "inline");
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<SearchItem[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,12 +36,13 @@ export default function SiteSearch() {
   }, [isOpen, items, lang]);
 
   useEffect(() => {
+    if (variant !== "icon") return;
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 50);
     else setQuery("");
-  }, [isOpen]);
+  }, [isOpen, variant]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (variant !== "icon" || !isOpen) return;
     const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setIsOpen(false); };
     document.addEventListener("keydown", onKeyDown);
     document.body.style.overflow = "hidden";
@@ -49,7 +50,7 @@ export default function SiteSearch() {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, variant]);
 
   const normalizedQuery = query.trim().toLocaleLowerCase(lang === "en" ? "en" : "tr");
   const results = normalizedQuery.length < 2 || !items
@@ -62,6 +63,43 @@ export default function SiteSearch() {
   const typeLabel = lang === "en"
     ? { service: "Service", knowledge: "Technical Note", project: "Project" }
     : { service: "Hizmet", knowledge: "Teknik Bilgi", project: "Proje" };
+
+  const resultsList = (onResultClick: () => void) => (
+    <div className="site-search__results">
+      {normalizedQuery.length >= 2 && items === null && <p className="site-search__hint">{lang === "en" ? "Loading…" : "Yükleniyor…"}</p>}
+      {normalizedQuery.length >= 2 && items !== null && results.length === 0 && <p className="site-search__hint">{lang === "en" ? "No results found." : "Sonuç bulunamadı."}</p>}
+      {results.map((item) => {
+        const Icon = typeIcon[item.type];
+        return (
+          <a key={item.path} href={toPath(item.path)} className="site-search__result" onClick={onResultClick}>
+            <Icon size={16} aria-hidden="true" />
+            <span className="site-search__result-copy">
+              <strong>{item.title}</strong>
+              <small>{typeLabel[item.type]}</small>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+  );
+
+  if (variant === "inline") {
+    return (
+      <div className="site-search site-search--inline">
+        <div className="site-search__input-row site-search__input-row--inline">
+          <Search size={18} aria-hidden="true" />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={lang === "en" ? "Search…" : "Ara…"}
+            onFocus={() => { if (items === null) setIsOpen(true); }}
+          />
+        </div>
+        {query.trim().length >= 2 && resultsList(() => setQuery(""))}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -82,23 +120,8 @@ export default function SiteSearch() {
               />
               <button type="button" onClick={() => setIsOpen(false)} aria-label={lang === "en" ? "Close" : "Kapat"}><X size={18} /></button>
             </div>
-            <div className="site-search__results">
-              {normalizedQuery.length >= 2 && items === null && <p className="site-search__hint">{lang === "en" ? "Loading…" : "Yükleniyor…"}</p>}
-              {normalizedQuery.length >= 2 && items !== null && results.length === 0 && <p className="site-search__hint">{lang === "en" ? "No results found." : "Sonuç bulunamadı."}</p>}
-              {normalizedQuery.length < 2 && <p className="site-search__hint">{lang === "en" ? "Type at least 2 characters to search." : "Aramak için en az 2 karakter yazın."}</p>}
-              {results.map((item) => {
-                const Icon = typeIcon[item.type];
-                return (
-                  <a key={item.path} href={toPath(item.path)} className="site-search__result" onClick={() => setIsOpen(false)}>
-                    <Icon size={16} aria-hidden="true" />
-                    <span className="site-search__result-copy">
-                      <strong>{item.title}</strong>
-                      <small>{typeLabel[item.type]}</small>
-                    </span>
-                  </a>
-                );
-              })}
-            </div>
+            {normalizedQuery.length < 2 && <p className="site-search__hint">{lang === "en" ? "Type at least 2 characters to search." : "Aramak için en az 2 karakter yazın."}</p>}
+            {resultsList(() => setIsOpen(false))}
           </div>
         </div>
       )}
