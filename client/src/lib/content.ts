@@ -32,6 +32,29 @@ export async function moveSortOrder(table: string, items: { id: number; sortOrde
   if (neighborError) throw neighborError;
 }
 
+/**
+ * Jumps an item directly to a 1-indexed position typed by the admin (e.g.
+ * "95"), for lists too long to reorder one arrow-click at a time. Re-sequences
+ * every item's sort_order (0, 1, 2, …) to match the new order, so the list
+ * always stays gap-free and consistent afterwards.
+ */
+export async function moveToPosition(table: string, items: { id: number; sortOrder: number }[], itemId: number, targetPosition: number): Promise<void> {
+  const currentIndex = items.findIndex((item) => item.id === itemId);
+  if (currentIndex === -1) return;
+  const clampedTarget = Math.max(1, Math.min(items.length, Math.round(targetPosition))) - 1;
+  if (clampedTarget === currentIndex) return;
+
+  const reordered = items.slice();
+  const [moved] = reordered.splice(currentIndex, 1);
+  reordered.splice(clampedTarget, 0, moved);
+
+  await Promise.all(
+    reordered.map((item, index) =>
+      item.sortOrder === index ? Promise.resolve() : supabase.from(table).update({ sort_order: index }).eq("id", item.id)
+    )
+  );
+}
+
 export type ProjectRow = {
   id: number;
   slug: string;
