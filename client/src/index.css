@@ -794,6 +794,11 @@ textarea:focus-visible {
 .new-contact-form [aria-invalid="true"] { border-color: #a94238 !important; }
 .new-contact-form .consent-field { display: flex; grid-template-columns: none; align-items: flex-start; gap: 8px; font-weight: 500; line-height: 1.5; }
 .new-contact-form .consent-field input { margin-top: 3px; accent-color: var(--navy); }
+.phone-input { display: flex; gap: 8px; }
+.phone-input__country { flex: 0 0 auto; width: 108px; border: 1px solid #d8d0c4; background: var(--paper); color: var(--navy); padding: 9px 6px; font: 14px/1.4 var(--sans); outline: 0; transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+.phone-input__number { flex: 1; min-width: 0; border: 1px solid #d8d0c4; background: var(--paper); color: var(--navy); padding: 9px 11px; font: 14px/1.4 var(--sans); outline: 0; transition: border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+.phone-input__country:focus, .phone-input__number:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,157,76,.18); }
+.phone-input.has-error .phone-input__country, .phone-input.has-error .phone-input__number { border-color: #c0433c; }
 .new-contact-form .button { justify-self: start; margin-top: 4px; }
 .new-contact-success { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; overflow: hidden; border: 1px solid rgba(7,58,107,.18); border-left: 3px solid var(--gold); background: linear-gradient(110deg, #f8f5ef 0%, #fffdf9 62%, #f2eadb 100%); color: var(--navy); padding: 16px 18px 16px 15px; outline: 0; animation: contactSuccessIn 360ms var(--ease-out) both; }
 .new-contact-success::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--gold-light); transform: scaleY(0); transform-origin: bottom; animation: contactSuccessEdge 420ms var(--ease-out) 90ms both; }

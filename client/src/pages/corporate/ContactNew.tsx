@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import { getPublishedServices, getPublishedRegions } from "@/lib/content";
+import PhoneInput, { emptyPhoneValue, formatPhoneValue, type PhoneValue } from "@/components/PhoneInput";
 import { useLanguage } from "@/lib/i18n";
 import {
   ArrowLeft,
@@ -27,6 +28,7 @@ import { usePageData, usePageMetadata, PageFrame, CorporateHero } from "./pageSh
 type FormState = {
   name: string;
   email: string;
+  phone: string;
   service: string;
   region: string;
   message: string;
@@ -77,6 +79,7 @@ const formFields = [
 const emptyForm: FormState = {
   name: "",
   email: "",
+  phone: "",
   service: "",
   region: "",
   message: "",
@@ -114,6 +117,11 @@ export function validateCorporateContact(
   ) {
     next.email =
       "Geçerli bir e-posta adresi yazın.";
+  }
+
+  if (values.phone.replace(/\D/g, "").length < 7) {
+    next.phone =
+      "Geri dönüş yapabilmemiz için telefon numaranızı yazın.";
   }
 
   if (!values.service) {
@@ -160,6 +168,11 @@ export default function ContactNew() {
     useState<FormState>(
       emptyForm
     );
+
+  const [phoneValue, setPhoneValue] = useState<PhoneValue>(emptyPhoneValue);
+  useEffect(() => {
+    setValues((current) => ({ ...current, phone: formatPhoneValue(phoneValue) }));
+  }, [phoneValue]);
 
   // A second, lightweight spam signal alongside the honeypot field: real
   // visitors take at least a couple of seconds to read the form and fill it
@@ -356,6 +369,9 @@ export default function ContactNew() {
               values.email
                 .trim()
                 .toLowerCase(),
+
+            phone:
+              values.phone.trim(),
 
             service:
               values.service.trim(),
@@ -575,6 +591,29 @@ export default function ContactNew() {
             )}
           </label>
           </div>
+
+          {/* PHONE */}
+
+          <label>
+            Telefon numarası
+
+            <PhoneInput
+              id="phone-field"
+              value={phoneValue}
+              onChange={setPhoneValue}
+              hasError={Boolean(errors.phone)}
+            />
+
+            {errors.phone && (
+              <small
+                id="phone-error"
+                className="field-error"
+                role="alert"
+              >
+                {errors.phone}
+              </small>
+            )}
+          </label>
 
           {/* SERVICE */}
 

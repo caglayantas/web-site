@@ -92,7 +92,7 @@ export default function AdminDashboard() {
                     <div className="admin-project-row__meta"><small>{formatDate(message.createdAt)}</small></div>
                     <h3>{message.name || "İsimsiz"} {message.service && <span style={{ fontWeight: 400, color: "#8a95a3" }}>· {message.service}</span>}</h3>
                     <p>{message.message}</p>
-                    <small>{message.email}{message.region ? ` · ${message.region}` : ""}</small>
+                    <small>{message.email}{message.phone ? ` · ${message.phone}` : ""}{message.region ? ` · ${message.region}` : ""}</small>
                   </div>
                 </article>
               ))}

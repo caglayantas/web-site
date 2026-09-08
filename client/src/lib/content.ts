@@ -867,6 +867,7 @@ export type ContactMessageRow = {
   id: number;
   name: string;
   email: string;
+  phone: string;
   service: string;
   region: string;
   message: string;
@@ -875,12 +876,13 @@ export type ContactMessageRow = {
 };
 
 export async function getRecentContactMessages(limit = 6): Promise<ContactMessageRow[]> {
-  const { data, error } = await supabase.from("contact_messages").select("id,name,email,service,region,message,status,created_at").order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await supabase.from("contact_messages").select("id,name,email,phone,service,region,message,status,created_at").order("created_at", { ascending: false }).limit(limit);
   if (error) throw error;
   return (data ?? []).map((row: any) => ({
     id: row.id,
     name: row.name ?? "",
     email: row.email ?? "",
+    phone: row.phone ?? "",
     service: row.service ?? "",
     region: row.region ?? "",
     message: row.message ?? "",
