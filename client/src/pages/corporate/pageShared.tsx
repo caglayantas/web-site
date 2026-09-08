@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useLanguage } from "@/lib/i18n";
+import { updateHreflangTags } from "@/lib/seo";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -263,6 +264,8 @@ function usePageMetadata(
         "href",
         `${SITE_URL}${toPath(path)}`
       );
+
+    updateHreflangTags(path);
 
     document
       .querySelector(

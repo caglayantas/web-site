@@ -5,6 +5,7 @@ import PageHero from "@/components/PageHero";
 import { useLanguage } from "@/lib/i18n";
 import { getPublishedRegions, localizeRegion, type RegionRow } from "@/lib/content";
 import RegionsMap from "@/components/RegionsMap";
+import { updateHreflangTags } from "@/lib/seo";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -26,6 +27,7 @@ export default function ServiceRegions() {
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}${toPath("/hizmet-bolgelerimiz")}`);
+    updateHreflangTags("/hizmet-bolgelerimiz");
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${SITE_URL}${toPath("/hizmet-bolgelerimiz")}`);

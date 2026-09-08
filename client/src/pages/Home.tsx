@@ -5,6 +5,7 @@ import ServiceGrid from "@/components/ServiceGrid";
 import ServiceFAQ from "@/components/ServiceFAQ";
 import { getPublishedKnowledgePosts, getPublishedProjects, getPublishedPartners, localizePartner, type KnowledgePostRow, type ProjectRow, type PartnerRow } from "@/lib/content";
 import { useLanguage } from "@/lib/i18n";
+import { updateHreflangTags } from "@/lib/seo";
 import { ArrowDownRight, ArrowUpRight, BatteryCharging, CalendarClock, Check, ChevronRight, ClipboardCheck, Clock3, FileText, MapPin, Settings2, ShieldCheck, Wrench, MoveRight } from "lucide-react";
 
 const SITE_URL = "https://www.perlamarine.com";
@@ -146,6 +147,7 @@ export default function Home() {
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${SITE_URL}${toPath("/")}`);
+    updateHreflangTags("/");
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${SITE_URL}${toPath("/")}`);

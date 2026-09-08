@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpRight, Check, FileText, Wrench } from "lucide-react";
 import { getPublishedServiceBySlug, getPublishedKnowledgePosts, localizeService, localizeKnowledge, type ServiceRow, type KnowledgePostRow } from "@/lib/content";
 import { useLanguage } from "@/lib/i18n";
 import NotFound from "@/pages/NotFound";
+import { updateHreflangTags } from "@/lib/seo";
 
 const SITE_URL = "https://www.perlamarine.com";
 
@@ -49,6 +50,7 @@ export default function ServiceDetail() {
     if (!data) return;
     const service = localizeService(data, lang);
     const canonicalUrl = `${SITE_URL}${toPath(`/hizmetler/${data.slug}`)}`;
+    updateHreflangTags(`/hizmetler/${data.slug}`);
     const title = `${service.title} | Perla Marine`;
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", service.description);

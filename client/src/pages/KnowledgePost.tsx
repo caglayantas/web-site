@@ -7,6 +7,7 @@ import { getKnowledgeCoverImage } from "@/lib/knowledge";
 import { useLanguage } from "@/lib/i18n";
 import NotFound from "@/pages/NotFound";
 import ShareButtons from "@/components/ShareButtons";
+import { updateHreflangTags } from "@/lib/seo";
 
 const SITE_URL = "https://www.perlamarine.com";
 const FONT_SIZES = ["sm", "md", "lg", "xl"] as const;
@@ -90,13 +91,15 @@ export default function KnowledgePost() {
     const article = localizeKnowledge(data, lang);
     const meta = getKnowledgeMeta(article);
     const canonicalUrl = `${SITE_URL}${toPath(`/teknik-bilgiler/${data.slug}`)}`;
+    updateHreflangTags(`/teknik-bilgiler/${data.slug}`);
     const imageUrl = data.coverImage || getKnowledgeCoverImage(article.category, article.title);
-    document.title = `${meta.title} | Perla Marine`;
+    const pageTitle = meta.title.toLowerCase().includes("perla marine") ? meta.title : `${meta.title} | Perla Marine`;
+    document.title = pageTitle;
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute("content", meta.description);
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) canonical.setAttribute("href", canonicalUrl);
-    document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${meta.title} | Perla Marine`);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", pageTitle);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
     document.querySelector('meta[property="og:image"]')?.setAttribute("content", imageUrl.startsWith("http") ? imageUrl : `${window.location.origin}${imageUrl}`);

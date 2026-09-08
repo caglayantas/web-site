@@ -8,6 +8,7 @@ import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import ShareButtons from "@/components/ShareButtons";
 import GalleryLightbox from "@/components/GalleryLightbox";
 import NotFound from "@/pages/NotFound";
+import { updateHreflangTags } from "@/lib/seo";
 
 const SITE_URL = "https://www.perlamarine.com";
 export default function ProjectDetail() {
@@ -27,6 +28,7 @@ export default function ProjectDetail() {
     if (!data) return;
     const project = localizeProject(data, lang);
     const canonicalUrl = `${SITE_URL}${toPath(`/projeler/${data.slug}`)}`;
+    updateHreflangTags(`/projeler/${data.slug}`);
     document.title = `${project.title} | Perla Marine`;
     document.querySelector('meta[name="description"]')?.setAttribute("content", project.detail);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);
