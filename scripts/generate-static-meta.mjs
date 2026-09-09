@@ -46,6 +46,10 @@ const STATIC_PAGES = [
   { path: "sss", title: "SSS | Perla Marine Tekne Bakım ve Teknik Servis", description: "Perla Marine tekne bakım-onarım ve teknik servis hizmetleri hakkında sık sorulan sorular." },
   { path: "hizmet-bolgelerimiz", title: "Hizmet Bölgelerimiz | Perla Marine Tekne Bakım ve Onarım", description: "Perla Marine'in İzmir merkezli olarak Ege, Akdeniz ve Marmara kıyılarında hizmet verdiği bölgeleri inceleyin." },
   { path: "referanslarimiz", title: "Referanslarımız | Perla Marine Tekne Bakım ve Onarım", description: "Perla Marine'in bugüne kadar hizmet verdiği tekne sahipleri ve iş ortaklarından referanslar." },
+  { path: "kvkk", title: "KVKK Aydınlatma Metni | Perla Marine", description: "Perla Marine iletişim taleplerinde işlenen kişisel verilere ilişkin KVKK aydınlatma metni." },
+  { path: "gizlilik", title: "Gizlilik Politikası | Perla Marine", description: "Perla Marine web sitesi ve iletişim kanallarında bilgi güvenliği ve gizlilik ilkeleri." },
+  { path: "cerez", title: "Çerez Politikası | Perla Marine", description: "Perla Marine web sitesinde çerezlerin kullanımına ilişkin bilgilendirme." },
+  { path: "site-haritasi", title: "Site Haritası | Perla Marine", description: "Perla Marine ana sayfa, hizmet, proje, Teknik Bilgiler, SSS ve iletişim sayfalarına hızlı erişim." },
 ];
 
 async function fetchPublished(table, select) {
