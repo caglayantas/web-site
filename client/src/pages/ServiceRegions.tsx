@@ -7,7 +7,7 @@ import { getPublishedRegions, localizeRegion, type RegionRow } from "@/lib/conte
 import RegionsMap from "@/components/RegionsMap";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 export default function ServiceRegions() {
   const { lang, toPath } = useLanguage();

@@ -195,7 +195,7 @@ export default function Legal({ type }: { type: keyof typeof legalContentTr }) {
     const [title, description] = metaByType[type];
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
-    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://www.perlamarine.com${toPath(`/${type}`)}`);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://perlamarine.com${toPath(`/${type}`)}`);
     updateHreflangTags(`/${type}`);
     return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [type, lang]);
@@ -224,7 +224,7 @@ export function Sitemap() {
   useEffect(() => {
     document.title = lang === "en" ? "Sitemap | Perla Marine" : "Site Haritası | Perla Marine";
     document.querySelector('meta[name="description"]')?.setAttribute("content", lang === "en" ? "Quick access to Perla Marine's home, services, projects, technical notes, FAQ, and contact pages." : "Perla Marine ana sayfa, hizmet, proje, Teknik Bilgiler, SSS ve iletişim sayfalarına hızlı erişim.");
-    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://www.perlamarine.com${toPath("/site-haritasi")}`);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://perlamarine.com${toPath("/site-haritasi")}`);
     updateHreflangTags("/site-haritasi");
     return () => { document.title = lang === "en" ? "Perla Marine | Boat & Yacht Maintenance and Repair" : "Perla Marine | Tekne ve Yat Bakım-Onarım"; };
   }, [lang]);

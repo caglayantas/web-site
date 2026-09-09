@@ -5,7 +5,7 @@ import { getPublishedBoatListings, getListingsEnabled, type BoatListingRow } fro
 import PageHero from "@/components/PageHero";
 import { useLanguage } from "@/lib/i18n";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 function ListingLightbox({ listing, startIndex, onClose }: { listing: BoatListingRow; startIndex: number; onClose: () => void }) {
   const images = [listing.coverImage, ...listing.galleryImages].filter((url): url is string => Boolean(url));

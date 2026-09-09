@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/i18n";
 import NotFound from "@/pages/NotFound";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 // Maps a service slug back to the technical-note category that covers it, so a
 // service page can surface the informational articles a visitor might want to

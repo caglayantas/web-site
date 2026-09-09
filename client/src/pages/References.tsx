@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/i18n";
 import { getPublishedClientReferences, localizeClientReference, type ClientReferenceRow } from "@/lib/content";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 export default function References() {
   const { lang, toPath } = useLanguage();

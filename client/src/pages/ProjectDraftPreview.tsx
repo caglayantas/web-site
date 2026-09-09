@@ -4,7 +4,7 @@ import { ArrowLeft, Check, ExternalLink, Loader2, Wrench } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRoute } from "wouter";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 export default function ProjectDraftPreview() {
   const [, params] = useRoute("/yonetim/projeler/preview/:slug");

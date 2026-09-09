@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useLanguage } from "@/lib/i18n";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 type PageData = {
   eyebrow: string;

@@ -9,7 +9,7 @@ import NotFound from "@/pages/NotFound";
 import ShareButtons from "@/components/ShareButtons";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 const FONT_SIZES = ["sm", "md", "lg", "xl"] as const;
 type FontSize = (typeof FONT_SIZES)[number];
 

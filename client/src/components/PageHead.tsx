@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 const DEFAULT_IMAGE = `${SITE_URL}/manus-storage/perla-hero-medium-yacht-service_7ccec84c_3e23263b.webp`;
 
 type Metadata = { title: string; description: string; path: string; image?: string };

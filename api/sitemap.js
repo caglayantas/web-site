@@ -5,7 +5,7 @@
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL?.trim() || "https://zroktbqjiyutdikwxbzk.supabase.co";
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY?.trim() || "sb_publishable_7gwgIzWZ3n1w04RRCM7q9g_P-oFGkSO";
-const SITE_URL = (process.env.PUBLIC_SITE_URL?.trim() || "https://www.perlamarine.com").replace(/\/+$/, "");
+const SITE_URL = (process.env.PUBLIC_SITE_URL?.trim() || "https://perlamarine.com").replace(/\/+$/, "");
 
 const staticRoutes = ["/", "/hakkimizda", "/hizmetler", "/hizmet-bolgelerimiz", "/projeler", "/referanslarimiz", "/teknik-bilgiler", "/iletisim", "/sss", "/kvkk", "/gizlilik", "/cerez", "/site-haritasi"];
 

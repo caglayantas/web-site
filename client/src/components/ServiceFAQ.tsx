@@ -22,7 +22,7 @@ export default function ServiceFAQ({ compact = false }: { compact?: boolean }) {
     const description = lang === "en"
       ? "Answers to frequently asked questions about Perla Marine's boat maintenance and repair, marine electrical, lithium BMS, propulsion, and mechanical services."
       : "Perla Marine’in tekne bakım-onarım, marin elektrik, lityum BMS, motor-tahrik ve mekanik tesisat hizmetleri hakkında sık sorulan soruların yanıtları.";
-    const canonicalUrl = `https://www.perlamarine.com${toPath("/sss")}`;
+    const canonicalUrl = `https://perlamarine.com${toPath("/sss")}`;
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);

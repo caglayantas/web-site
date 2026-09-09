@@ -1,4 +1,4 @@
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 
 /**
  * Creates the reciprocal hreflang <link> tags for the current page's TR/EN

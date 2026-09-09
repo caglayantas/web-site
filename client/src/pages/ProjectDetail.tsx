@@ -10,7 +10,7 @@ import GalleryLightbox from "@/components/GalleryLightbox";
 import NotFound from "@/pages/NotFound";
 import { updateHreflangTags } from "@/lib/seo";
 
-const SITE_URL = "https://www.perlamarine.com";
+const SITE_URL = "https://perlamarine.com";
 export default function ProjectDetail() {
   const [location] = useLocation();
   const { lang, toPath, stripLang } = useLanguage();
